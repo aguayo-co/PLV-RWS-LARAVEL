@@ -16,7 +16,7 @@
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
-    RewriteRule ^ %{HTTP:X-Forwarded-Proto}%{SERVER_NAME}%1 [L,R=301]
+    RewriteRule ^ %{HTTP:X-Forwarded-Proto}://%{SERVER_NAME}%1 [L,R=301]
 
     # Handle Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
