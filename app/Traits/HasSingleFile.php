@@ -32,7 +32,8 @@ trait HasSingleFile
 
         Storage::deleteDirectory($path);
         if ($file) {
-            $file->storeAs($path, uniqid());
+            $filename = uniqid() . '.' . $file->extension();
+            $file->storeAs($path, $filename);
         }
         # Timestamps might not get updated if this was the only attribute that
         # changed in the model. Force timestamp update.

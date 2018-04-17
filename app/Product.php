@@ -125,7 +125,8 @@ class Product extends Model
         }
 
         foreach ($images as $image) {
-            $image->storeAs($this->image_path, uniqid());
+            $filename = uniqid() . '.' . $image->extension();
+            $image->storeAs($this->image_path, $filename);
         }
         # Timestamps might not get updated if this was the only attribute that
         # changed in the model. Force timestamp update.
