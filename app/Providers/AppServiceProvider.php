@@ -21,10 +21,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        # MySQL < 5.7 do not allow longer strings.
-        # https://laravel.com/docs/5.6/migrations#creating-indexes
-        Schema::defaultStringLength(191);
-
         # Change the default rendering method for ResetPassword.
         ResetPasswordNotification::$toMailCallback = function ($notifiable, $token) {
             return (new UserMailMessage($notifiable))->view(
