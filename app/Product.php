@@ -2,10 +2,11 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
-use App\Traits\SaveLater;
 use App\Traits\HasStatuses;
+use App\Traits\SaveLater;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 
 class Product extends Model
 {
@@ -103,10 +104,17 @@ class Product extends Model
 
     protected function getImagesAttribute()
     {
+        $imagePath = $this->image_path;
+        if ($images = Cache::get($imagePath)) {
+            return $images;
+        }
+
         $images = [];
-        foreach (Storage::files($this->image_path) as $image) {
+        foreach (Storage::files($imagePath) as $image) {
             $images[] = Storage::temporaryUrl($image, now()->addMinutes(30));
         }
+
+        Cache::put($imagePath, $images, 29);
         return $images;
     }
 
@@ -126,6 +134,9 @@ class Product extends Model
 
     protected function setDeleteImagesAttribute(array $images)
     {
+        $imagePath = $this->image_path;
+        Cache::forget($imagePath);
+
         foreach ($images as $image) {
             if ($image && Storage::exists($this->image_path . $image)) {
                 Storage::delete($this->image_path . $image);

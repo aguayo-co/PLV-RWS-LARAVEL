@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 trait HasSingleFile
@@ -27,6 +28,7 @@ trait HasSingleFile
         }
 
         $path = $this->getBasePathFor($attribute);
+        Cache::forget($path);
 
         Storage::deleteDirectory($path);
         if ($file) {
@@ -40,8 +42,14 @@ trait HasSingleFile
     protected function getFileUrl($attribute)
     {
         $path = $this->getBasePathFor($attribute);
+        if ($url = Cache::get($path)) {
+            return $url;
+        }
+
         if ($files = Storage::files($path)) {
-            return Storage::temporaryUrl($files[0], now()->addMinutes(30));
+            $url = Storage::temporaryUrl($files[0], now()->addMinutes(30));
+            cache::put($path, $url, 29);
+            return $url;
         }
         return;
     }
