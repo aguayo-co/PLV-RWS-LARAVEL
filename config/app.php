@@ -150,6 +150,7 @@ return [
         /*
          * Package Service Providers...
          */
+        \Ecrmnn\LaravelHttps\Providers\ServiceProvider::class,
 
         /*
          * Application Service Providers...
