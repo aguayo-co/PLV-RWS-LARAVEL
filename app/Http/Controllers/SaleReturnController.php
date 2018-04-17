@@ -56,6 +56,7 @@ class SaleReturnController extends Controller
                 'exists:sales,id',
                 // Once a return has been created, sale can't be changed,
                 // not even by admins. A new one has to be created instead.
+                // And, only allow one return per Sale.
                 $this->getSaleIdRule($return, $saleId),
             ],
             'products_ids' => [

@@ -107,6 +107,11 @@ class Sale extends Model
         });
     }
 
+    /**
+     * This relation brings the SaleReturn that was created for this Sale.
+     * It should only be one due to how they are created (SaleReturnController),
+     * even though the relation is a belongsToMany().
+     */
     public function returns()
     {
         return $this->belongsToMany('App\SaleReturn', 'product_sale');
