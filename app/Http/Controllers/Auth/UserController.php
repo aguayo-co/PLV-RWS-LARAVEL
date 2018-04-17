@@ -163,14 +163,6 @@ class UserController extends Controller
             throw (new ModelNotFoundException)->setModel(User::class);
         }
 
-        if (auth()->guest()) {
-            throw UnauthorizedException::notLoggedIn();
-        }
-
-        if (!auth()->user()->hasRole('admin')) {
-            throw UnauthorizedException::forRoles(['admin']);
-        }
-
         $pagination = parent::index($request);
         $users = $pagination->getCollection();
         $users = $this->setVisibility($users);
