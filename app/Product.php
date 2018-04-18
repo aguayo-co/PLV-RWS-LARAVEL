@@ -110,11 +110,12 @@ class Product extends Model
         }
 
         $images = [];
+        $validUntil = now()->addDays(1);
         foreach (Storage::files($imagePath) as $image) {
-            $images[] = Storage::temporaryUrl($image, now()->addMinutes(30));
+            $images[] = Storage::temporaryUrl($image, $validUntil);
         }
 
-        Cache::put($imagePath, $images, 29);
+        Cache::put($imagePath, $images, now()->diffInMinutes($validUntil) - 1);
         return $images;
     }
 

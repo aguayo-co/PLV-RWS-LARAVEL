@@ -48,8 +48,9 @@ trait HasSingleFile
         }
 
         if ($files = Storage::files($path)) {
-            $url = Storage::temporaryUrl($files[0], now()->addMinutes(30));
-            cache::put($path, $url, 29);
+            $validUntil = now()->addDays(1);
+            $url = Storage::temporaryUrl($files[0], $validUntil);
+            cache::put($path, $url, now()->diffInMinutes($validUntil) - 1);
             return $url;
         }
         return;
