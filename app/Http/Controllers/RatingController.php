@@ -9,6 +9,11 @@ use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
+/**
+ * Ratings are created automatically, there is no POST method.
+ * They share the primary key with Sale.
+ * Creation is handled in the RouteServiceProvider.
+ */
 class RatingController extends Controller
 {
     protected $modelClass = Rating::class;
@@ -75,18 +80,5 @@ class RatingController extends Controller
             'buyer_rating' => 'required_with:buyer_comment|integer|between:-1,1',
             'buyer_comment' => 'required_with:buyer_rating|string|max:10000',
         ];
-    }
-
-    public function forSale(Request $request, Model $sale)
-    {
-        $rating = Rating::find($sale->id);
-        if (!$rating) {
-            $rating = new Rating();
-            $rating->sale_id = $sale->id;
-            $rating->status = Rating::STATUS_UNPUBLISHED;
-            $rating->save();
-            $rating = $rating->fresh();
-        }
-        return $this->show($request, $rating);
     }
 }
