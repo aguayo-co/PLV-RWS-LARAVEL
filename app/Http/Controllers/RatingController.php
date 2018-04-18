@@ -12,7 +12,7 @@ use Illuminate\Validation\Rule;
 class RatingController extends Controller
 {
     protected $modelClass = Rating::class;
-    public static $allowedWhereIn = ['id', 'sale_id'];
+    public static $allowedWhereIn = ['sale_id'];
 
     public function __construct()
     {
@@ -20,17 +20,6 @@ class RatingController extends Controller
         $this->middleware('owner_or_admin')->only('show');
         $this->middleware(self::class . '::validateUserCanRate')->only('update');
         $this->middleware(self::class . '::validateCanBeRated')->only('update');
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-        // Create a rating for each created sale.
-        Sale::created(function ($sale) {
-            $rating = new self();
-            $rating->id = $sale->id;
-            $rating->save();
-        });
     }
 
     /**
@@ -90,7 +79,14 @@ class RatingController extends Controller
 
     public function forSale(Request $request, Model $sale)
     {
-        $rating = Rating::firstOrCreate(['id', $sale->id]);
+        $rating = Rating::find($sale->id);
+        if (!$rating) {
+            $rating = new Rating();
+            $rating->sale_id = $sale->id;
+            $rating->status = Rating::STATUS_UNPUBLISHED;
+            $rating->save();
+            $rating = $rating->fresh();
+        }
         return $this->show($request, $rating);
     }
 }
