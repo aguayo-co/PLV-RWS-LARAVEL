@@ -84,8 +84,11 @@ class Controller extends BaseController
         }
 
         foreach ($rules as &$rule) {
-            if (is_string($rule) && strpos($rule, 'string') !== false && strpos($rule, 'max:') === false) {
+            if (is_string($rule) && strpos($rule, 'string') !== false) {
                 $rule = $rule . '|max:' . Schema::getFacadeRoot()::$defaultStringLength;
+            }
+            if (is_array($rule) && in_array('string', $rule) === true) {
+                $rule[] = 'max:' . Schema::getFacadeRoot()::$defaultStringLength;
             }
         }
 
