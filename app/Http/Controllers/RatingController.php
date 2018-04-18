@@ -12,12 +12,14 @@ use Illuminate\Validation\Rule;
 class RatingController extends Controller
 {
     protected $modelClass = Rating::class;
+    public static $allowedWhereIn = ['id', 'sale_id'];
 
     public function __construct()
     {
         parent::__construct();
-        $this->middleware(self::class . '::validateUserCanRate')->only(['rate']);
-        $this->middleware(self::class . '::validateCanBeRated')->only(['rate']);
+        $this->middleware('owner_or_admin')->only('show');
+        $this->middleware(self::class . '::validateUserCanRate')->only('update');
+        $this->middleware(self::class . '::validateCanBeRated')->only('update');
     }
 
     protected static function boot()
@@ -39,22 +41,14 @@ class RatingController extends Controller
         $user = auth()->user();
         $rating = $request->route()->parameters['rating'];
 
-        if ($user->hasRole('admin')) {
-            return $next($request);
-        }
-
         $seller = $rating->sale->user;
         $buyer = $rating->sale->order->user;
 
-        if ($user->isNot($seller) && $user->isNot($buyer)) {
-            abort(Response::HTTP_FORBIDDEN, 'User not allowed to rate this Sale.');
-        }
-
-        if ($request->only(['seller_rating', 'seller_comment']) && $user->isNot($seller)) {
+        if ($request->only(['seller_rating', 'seller_comment']) && $user->is($buyer)) {
             abort(Response::HTTP_FORBIDDEN, 'Only seller or admin can set seller rating.');
         }
 
-        if ($request->only(['buyer_rating', 'buyer_comment']) && $user->isNot($buyer)) {
+        if ($request->only(['buyer_rating', 'buyer_comment']) && $user->is($seller)) {
             abort(Response::HTTP_FORBIDDEN, 'Only buyer or admin can set buyer rating.');
         }
 
@@ -94,11 +88,9 @@ class RatingController extends Controller
         ];
     }
 
-    /**
-     * Alias for update method, without its middleware.
-     */
-    public function rate(Request $request, Model $rating)
+    public function forSale(Request $request, Model $sale)
     {
-        return $this->update($request, $rating);
+        $rating = Rating::firstOrCreate(['id', $sale->id]);
+        return $this->show($request, $rating);
     }
 }

@@ -21,4 +21,9 @@ class Rating extends Model
     {
         return $this->belongsTo('App\Sale');
     }
+
+    protected function getOwnersIdsAttribute()
+    {
+        return collect([$this->sale->user_id, $this->sale->order->user_id]);
+    }
 }

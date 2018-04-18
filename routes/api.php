@@ -60,10 +60,6 @@ Route::name('api.')->group(function () {
     Route::get('products', 'ProductController@index')->name('products');
     Route::get('products/{product}', 'ProductController@show')->name('product.get')->where('product', ID_REGEX);
 
-    # Public Sales' rating routes.
-    Route::get('ratings', 'RatingController@index')->name('ratings');
-    Route::get('ratings/{rating}', 'RatingController@show')->name('rating.get')->where('rating', ID_REGEX);
-
     # Auth routes.
     # Only authenticated requests here.
     Route::middleware('auth:api')->group(function () {
@@ -93,8 +89,11 @@ Route::name('api.')->group(function () {
             ->name('product.delete')->where('product', ID_REGEX);
 
         # Routes for Sales' rating.
-        Route::patch('ratings/{rating}', 'RatingController@rate')->name('rating.update')->where('rating', ID_REGEX);
+        Route::get('ratings/{rating}', 'RatingController@show')->name('rating.get')->where('rating', ID_REGEX);
+        Route::patch('ratings/{rating}', 'RatingController@update')->name('rating.update')->where('rating', ID_REGEX);
         Route::delete('ratings/{rating}', 'RatingController@delete')->name('rating.delete')->where('rating', ID_REGEX);
+        Route::get('ratings/sale/{sale}', 'RatingController@forSale')
+            ->name('rating.get_for_sale')->where('sale', ID_REGEX);
 
         # Routes for shopping cart and payments.
         Route::get('/shopping_cart', 'OrderController@getShoppingCart')->name('shopping_cart');
