@@ -23,7 +23,7 @@ class Product extends Model
     const STATUS_SOLD = 31;
     const STATUS_SOLD_RETURNED = 32;
 
-    protected const IMAGES_BASE_PATH = 'uploads/product/images/';
+    protected const IMAGES_BASE_PATH = 'public/product/images/';
 
     /**
      * The attributes that are mass assignable.
@@ -110,12 +110,11 @@ class Product extends Model
         }
 
         $images = [];
-        $validUntil = now()->addDays(1);
         foreach (Storage::files($imagePath) as $image) {
-            $images[] = Storage::temporaryUrl($image, $validUntil);
+            $images[] = asset(Storage::url($image));
         }
 
-        Cache::put($imagePath, $images, now()->diffInMinutes($validUntil) - 1);
+        Cache::put($imagePath, $images, 1440);
         return $images;
     }
 

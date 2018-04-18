@@ -18,7 +18,7 @@ trait HasSingleFile
 
         $snakeClass = snake_case(class_basename(self::class));
         $snakeAttribute = snake_case($attribute);
-        return 'uploads/' . $snakeClass . '/' . $snakeAttribute . '/' . $this->id . '/';
+        return 'public/' . $snakeClass . '/' . $snakeAttribute . '/' . $this->id . '/';
     }
 
     protected function setFile($attribute, ?UploadedFile $file)
@@ -48,9 +48,8 @@ trait HasSingleFile
         }
 
         if ($files = Storage::files($path)) {
-            $validUntil = now()->addDays(1);
-            $url = Storage::temporaryUrl($files[0], $validUntil);
-            cache::put($path, $url, now()->diffInMinutes($validUntil) - 1);
+            $url = asset(Storage::url($files[0]));
+            cache::put($path, $url, 1440);
             return $url;
         }
         return;
