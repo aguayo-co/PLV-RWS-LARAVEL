@@ -185,6 +185,13 @@ class SaleReturnController extends Controller
             if (!$return) {
                 return $fail(__('No se puede agregar esta información durante la creación.'));
             }
+
+            $user = auth()->user();
+            $seller = $return->sales->first()->user;
+            if ($user->is($seller)) {
+                return $fail(__('Usuario no tiene permiso para modificar esta información.'));
+            }
+
             if (SaleReturn::STATUS_RECEIVED < $return->status) {
                 return $fail(__('Información ya no se puede modificar.'));
             }
