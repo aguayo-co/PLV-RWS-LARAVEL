@@ -43,8 +43,9 @@ class SaleReturnController extends Controller
             SaleReturn::STATUS_SHIPPED,
             SaleReturn::STATUS_DELIVERED,
             SaleReturn::STATUS_RECEIVED,
+            SaleReturn::STATUS_ADMIN,
             SaleReturn::STATUS_COMPLETED,
-            SaleReturn::STATUS_CANCELED
+            SaleReturn::STATUS_CANCELED,
         ];
         $minStatus = $return ? $return->status : min($validStatuses);
         $saleId = $return ? $return->sale->id : array_get($data, 'sale_id');
@@ -152,10 +153,11 @@ class SaleReturnController extends Controller
                 return $fail(__('validation.in', ['values' => implode(', ', $buyerStatuses)]));
             }
 
-            // Seller can set two statuses.
+            // Seller can set three statuses.
             // Validate we have one of those.
             $sellerStatuses = [
                 SaleReturn::STATUS_RECEIVED,
+                SaleReturn::STATUS_ADMIN,
                 SaleReturn::STATUS_COMPLETED,
             ];
             $seller = $return->sales->first()->user;

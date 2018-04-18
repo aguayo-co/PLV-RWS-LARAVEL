@@ -18,6 +18,7 @@ class SaleReturn extends Model
     const STATUS_SHIPPED = 40;
     const STATUS_DELIVERED = 41;
     const STATUS_RECEIVED = 49;
+    const STATUS_ADMIN = 50;
     const STATUS_COMPLETED = 90;
     const STATUS_CANCELED = 99;
 
@@ -55,7 +56,7 @@ class SaleReturn extends Model
     /**
      * Associate the products to be returned with this SaleReturn.
      * It is done on the same table as products get associated to sales.
-     * A third column tells was if it is being returned or not.
+     * A third column tells us if it is being returned or not.
      *
      * @param  array $data An array with two keys: sale_id and products_ids.
      */
