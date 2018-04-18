@@ -22,7 +22,7 @@ class SaleReturn extends Model
     const STATUS_COMPLETED = 90;
     const STATUS_CANCELED = 99;
 
-    protected $fillable = ['status', 'products_ids'];
+    protected $fillable = ['shipment_details', 'reason', 'status', 'products_ids'];
 
     protected $dispatchesEvents = [
         'saved' => SaleReturnSaved::class,
@@ -79,5 +79,15 @@ class SaleReturn extends Model
 
         $sale->products()->sync($productsIdsSync);
         $sale->load('products');
+    }
+
+    public function setShipmentDetailsAttribute($value)
+    {
+        $this->attributes['shipment_details'] = json_encode($value);
+    }
+
+    public function getShipmentDetailsAttribute($value)
+    {
+        return json_decode($value, true);
     }
 }

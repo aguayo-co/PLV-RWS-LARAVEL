@@ -51,6 +51,15 @@ class SaleReturnController extends Controller
         $saleId = $return ? $return->sale->id : array_get($data, 'sale_id');
         $required = !$return ? 'required|' : '';
         return [
+            'shipment_details' => [
+                'array',
+                $this->getCanSetShipmentDetailsRule($return),
+            ],
+            'reason' => [
+                trim($required, '|'),
+                'string',
+                $this->getCanSetReasonRule($return),
+            ],
             'sale_id' => [
                 trim($required, '|'),
                 'integer',
@@ -163,6 +172,30 @@ class SaleReturnController extends Controller
             $seller = $return->sales->first()->user;
             if ($user->is($seller) && !in_array($value, $sellerStatuses, true)) {
                 return $fail(__('validation.in', ['values' => implode(', ', $sellerStatuses)]));
+            }
+        };
+    }
+
+    /**
+     * Rule that validates that Shipment Details can be set.
+     */
+    protected function getCanSetShipmentDetailsRule($return)
+    {
+        return function ($attribute, $value, $fail) use ($return) {
+            if (!$return) {
+                return $fail(__('No se puede agregar esta información durante la creación.'));
+            }
+            if (SaleReturn::STATUS_RECEIVED < $return->status) {
+                return $fail(__('Información ya no se puede modificar.'));
+            }
+        };
+    }
+
+    protected function getCanSetReasonRule($return)
+    {
+        return function ($attribute, $value, $fail) use ($return) {
+            if ($return) {
+                return $fail(__('Información ya no se puede modificar.'));
             }
         };
     }

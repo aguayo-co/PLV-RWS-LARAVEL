@@ -60,7 +60,7 @@ class SaleController extends Controller
         return [
             'shipment_details' => [
                 'array',
-                $this->getCanSetShippingDetailsRule($sale),
+                $this->getCanSetShipmentDetailsRule($sale),
             ],
             'status' => [
                 'bail',
@@ -90,16 +90,19 @@ class SaleController extends Controller
     }
 
     /**
-     * Rule that validates that a Sale status is valid.
+     * Rule that validates that Shipment Details can be set.
      */
-    protected function getCanSetShippingDetailsRule($sale)
+    protected function getCanSetShipmentDetailsRule($sale)
     {
         return function ($attribute, $value, $fail) use ($sale) {
-            // Order needs to be payed.
-            if ($sale->status < Sale::STATUS_PAYED) {
-                return $fail(__('La orden no ha sido pagada.'));
+            if (!$sale) {
+                return $fail(__('No se puede agregar esta información durante la creación.'));
             }
-            // Order shipped already.
+            // Sale needs to be payed.
+            if ($sale->status < Sale::STATUS_PAYED) {
+                return $fail(__('La venta no ha sido pagada.'));
+            }
+            // Sale shipped already.
             if (Sale::STATUS_RECEIVED < $sale->status) {
                 return $fail(__('Información ya no se puede modificar.'));
             }
