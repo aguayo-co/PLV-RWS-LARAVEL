@@ -96,7 +96,7 @@ class ProductController extends Controller
             ],
             # Sólo permite una talla que tenga padre.
             'size_id' => [
-                trim($required, '|'),
+                'nullable',
                 'integer',
                 Rule::exists('sizes', 'id')->where(function ($query) {
                     $query->whereNotNull('parent_id');
