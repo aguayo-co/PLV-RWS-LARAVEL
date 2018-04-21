@@ -18,7 +18,8 @@ trait HasSingleFile
 
         $snakeClass = snake_case(class_basename(self::class));
         $snakeAttribute = snake_case($attribute);
-        return 'public/' . $snakeClass . '/' . $snakeAttribute . '/' . $this->id . '/';
+        $idPath = implode(str_split(str_pad($this->id, 9, 0, STR_PAD_LEFT), 3), '/');
+        return 'public/' . $snakeClass . '/' . $snakeAttribute . '/' . $idPath . '/';
     }
 
     protected function setFile($attribute, ?UploadedFile $file)

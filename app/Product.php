@@ -99,7 +99,8 @@ class Product extends Model
 
     protected function getImagePathAttribute()
     {
-        return $this::IMAGES_BASE_PATH . $this->id . '/';
+        $idPath = implode(str_split(str_pad($this->id, 9, 0, STR_PAD_LEFT), 3), '/');
+        return $this::IMAGES_BASE_PATH . $idPath . '/';
     }
 
     protected function getImagesAttribute()
