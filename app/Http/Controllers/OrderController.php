@@ -32,6 +32,7 @@ class OrderController extends Controller
     protected $modelClass = Order::class;
 
     public static $allowedWhereIn = ['id', 'user_id'];
+    public static $allowedWhereBetween = ['status'];
 
     /**
      * Create a new controller instance.
