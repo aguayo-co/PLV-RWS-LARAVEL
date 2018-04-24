@@ -29,7 +29,7 @@ class Slider extends Model
          'priority'
     ];
 
-    protected $appends = ['image'];
+    protected $appends = ['image', 'image_mobile'];
 
     public function getRouteKeyName()
     {
