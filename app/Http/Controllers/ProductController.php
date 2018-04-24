@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Product;
 use App\Notifications\NewProduct;
 use App\Notifications\ProductApproved;
 use App\Notifications\ProductHidden;
 use App\Notifications\ProductRejected;
+use App\Product;
+use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -161,7 +162,9 @@ class ProductController extends Controller
         }
 
         if (!$product) {
-            $data['status'] = Product::STATUS_UNPUBLISHED;
+            $seller = User::find($data['user_id']);
+            $approvedProductsCount = $seller->products->where('status', '>=', Product::STATUS_APPROVED)->count();
+            $data['status'] = $approvedProductsCount > 0 ? Product::STATUS_APPROVED : Product::STATUS_UNPUBLISHED;
         }
 
         return $data;
