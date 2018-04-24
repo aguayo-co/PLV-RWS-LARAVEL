@@ -23,6 +23,7 @@ class SaleController extends Controller
     protected $modelClass = Sale::class;
 
     public static $allowedWhereIn = ['id', 'user_id'];
+    public static $allowedWhereBetween = ['status'];
 
     public function __construct()
     {
