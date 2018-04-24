@@ -91,13 +91,28 @@ class Sale extends Model
     }
 
     /**
-     * The total value of the order.
+     * The value off the commission for the sale.
      */
     public function getCommissionAttribute()
     {
         return $this->products->sum(function ($product) {
             return round($product->price * $product->commission / 100);
         });
+    }
+
+    /**
+     * The cost of shipping this order via Chilexpress.
+     */
+    public function getShippingCostAttribute()
+    {
+        if (1 == 1 || ($this->shipping_method && strpos($this->shipping_method->name, 'chilexpress') !== false)) {
+            $chilexpress = app()->get('chilexpress');
+            $shippingAddress = $this->order->shipping_information['address'];
+            $fromAddress = $this->user->addresses->where('id', $this->user->favorite_address_id)->first();
+
+            return $chilexpress->tarifar($fromAddress, $shippingAddress, 0.5, 10, 10, 10);
+        }
+        return 0;
     }
 
     public function getReturnedCommissionAttribute()
@@ -121,7 +136,6 @@ class Sale extends Model
     {
         return $this->hasMany('App\CreditsTransaction');
     }
-
 
     public function shippingMethod()
     {

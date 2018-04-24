@@ -84,6 +84,14 @@ class Order extends Model
     }
 
     /**
+     * The total value of the order.
+     */
+    public function getShippingCostAttribute()
+    {
+        return $this->sales->sum('shipping_cost');
+    }
+
+    /**
      * The value the user needs to pay after applying the credits
      * and the coupons the user used.
      */
@@ -92,7 +100,8 @@ class Order extends Model
         $total = $this->products->sum('price');
         $credited = $this->used_credits;
         $discount = $this->coupon_discount;
-        return $total - $credited - $discount;
+        $shippingCost = $this->shipping_cost;
+        return $total - $credited - $discount + $shippingCost;
     }
 
     /**

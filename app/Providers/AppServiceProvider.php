@@ -37,9 +37,11 @@ class AppServiceProvider extends ServiceProvider
         Validator::extend('empty_with', 'App\Validators\EmptyWithValidator@validateEmptyWith');
         Validator::replacer('empty_with', 'App\Validators\EmptyWithValidator@replaceEmptyWith');
 
-        DB::listen(function ($query) {
-            Log::debug($query->sql);
-        });
+        if (env('LOG_QUERIES')) {
+            DB::listen(function ($query) {
+                Log::debug($query->sql);
+            });
+        }
     }
 
     /**
