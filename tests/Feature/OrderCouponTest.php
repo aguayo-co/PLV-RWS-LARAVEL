@@ -54,7 +54,7 @@ class OrderCouponTest extends TestCase
             ]);
 
         $response->assertStatus(200)
-            ->assertJson(['due' => $product->price - $coupon->discount_value]);
+            ->assertJson(['due' => max(0, $product->price - $coupon->discount_value)]);
     }
 
     public function testCouponWithPercentageIsApplied()

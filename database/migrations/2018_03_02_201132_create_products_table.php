@@ -33,7 +33,7 @@ class CreateProductsTable extends Migration
             $table->foreign('condition_id')->references('id')->on('conditions');
             $table->integer('size_id')->unsigned();
             $table->foreign('size_id')->references('id')->on('sizes');
-            $table->integer('status')->unsigned();
+            $table->integer('status')->unsigned()->index();
             $table->timestamps();
         });
         DB::statement('ALTER TABLE products ADD FULLTEXT search(title, description)');

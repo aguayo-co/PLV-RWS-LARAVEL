@@ -7,6 +7,7 @@ use App\Coupon;
 use App\CreditsTransaction;
 use App\Http\Controllers\Order\CouponRules;
 use App\Http\Controllers\Order\OrderControllerRules;
+use App\Http\Controllers\Order\EnsureShippingInformation;
 use App\Http\Traits\CurrentUserOrder;
 use App\Order;
 use App\Payment;
@@ -28,6 +29,7 @@ class OrderController extends Controller
     use CouponRules;
     use CurrentUserOrder;
     use OrderControllerRules;
+    use EnsureShippingInformation;
 
     protected $modelClass = Order::class;
 
@@ -267,6 +269,16 @@ class OrderController extends Controller
     public function getShoppingCart(Request $request)
     {
         return $this->show($request, $this->currentUserOrder());
+    }
+
+    /**
+     * Show method to set .
+     */
+    public function show(Request $request, Model $order)
+    {
+        $order = parent::show($request, $order);
+        $this->ensureShippingInformation($order);
+        return $order;
     }
 
     /**

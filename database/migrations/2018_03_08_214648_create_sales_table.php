@@ -22,7 +22,7 @@ class CreateSalesTable extends Migration
             $table->integer('shipping_method_id')->unsigned()->nullable();
             $table->foreign('shipping_method_id')->references('id')->on('shipping_methods');
             $table->json('shipment_details')->nullable();
-            $table->tinyInteger('status')->unsigned();
+            $table->tinyInteger('status')->unsigned()->index();
             $table->json('status_history');
             $table->timestamps();
         });

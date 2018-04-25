@@ -25,7 +25,7 @@ $factory->define(Product::class, function (Faker $faker) {
         'original_price' => $faker->numberBetween(0, 999999),
         'price' => $faker->numberBetween(0, 499999),
         'commission' => $faker->numberBetween(0, 100),
-        'user_id' => User::all()->random()->id,
+        'user_id' => User::role('seller')->get()->random()->id,
         'brand_id' => Brand::all()->random()->id,
         'category_id' => Category::whereNotNull('parent_id')->get()->random()->id,
         'size_id' => Size::whereNotNull('parent_id')->get()->random()->id,
