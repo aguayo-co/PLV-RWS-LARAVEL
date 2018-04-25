@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Address;
+use App\Geoname;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use App\Geoname;
+use Illuminate\Validation\Rule;
 
 class AddressController extends Controller
 {
@@ -20,11 +21,18 @@ class AddressController extends Controller
     protected function validationRules(array $data, ?Model $address)
     {
         $required = !$address ? 'required|' : '';
+
         return [
-            'address' => $required . 'string',
-            'region' => $required . 'string',
-            'city' => $required . 'string',
-            'zone' => $required . 'string',
+            'number' => $required . 'number',
+            'street' => $required . 'street',
+            'additional' => 'additional',
+            'commune' => [
+                $required,
+                'string',
+                Rule::exists('geonames', 'name')->where(function ($query) {
+                    $query->where('country_code', 'CL')->where('feature_code', 'ADM3');
+                }),
+            ]
         ];
     }
 

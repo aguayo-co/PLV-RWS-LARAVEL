@@ -109,7 +109,5 @@ trait Comunas
                 Log::error("Sin equivalencia en Chilexpress para comuna de Geonames: {$geoname->name} - {$geoname->admin2_code}");
             }
         }
-
-
     }
 }

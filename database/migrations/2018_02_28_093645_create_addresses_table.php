@@ -17,10 +17,11 @@ class CreateAddressesTable extends Migration
             $table->increments('id');
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
-            $table->string('address');
-            $table->string('region');
-            $table->string('city');
-            $table->string('zone');
+            $table->string('number');
+            $table->string('street');
+            $table->string('additional')->nullable();
+            $table->string('geonameid');
+            $table->foreign('geonameid')->references('geonameid')->on('geonames');
             $table->timestamps();
         });
     }
