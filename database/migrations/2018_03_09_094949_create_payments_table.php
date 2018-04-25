@@ -19,7 +19,7 @@ class CreatePaymentsTable extends Migration
             $table->integer('order_id')->unsigned()->unique();
             $table->foreign('order_id')->references('id')->on('orders');
             $table->string('gateway');
-            $table->tinyInteger('status')->unsigned();
+            $table->tinyInteger('status')->unsigned()->index();
             $table->json('request')->nullable();
             $table->json('attempts')->nullable();
             $table->timestamps();

@@ -18,7 +18,7 @@ class CreateOrdersTable extends Migration
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
             $table->json('shipping_information')->nullable();
-            $table->tinyInteger('status')->unsigned();
+            $table->tinyInteger('status')->unsigned()->index();
             $table->json('status_history');
             $table->integer('coupon_id')->unsigned()->nullable();
             $table->foreign('coupon_id')->references('id')->on('coupons');

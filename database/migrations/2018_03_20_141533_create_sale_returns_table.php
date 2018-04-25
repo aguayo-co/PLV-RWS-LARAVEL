@@ -15,7 +15,7 @@ class CreateSaleReturnsTable extends Migration
     {
         Schema::create('sale_returns', function (Blueprint $table) {
             $table->increments('id');
-            $table->tinyInteger('status')->unsigned();
+            $table->tinyInteger('status')->unsigned()->index();
             $table->json('status_history');
             $table->timestamps();
         });

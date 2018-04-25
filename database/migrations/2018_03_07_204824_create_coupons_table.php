@@ -24,7 +24,7 @@ class CreateCouponsTable extends Migration
             $table->boolean('first_purchase_only')->default(false);
             $table->integer('discount_value')->unsigned();
             $table->string('discount_type');
-            $table->integer('status')->unsigned()->default(true);
+            $table->integer('status')->unsigned()->default(true)->index();
             $table->timestamps();
         });
     }
