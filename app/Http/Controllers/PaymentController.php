@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Gateways\Gateway;
 use App\Http\Controllers\Order\CouponRules;
+use App\Http\Controllers\Order\EnsureShippingInformation;
 use App\Http\Traits\CurrentUserOrder;
 use App\Order;
 use App\Payment;
@@ -19,6 +20,7 @@ class PaymentController extends Controller
 {
     use CouponRules;
     use CurrentUserOrder;
+    use EnsureShippingInformation;
 
     protected $modelClass = Payment::class;
 
@@ -120,6 +122,8 @@ class PaymentController extends Controller
      */
     public function generatePayment(Request $request, Order $order)
     {
+        $this->ensureShippingInformation($order);
+
         $this->validateOrderCanCheckout($order);
 
         // Get the gateway to use.
