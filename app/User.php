@@ -104,6 +104,7 @@ class User extends Authenticatable
 
         switch (false) {
             case $this->about:
+            case $this->favorite_address_id:
             case $this->shipping_method_ids->isNotEmpty():
             case $this->phone:
             case $this->picture:

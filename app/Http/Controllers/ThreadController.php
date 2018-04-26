@@ -37,29 +37,30 @@ class ThreadController extends Controller
     }
 
     /**
-     * Return a Closure that modifies the index query.
-     * The closure receives the $query as a parameter.
+     * Filters the index query for "unread" messages.
      *
      * @return Closure
      */
     protected function alterIndexQuery()
     {
         return function ($query) {
-            if (!request()->query('product_id')) {
-                $filterUnread = (bool) array_get(request()->query('filter'), 'unread');
+            $query = $query->latest('updated_at');
 
-                if ($filterUnread) {
-                    // All threads that user is participating in, with new messages
-                    $query = $query->forUserWithNewMessages(auth()->id())->latest('updated_at');
-                }
-
-                if (!$filterUnread) {
-                    // All threads that user is participating in
-                    $query = $query->forUser(auth()->id());
-                }
+            // If asked for a product's threads, only show public ones.
+            $productId = array_has(request()->query('filter'), 'product_id');
+            if ($productId) {
+                return $query->where('private', false);
             }
 
-            return $query->latest('updated_at');
+            $filterUnread = (bool) array_get(request()->query('filter'), 'unread');
+            // All threads that user is participating in that have
+            // unread messages.
+            if ($filterUnread) {
+                return $query->forUserWithNewMessages(auth()->id())->latest('updated_at');
+            }
+
+            // All threads that user is participating in.
+            return $query->forUser(auth()->id());
         };
     }
 
