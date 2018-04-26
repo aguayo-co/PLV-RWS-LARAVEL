@@ -21,6 +21,7 @@ class CreateChilexpressGeodataTable extends Migration
             $table->string('region_cod');
             $table->string('comuna_cod')->nullable();
             $table->string('comuna_cod_ine')->nullable();
+            $table->tinyInteger('coverage_type')->nullable();
             $table->timestamps();
         });
     }

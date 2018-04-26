@@ -16,6 +16,10 @@ trait Regiones
      */
     public function regiones()
     {
+        if ($cached = cache('chilexpress.regiones')) {
+            return $cached;
+        };
+
         $route = "ConsultarRegiones";
 
         $method = 'reqObtenerRegion';
@@ -54,7 +58,11 @@ trait Regiones
             return null;
         }
 
-        return $result->respObtenerRegion->Regiones;
+        $regiones = $result->respObtenerRegion->Regiones;
+
+        cache(['chilexpress.regiones' => $regiones], now()->addSeconds(3600));
+
+        return $regiones;
     }
 
     /**
@@ -77,7 +85,7 @@ trait Regiones
                 $chilexpressGeodata->name = $region->GlsRegion;
                 $chilexpressGeodata->type = 'region';
                 $chilexpressGeodata->region_cod = $region->idRegion;
-                $chilexpressGeodata->Save();
+                $chilexpressGeodata->save();
             }
             if (!$regionFound) {
                 Log::error("Sin equivalencia en Geonames para región de Chilexpress: {$region->GlsRegion} - {$region->idRegion}");
