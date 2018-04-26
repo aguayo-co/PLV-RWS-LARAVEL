@@ -31,7 +31,7 @@ class CreateProductsTable extends Migration
             $table->foreign('category_id')->references('id')->on('categories');
             $table->integer('condition_id')->unsigned();
             $table->foreign('condition_id')->references('id')->on('conditions');
-            $table->integer('size_id')->unsigned();
+            $table->integer('size_id')->unsigned()->nullable();
             $table->foreign('size_id')->references('id')->on('sizes');
             $table->integer('status')->unsigned()->index();
             $table->timestamps();

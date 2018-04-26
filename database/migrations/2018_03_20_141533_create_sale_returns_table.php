@@ -15,6 +15,8 @@ class CreateSaleReturnsTable extends Migration
     {
         Schema::create('sale_returns', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('reason')->nullable();
+            $table->json('shipment_details')->nullable();
             $table->tinyInteger('status')->unsigned()->index();
             $table->json('status_history');
             $table->timestamps();
