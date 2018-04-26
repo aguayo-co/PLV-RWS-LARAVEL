@@ -91,6 +91,32 @@ class PaymentController extends Controller
         if (!data_get($order, 'shipping_information.phone')) {
             abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Order needs shipping phone.');
         }
+
+        $this->validateChileExpressIsAvailable($order);
+    }
+
+    /**
+     * Validate that delivery with Chilexpress is available if any of the sales
+     * has been selected to be delivered with them.
+     */
+    protected function validateChileExpressIsAvailable(Model $order)
+    {
+        $address = data_get($order, 'shipping_information.address');
+        $order->sales->each(function ($sale) {
+            if (strpos($sale->shipping_method->name, 'chilexpress') !== false) {
+                // No geonameid means we can not match the address.
+                // Should not happen, but never know.
+                if (!$address->geonameid) {
+                    abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Address not compatible with Chilexpress.');
+                }
+
+                if (ChilexpressGeodata::where('coverage_type', '>', 1)->find($address->geonameid)) {
+                    abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Address not covered by Chilexpress.');
+                }
+                // Address is in Chilexpress delivery area, no need to check other sales.
+                return false;
+            }
+        });
     }
 
     /**
