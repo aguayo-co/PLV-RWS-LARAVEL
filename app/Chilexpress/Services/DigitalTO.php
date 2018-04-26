@@ -2,22 +2,23 @@
 
 namespace App\Chilexpress\Services;
 
-/**
- * Genera una orden de transporte y su etiqueta
- */
 trait DigitalTO
 {
     /**
-     * Retorna el valor del shipping de Chilexpress
-     * @param string $origen Codigo de la ciudad de origen
-     * @param string $destino Codigo de la ciudad destino
-     * @param int $peso en kilo
-     * @param int $alto en cm
-     * @param int $ancho en cm
-     * @param int $largo en cm
-     * @return mixed null o int con valor
+     * Generate label for given Shipping details.
+     *
+     * @param \App\User $seller.
+     * @param \App\User $buyer.
+     * @param \App\Address $origen.
+     * @param \App\Address $destino.
+     * @param int $weight Kg
+     * @param int $height cm
+     * @param int $width cm
+     * @param int $length cm
+     *
+     * @return mixed null or image blob
      */
-    public function order()
+    public function order($ref, $seller, $buyer, $origen, $destino, $weight, $height, $width, $length)
     {
         $route = "IntegracionAsistidaOp";
 
@@ -25,40 +26,42 @@ trait DigitalTO
         $data = [
             'codigoProducto' => '3',
             'codigoServicio' => '3',
-            'comunaOrigen' => 'RENCA',
+            'comunaOrigen' => $origen->chilexpressGeodata->name,
             'numeroTCC' => '22106942',
-            'referenciaEnvio' => 'ENVÍO DE PRILOV',
-            'referenciaEnvio2' => 'Compra1',
+            'referenciaEnvio' => 'PRILOV - ' . $ref,
+            'referenciaEnvio2' => null,
             'eoc' => '0',
             'Remitente' => [
-                'nombre' => 'Mario Moyano',
-                'email' => 'mmoyano@chilexpress.cl',
-                'celular' => '84642291',
+                'nombre' => $seller->full_name,
+                'email' => $seller->email,
+                'celular' => $seller->phone,
             ],
             'Destinatario' => [
-                'nombre' => 'Juan Saab',
-                'email' => 'juan.saab@aguayo.co',
-                'celular' => '555 123 45 67',
+                'nombre' => $buyer->full_name,
+                'email' => $buyer->email,
+                'celular' => $buyer->phone,
             ],
             'Direccion' => [
-                'comuna' => 'PENALOLEN',
-                'calle' => 'Camino de las Camelias',
-                'numero' => '7909',
-                'complemento' => 'Casa 33',
+                'comuna' => $destino->chilexpressGeodata->name,
+                'calle' => $destino->street,
+                'numero' => $destino->number,
+                'complemento' => $destino->additional,
             ],
             'DireccionDevolucion' => [
-                'comuna' => 'PUDAHUEL',
-                'calle' => 'Jose Joaquin Perez',
-                'numero' => '1376',
-                'complemento' => 'Piso 2',
+                'comuna' => $origen->chilexpressGeodata->name,
+                'calle' => $origen->street,
+                'numero' => $origen->number,
+                'complemento' => $origen->additional,
             ],
             'Pieza' => [
-                'peso' => '5',
-                'alto' => '1',
-                'ancho' => '1',
-                'largo' => '1',
+                'peso' => $weight,
+                'alto' => $height,
+                'ancho' => $width,
+                'largo' => $length,
             ],
         ];
+
+        // eval(\Psy\sh());
 
         $clientOptions = array(
             'login'    => "UsrTestServicios",
@@ -82,9 +85,10 @@ trait DigitalTO
             return null;
         }
 
-        $image = $result->respGenerarIntegracionAsistida->DatosEtiqueta->imagenEtiqueta;
-        $fp = fopen('image', 'w');
-        fwrite($fp, $image);
-        fclose($fp);
+        if ($result->respGenerarIntegracionAsistida->EstadoOperacion->codigoEstado !== 0) {
+            return null;
+        }
+
+        return $result->respGenerarIntegracionAsistida->DatosEtiqueta->imagenEtiqueta;
     }
 }

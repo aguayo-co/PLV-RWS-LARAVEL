@@ -62,6 +62,7 @@ class SelfOrAdminTest extends TestCase
         $this->request->user_id = $this->user->id;
 
         $addressUser = factory(User::class)->create();
+        $this->artisan('db:seed', ['--class' => 'GeonamesSeeder']);
         $address = factory(Address::class)->create(['user_id' => $addressUser->id]);
         $this->route->parameters = [$address];
 

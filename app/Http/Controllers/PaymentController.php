@@ -107,7 +107,7 @@ class PaymentController extends Controller
     {
         $geonameid = data_get($order, 'shipping_information.address.geonameid');
         $order->sales->each(function ($sale) {
-            if (strpos($sale->shipping_method->name, 'chilexpress') !== false) {
+            if ($sale->shipping_method && strpos($sale->shipping_method->name, 'chilexpress') !== false) {
                 // No geonameid means we can not match the address.
                 // Should not happen, but never know.
                 if (!$geonameid) {

@@ -6,13 +6,10 @@ use App\ChilexpressGeodata;
 use App\Geoname;
 use Illuminate\Support\Facades\Log;
 
-/**
- * Clase para calculo de tarifa de chilexpress
- */
 trait Comunas
 {
     /**
-     * Retorna las comunas de Chile con cobertura.
+     * Return Communes with coverage by Chilexpress.
      */
     public function comunas($coverageType = 3)
     {

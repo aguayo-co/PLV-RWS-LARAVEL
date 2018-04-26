@@ -11,7 +11,6 @@ class ChilexpressGeodata extends Model
     public $incrementing = false;
 
     public $fillable = ['geonameid'];
-    public $with = ['geoname'];
 
     public function geoname()
     {

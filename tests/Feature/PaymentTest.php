@@ -39,6 +39,9 @@ class PaymentTest extends TestCase
         $this->admin->assignRole('admin');
         $this->admin = $this->admin->fresh();
         $this->seller = factory(User::class)->states(['profile'])->create()->fresh();
+        $this->artisan('db:seed', ['--class' => 'GeonamesSeeder']);
+        $this->address = factory(Address::class)->create(['user_id' => $this->seller->id]);
+        $this->seller = $this->seller->fresh();
         $this->user = factory(User::class)->create()->fresh();
     }
 

@@ -7,7 +7,6 @@ use App\Traits\HasSingleFile;
 use App\Traits\SaveLater;
 use Cmgmyr\Messenger\Traits\Messagable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Passport\HasApiTokens;
@@ -204,12 +203,12 @@ class User extends Authenticatable
         return $this->getFileUrl('picture');
     }
 
-    protected function setCoverAttribute(?UploadedFile $cover)
+    protected function setCoverAttribute($cover)
     {
         $this->setFile('cover', $cover);
     }
 
-    protected function setPictureAttribute(?UploadedFile $picture)
+    protected function setPictureAttribute($picture)
     {
         $this->setFile('picture', $picture);
     }

@@ -20,7 +20,7 @@ class CreateAddressesTable extends Migration
             $table->string('number');
             $table->string('street');
             $table->string('additional')->nullable();
-            $table->string('geonameid');
+            $table->integer('geonameid')->unsigned();
             $table->foreign('geonameid')->references('geonameid')->on('geonames');
             $table->timestamps();
         });

@@ -5,7 +5,6 @@ namespace App;
 use App\Traits\HasSingleFile;
 use App\Traits\HasStatuses;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\UploadedFile;
 
 class Payment extends Model
 {
@@ -79,7 +78,7 @@ class Payment extends Model
         return $this->getFileUrl('transfer_receipt');
     }
 
-    protected function setTransferReceiptAttribute(?UploadedFile $transferReceipt)
+    protected function setTransferReceiptAttribute($transferReceipt)
     {
         $this->setFile('transfer_receipt', $transferReceipt);
     }

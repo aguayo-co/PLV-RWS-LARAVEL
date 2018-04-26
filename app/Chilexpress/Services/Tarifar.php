@@ -2,50 +2,35 @@
 
 namespace App\Chilexpress\Services;
 
-use App\Chilexpress\Address;
 use App\ChilexpressGeodata;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-/**
- * Clase para calculo de tarifa de chilexpress
- */
 trait Tarifar
 {
     /**
-     * Retorna el valor del shipping de Chilexpress
-     * @param string $origen Codigo de la ciudad de origen
-     * @param string $destino Codigo de la ciudad destino
-     * @param int $peso en kilo
-     * @param int $alto en cm
-     * @param int $ancho en cm
-     * @param int $largo en cm
-     * @return mixed null o int con valor
+     * Calculate shipping cost.
+     *
+     * @param \App\Address $origen.
+     * @param \App\Address $destino.
+     * @param int $weight Kg
+     * @param int $height cm
+     * @param int $width cm
+     * @param int $length cm
+     *
+     * @return mixed null or int
      */
-    public function tarifar($origenAddress, $destinoAddress, $peso, $alto, $ancho, $largo)
+    public function tarifar($origen, $destino, $weight, $height, $width, $length)
     {
-
-        try {
-            $origenAddress = new Address($origenAddress['address'], $origenAddress['region'], $origenAddress['zone']);
-        } catch (ModelNotFoundException $e) {
-            return null;
-        }
-
-        try {
-            $destinoAddress = new Address($destinoAddress['address'], $destinoAddress['region'], $destinoAddress['zone']);
-        } catch (ModelNotFoundException $e) {
-            return null;
-        }
-
         $route = "TarificarCourier";
 
         $method = 'reqValorizarCourier';
         $data = [
-            'CodCoberturaOrigen' => $origenAddress->comuna->comuna_cod,
-            'CodCoberturaDestino' => $destinoAddress->comuna->comuna_cod,
-            'PesoPza' => $peso,
-            'DimAltoPza' => $alto,
-            'DimAnchoPza' => $ancho,
-            'DimLargoPza' => $largo
+            'CodCoberturaOrigen' => $origen->chilexpressGeodata->comuna_cod,
+            'CodCoberturaDestino' => $destino->chilexpressGeodata->comuna_cod,
+            'PesoPza' => $weight,
+            'DimAltoPza' => $height,
+            'DimAnchoPza' => $width,
+            'DimLargoPza' => $length,
         ];
 
         $clientOptions = array(
@@ -81,17 +66,14 @@ trait Tarifar
             return null;
         }
 
-        $valor = null;
-
-        return $result->respValorizarCourier;
-        if ($result->respValorizarCourier->CodEstado == 0) {
-            $servicio = collect($result->respValorizarCourier->Servicios)->firstWhere('CodServicio', 3);
-            if (!$servicio) {
-                $servicio = collect($result->respValorizarCourier->Servicios)->first();
-            }
-            $valor = $servicio->ValorServicio;
+        if ($result->respValorizarCourier->CodEstado !== 0) {
+            return null;
         }
 
-        return $valor;
+        $servicio = collect($result->respValorizarCourier->Servicios)->firstWhere('CodServicio', 3);
+        if (!$servicio) {
+            $servicio = collect($result->respValorizarCourier->Servicios)->first();
+        }
+        return $servicio->ValorServicio;
     }
 }

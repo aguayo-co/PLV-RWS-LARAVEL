@@ -2,7 +2,9 @@
 
 namespace App;
 
+use App\Address;
 use App\Events\SaleSaved;
+use App\Traits\HasSingleFile;
 use App\Traits\HasStatuses;
 use App\Traits\HasStatusHistory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,6 +13,7 @@ class Sale extends Model
 {
     use HasStatuses;
     use HasStatusHistory;
+    use HasSingleFile;
 
     // Numbers are used to know when an action can be taken.
     // For instance, an order can not be marked as shipped if it
@@ -105,14 +108,28 @@ class Sale extends Model
      */
     public function getShippingCostAttribute()
     {
-        if (1 == 1 || ($this->shipping_method && strpos($this->shipping_method->name, 'chilexpress') !== false)) {
-            $chilexpress = app()->get('chilexpress');
-            $shippingAddress = $this->order->shipping_information['address'];
-            $fromAddress = $this->user->addresses->where('id', $this->user->favorite_address_id)->first();
-
-            return $chilexpress->tarifar($fromAddress, $shippingAddress, 0.5, 10, 10, 10);
+        $shippingAddress = data_get($this->order->makeHidden('sales')->shipping_information, 'address');
+        if (!$shippingAddress) {
+            return 0;
         }
-        return 0;
+
+        if (!$this->shipping_method || strpos($this->shipping_method->name, 'chilexpress') === false) {
+            return 0;
+        }
+
+        $shipFrom = $this->user->addresses
+            ->where('id', $this->user->favorite_address_id)->first();
+        if (!$shipFrom) {
+            return 0;
+        }
+
+        if (!data_get($shippingAddress, 'geonameid')) {
+            return 0;
+        }
+        $shipTo = new Address(array_only($shippingAddress, ['geonameid']));
+
+        $chilexpress = app()->get('chilexpress');
+        return $chilexpress->tarifar($shipFrom, $shipTo, 0.5, 10, 10, 10);
     }
 
     public function getReturnedCommissionAttribute()
@@ -142,6 +159,9 @@ class Sale extends Model
         return $this->belongsTo('App\ShippingMethod');
     }
 
+    #                                 #
+    # Start Shipment Details methods. #
+    #                                 #
     public function setShipmentDetailsAttribute($value)
     {
         $this->attributes['shipment_details'] = json_encode($value);
@@ -151,4 +171,49 @@ class Sale extends Model
     {
         return json_decode($value, true);
     }
+    #                                 #
+    # End Shipment Details methods  . #
+    #                                 #
+
+    #                                 #
+    # End Label image methods       . #
+    #                                 #
+    protected function getShippingLabelAttribute()
+    {
+        if ($url = $this->getFileUrl('shipping_label')) {
+            return $url;
+        };
+
+        if ($this->status < $this::STATUS_PAYED) {
+            return;
+        }
+
+        $label = $this->generateShippingLabel();
+        $this->setContentToFile('shipping_label', $label, 'jpeg');
+        return $this->getFileUrl('shipping_label');
+    }
+
+    protected function setShippingLabelAttribute($cover)
+    {
+        $this->setFile('shipping_label', $cover);
+    }
+
+    protected function generateShippingLabel()
+    {
+        $order = $this->order->makeHidden('sales');
+        $shippingAddress = data_get($order->shipping_information, 'address');
+        if ($shippingAddress || ($this->shipping_method && strpos($this->shipping_method->name, 'chilexpress') !== false)) {
+            $chilexpress = app()->get('chilexpress');
+            $shipTo = new Address($shippingAddress);
+            $shipFrom = $this->user->addresses
+                ->where('id', $this->user->favorite_address_id)->first();
+
+            $ref = "{$order->id}-{$this->id}";
+            return $chilexpress->order($ref, $this->user, $order->user, $shipFrom, $shipTo, 0.5, 10, 10, 10);
+        }
+        return 0;
+    }
+    #                                 #
+    # End Label image methods       . #
+    #                                 #
 }

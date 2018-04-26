@@ -3,7 +3,6 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use App\Traits\HasSingleFile;
 
@@ -41,7 +40,7 @@ class Slider extends Model
         return $this->getFileUrl('image');
     }
 
-    protected function setImageAttribute(UploadedFile $image)
+    protected function setImageAttribute($image)
     {
         $this->setFile('image', $image);
     }
@@ -52,7 +51,7 @@ class Slider extends Model
         return $this->getFileUrl('image_mobile');
     }
 
-    protected function setImageMobileAttribute(UploadedFile $image)
+    protected function setImageMobileAttribute($image)
     {
         $this->setFile('image_mobile', $image);
     }

@@ -22,6 +22,17 @@ class Address extends Model
         'commune', 'region', 'province'
     ];
 
+    public static function boot()
+    {
+        parent::boot();
+        self::created(function ($address) {
+            if (!$address->user->favorite_address_id) {
+                $address->user->favorite_address_id = $address->id;
+                $address->user->save();
+            }
+        });
+    }
+
     /**
      * Get the user that owns the address.
      */
@@ -33,6 +44,11 @@ class Address extends Model
     public function geoname()
     {
         return $this->belongsTo('App\Geoname', 'geonameid');
+    }
+
+    public function chilexpressGeodata()
+    {
+        return $this->belongsTo('App\ChilexpressGeodata', 'geonameid');
     }
 
     protected function getRegionAttribute()

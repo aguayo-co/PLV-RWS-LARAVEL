@@ -2,7 +2,6 @@
 
 namespace App\Traits;
 
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
@@ -22,7 +21,7 @@ trait HasSingleFile
         return 'public/' . $snakeClass . '/' . $snakeAttribute . '/' . $idPath . '/';
     }
 
-    protected function setFile($attribute, ?UploadedFile $file)
+    protected function setFile($attribute, $file)
     {
         if ($this->saveLater($attribute, $file)) {
             return;
@@ -34,12 +33,32 @@ trait HasSingleFile
         Storage::deleteDirectory($path);
         if ($file) {
             $filename = uniqid() . '.' . $file->extension();
-            $file->storeAs($path, $filename);
+            Storage::putFileAs($path, $file, $filename);
         }
         # Timestamps might not get updated if this was the only attribute that
         # changed in the model. Force timestamp update.
         $this->updateTimestamps();
     }
+
+    protected function setContentToFile($attribute, $content, $ext)
+    {
+        if ($this->saveLater($attribute, $content)) {
+            return;
+        }
+
+        $path = $this->getBasePathFor($attribute);
+        Cache::forget($path);
+
+        Storage::deleteDirectory($path);
+        if ($content) {
+            $filename = uniqid() . '.' . $ext;
+            Storage::put($path . $filename, $content);
+        }
+        # Timestamps might not get updated if this was the only attribute that
+        # changed in the model. Force timestamp update.
+        $this->updateTimestamps();
+    }
+
 
     protected function getFileUrl($attribute)
     {

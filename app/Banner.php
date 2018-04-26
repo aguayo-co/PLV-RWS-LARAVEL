@@ -2,10 +2,9 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use App\Traits\HasSingleFile;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Banner extends Model
 {
@@ -32,7 +31,7 @@ class Banner extends Model
         return $this->getFileUrl('image');
     }
 
-    protected function setImageAttribute(?UploadedFile $image)
+    protected function setImageAttribute($image)
     {
         $this->setFile('image', $image);
     }

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Address;
 use App\Brand;
 use App\Campaign;
 use App\Category;
@@ -11,7 +12,6 @@ use App\Product;
 use App\ShippingMethod;
 use App\Size;
 use App\User;
-use Illuminate\Http\UploadedFile;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
@@ -36,6 +36,9 @@ class ProductTest extends TestCase
         $this->admin->assignRole('admin');
         $this->admin = $this->admin->fresh();
         $this->seller = factory(User::class)->states(['profile'])->create()->fresh();
+        $this->artisan('db:seed', ['--class' => 'GeonamesSeeder']);
+        $this->address = factory(Address::class)->create(['user_id' => $this->seller->id]);
+        $this->seller = $this->seller->fresh();
         $this->user = factory(User::class)->create()->fresh();
     }
 

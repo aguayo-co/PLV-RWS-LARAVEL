@@ -15,6 +15,10 @@ class DatabaseSeeder extends Seeder
         Role::create(['name' => 'admin']);
         Role::create(['name' => 'seller']);
 
+        $this->call([
+            GeonamesSeeder::class,
+        ]);
+
         factory(App\Group::class, 5)->create();
         factory(App\ShippingMethod::class, 2)->create();
 

@@ -6,13 +6,10 @@ use App\ChilexpressGeodata;
 use App\Geoname;
 use Illuminate\Support\Facades\Log;
 
-/**
- * Clase para calculo de tarifa de chilexpress
- */
 trait Regiones
 {
     /**
-     * Retorna las regiones de Chile.
+     * Return Regions in Chile.
      */
     public function regiones()
     {

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Address;
 use App\User;
 use Laravel\Passport\Passport;
 use Tests\TestCase;
@@ -152,6 +153,9 @@ class UsersTest extends TestCase
         Role::create(['name' => 'seller']);
         factory(ShippingMethod::class)->create();
         $user = factory(User::class)->states('profile')->create();
+        $this->artisan('db:seed', ['--class' => 'GeonamesSeeder']);
+        $this->address = factory(Address::class)->create(['user_id' => $user->id]);
+        $user = $user->fresh();
         $this->assertTrue($user->hasRole('seller'));
     }
 

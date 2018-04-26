@@ -49,6 +49,7 @@ class OwnerOrAdminTest extends TestCase
     {
         auth()->setUser($this->users[0]);
 
+        $this->artisan('db:seed', ['--class' => 'GeonamesSeeder']);
         $address = factory(Address::class)->make(['user_id' => $this->users[1]->id]);
 
         $this->route->parameters = [$address];
@@ -72,6 +73,7 @@ class OwnerOrAdminTest extends TestCase
     {
         auth()->setUser($this->users[0]);
 
+        $this->artisan('db:seed', ['--class' => 'GeonamesSeeder']);
         $address = factory(Address::class)->make(['user_id' => $this->users[0]->id]);
         $this->route->parameters = [$address];
         $response = $this->middleware->handle($this->request, $this->closure);
@@ -85,6 +87,7 @@ class OwnerOrAdminTest extends TestCase
         Role::create(['name' => 'admin']);
 
         $this->users[0]->assignRole('admin');
+        $this->artisan('db:seed', ['--class' => 'GeonamesSeeder']);
         $address = factory(Address::class)->make(['user_id' => $this->users[1]->id]);
         $this->route->parameters = [$address];
         $response = $this->middleware->handle($this->request, $this->closure);

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Address;
 use App\Brand;
 use App\Campaign;
 use App\Category;
@@ -32,6 +33,9 @@ class OrderCouponTest extends TestCase
         Role::create(['name' => 'seller']);
 
         $this->seller = factory(User::class)->states(['profile'])->create()->fresh();
+        $this->artisan('db:seed', ['--class' => 'GeonamesSeeder']);
+        $this->address = factory(Address::class)->create(['user_id' => $this->seller->id]);
+        $this->seller = $this->seller->fresh();
         $this->user = factory(User::class)->create()->fresh();
     }
 
