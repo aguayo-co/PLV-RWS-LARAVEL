@@ -13,7 +13,7 @@ class Address extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id', 'number', 'street', 'additional', 'commune',
+        'user_id', 'number', 'street', 'additional', 'geonameid',
     ];
     protected $hidden = [
         'geoname'
@@ -35,30 +35,23 @@ class Address extends Model
         return $this->belongsTo('App\Geoname', 'geonameid');
     }
 
-    protected function getRegionAttribute($value)
+    protected function getRegionAttribute()
     {
         $region = Geoname::where('feature_code', 'ADM1')
             ->where('admin1_code', $this->geoname->admin1_code)->first();
         return data_get($region, 'name');
     }
 
-    protected function getProvinceAttribute($value)
+    protected function getProvinceAttribute()
     {
         $province = Geoname::where('feature_code', 'ADM2')
             ->where('admin2_code', $this->geoname->admin2_code)->first();
         return data_get($province, 'name');
     }
 
-    protected function getCommuneAttribute($value)
+    protected function getCommuneAttribute()
     {
         return data_get($this->geoname, 'name');
-    }
-
-    protected function setCommuneAttribute($value)
-    {
-        $commune = Geoname::where('feature_code', 'ADM3')
-            ->where('name', $value)->first();
-        $this->attributes['geonameid'] = data_get($commune, 'geonameid');
     }
 
     /**

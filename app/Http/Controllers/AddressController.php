@@ -23,11 +23,11 @@ class AddressController extends Controller
         $required = !$address ? 'required|' : '';
 
         return [
-            'number' => $required . 'number',
-            'street' => $required . 'street',
-            'additional' => 'additional',
+            'number' => $required . 'string',
+            'street' => $required . 'string',
+            'additional' => 'string',
             'commune' => [
-                $required,
+                trim($required, '|'),
                 'string',
                 Rule::exists('geonames', 'name')->where(function ($query) {
                     $query->where('country_code', 'CL')->where('feature_code', 'ADM3');
@@ -50,6 +50,14 @@ class AddressController extends Controller
             $user = request()->route('user');
             $data['user_id'] = $user->id;
         }
+
+        array_forget($data, 'geonameid');
+        if ($commune = data_get($data, 'commune')) {
+            $geoname = Geoname::where('country_code', 'CL')->where('feature_code', 'ADM3')
+                ->where('name', $commune)->first();
+            $data['geonameid'] = data_get($geoname, 'geonameid');
+        }
+
         return $data;
     }
 

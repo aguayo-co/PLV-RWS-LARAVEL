@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\ChilexpressGeodata;
 use App\Gateways\Gateway;
 use App\Http\Controllers\Order\CouponRules;
 use App\Http\Controllers\Order\EnsureShippingInformation;
@@ -101,16 +102,16 @@ class PaymentController extends Controller
      */
     protected function validateChileExpressIsAvailable(Model $order)
     {
-        $address = data_get($order, 'shipping_information.address');
+        $geonameid = data_get($order, 'shipping_information.address.geonameid');
         $order->sales->each(function ($sale) {
             if (strpos($sale->shipping_method->name, 'chilexpress') !== false) {
                 // No geonameid means we can not match the address.
                 // Should not happen, but never know.
-                if (!$address->geonameid) {
+                if (!$geonameid) {
                     abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Address not compatible with Chilexpress.');
                 }
 
-                if (ChilexpressGeodata::where('coverage_type', '>', 1)->find($address->geonameid)) {
+                if (!ChilexpressGeodata::where('coverage_type', '>', 1)->find($geonameid)) {
                     abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Address not covered by Chilexpress.');
                 }
                 // Address is in Chilexpress delivery area, no need to check other sales.
