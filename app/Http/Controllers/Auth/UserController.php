@@ -22,6 +22,8 @@ class UserController extends Controller
     public static $allowedWhereIn = ['id', 'email'];
     public static $allowedWhereHas = ['group_ids' => 'groups'];
 
+    public static $searchIn = ['first_name', 'last_name'];
+
     protected function alterValidateData($data, Model $user = null)
     {
         # ID needed to validate it is not self-referenced.

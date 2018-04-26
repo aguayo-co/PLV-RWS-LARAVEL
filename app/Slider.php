@@ -19,14 +19,14 @@ class Slider extends Model
     protected $fillable = [
         'name',
         'main_text',
-         'small_text',
-         'button_text',
-         'url',
-         'image',
-         'image_mobile',
-         'orientation',
-         'font_color',
-         'priority'
+        'small_text',
+        'button_text',
+        'url',
+        'image',
+        'image_mobile',
+        'orientation',
+        'font_color',
+        'priority'
     ];
 
     protected $appends = ['image', 'image_mobile'];

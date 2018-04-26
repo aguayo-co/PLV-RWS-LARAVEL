@@ -23,8 +23,8 @@ class CreateUsersTable extends Migration
             $table->text('about')->nullable();
             $table->boolean('vacation_mode')->default(false);
             $table->timestamps();
-            DB::statement('ALTER TABLE products ADD FULLTEXT search(first_name, last_name)');
         });
+        DB::statement('ALTER TABLE users ADD FULLTEXT search(first_name, last_name)');
     }
 
     /**

@@ -25,10 +25,13 @@ class PaymentController extends Controller
 
     protected $modelClass = Payment::class;
 
+    public static $allowedWhereIn = ['id', 'gateway', 'status'];
+
     public function __construct()
     {
         parent::__construct();
 
+        $this->middleware('role:admin')->only('index');
         $this->middleware(self::class . '::validateUserIsOwner')->only(['generatePayment']);
     }
 
