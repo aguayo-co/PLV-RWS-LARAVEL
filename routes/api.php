@@ -100,5 +100,8 @@ Route::name('api.')->group(function () {
         Route::get('/shopping_cart/payment', 'PaymentController@store')->name('shopping_cart.payment.create');
         Route::get('/orders/{order}/payment', 'PaymentController@generatePayment')
             ->name('orders.payment.create')->where('order', ID_REGEX);
+
+        # Routes for Payments.
+        Route::get('payments', 'PaymentController@index')->name('payments');
     });
 });
