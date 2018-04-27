@@ -9,6 +9,7 @@ use Cmgmyr\Messenger\Models\Message;
 use Cmgmyr\Messenger\Models\Participant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
 class ThreadController extends Controller
@@ -19,9 +20,31 @@ class ThreadController extends Controller
     public function __construct()
     {
         parent::__construct();
-        // Add owner_or_admin access control to `show` method.
-        $this->middleware('owner_or_admin')->only('show');
+        $this->middleware(self::class . '::checkThreadPrivacy')->only('show');
     }
+
+    /**
+     * Middleware that validates permissions to set ratings.
+     */
+    public static function checkThreadPrivacy($request, $next)
+    {
+        $thread = $request->route()->parameters['thread'];
+        if (!$thread->private) {
+            return $next($request);
+        }
+
+        $user = auth()->user();
+        if ($user->hasRole('admin')) {
+            return $next($request);
+        }
+
+        if ($thread->hasParticipant($user)) {
+            return $next($request);
+        }
+
+        abort(Response::HTTP_FORBIDDEN, 'This is a private thread.');
+    }
+
 
     protected function validationRules(array $data, ?Model $thread)
     {
