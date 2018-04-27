@@ -24,10 +24,13 @@ class OwnerOrAdmin
         $object = array_get(array_values($request->route()->parameters), 0);
         switch (true) {
             case !$object:
-            case $user->is($object->user):
+            // Case for nested paths and for same user:
+            // /users/{user}/model/{model}
+            // /users/{user}
+            case $user->is($object):
+            case $user->id === $object->user_id:
             case $object->owners_ids && $object->owners_ids->contains($user->id):
             case $user->hasRole('admin'):
-            case $user->is($object):
                 return $next($request);
 
             default:
