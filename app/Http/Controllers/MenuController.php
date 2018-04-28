@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Menu;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
@@ -25,5 +26,13 @@ class MenuController extends AdminController
             'name' => $required . 'string|unique:menus,name' . $ignore,
             'slug' => 'string|unique:menus,slug' . $ignore,
         ];
+    }
+
+    /**
+     * Bring menu items for each menu with up to two levels of children.
+     */
+    protected function setVisibility(Collection $collection)
+    {
+        $collection->load('items.children.children');
     }
 }

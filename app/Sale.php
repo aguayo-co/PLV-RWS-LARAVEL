@@ -31,8 +31,7 @@ class Sale extends Model
     const STATUS_CANCELED = 99;
 
     protected $fillable = ['shipment_details', 'status'];
-    protected $with = ['products', 'shippingMethod', 'creditsTransactions', 'returns'];
-    protected $appends = ['returned_products_ids', 'total', 'commission'];
+    protected $appends = ['shipping_label'];
 
     protected $dispatchesEvents = [
         'saved' => SaleSaved::class,
@@ -108,12 +107,11 @@ class Sale extends Model
      */
     public function getShippingCostAttribute()
     {
-        $shippingAddress = data_get($this->order->makeHidden('sales')->shipping_information, 'address');
-        if (!$shippingAddress) {
+        if (!$this->shipping_method) {
             return 0;
         }
 
-        if (!$this->shipping_method || strpos($this->shipping_method->name, 'chilexpress') === false) {
+        if (strpos($this->shipping_method->name, 'chilexpress') === false) {
             return 0;
         }
 
@@ -123,6 +121,10 @@ class Sale extends Model
             return 0;
         }
 
+        $shippingAddress = data_get($this->order->shipping_information, 'address');
+        if (!$shippingAddress) {
+            return 0;
+        }
         if (!data_get($shippingAddress, 'geonameid')) {
             return 0;
         }
@@ -200,18 +202,27 @@ class Sale extends Model
 
     protected function generateShippingLabel()
     {
-        $order = $this->order->makeHidden('sales');
-        $shippingAddress = data_get($order->shipping_information, 'address');
-        if ($shippingAddress || ($this->shipping_method && strpos($this->shipping_method->name, 'chilexpress') !== false)) {
-            $chilexpress = app()->get('chilexpress');
-            $shipTo = new Address($shippingAddress);
-            $shipFrom = $this->user->addresses
-                ->where('id', $this->user->favorite_address_id)->first();
-
-            $ref = "{$order->id}-{$this->id}";
-            return $chilexpress->order($ref, $this->user, $order->user, $shipFrom, $shipTo, 0.5, 10, 10, 10);
+        $shippingMethodName = data_get($this->shipping_method, 'name');
+        if (!$shippingMethodName) {
+            return 0;
         }
-        return 0;
+        if (strpos($shippingMethodName, 'chilexpress') === false) {
+            return 0;
+        }
+
+        $order = $this->order;
+        $shippingAddress = data_get($order->shipping_information, 'address');
+        if (!$shippingAddress) {
+            return 0;
+        }
+
+        $chilexpress = app()->get('chilexpress');
+        $shipTo = new Address($shippingAddress);
+        $shipFrom = $this->user->addresses
+            ->where('id', $this->user->favorite_address_id)->first();
+
+        $ref = "{$order->id}-{$this->id}";
+        return $chilexpress->order($ref, $this->user, $order->user, $shipFrom, $shipTo, 0.5, 10, 10, 10);
     }
     #                                 #
     # End Label image methods       . #

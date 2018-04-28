@@ -6,7 +6,7 @@ use Illuminate\Http\UploadedFile;
 use App\ShippingMethod;
 
 $factory->define(App\User::class, function (Faker $faker) {
-    $groups = Group::setEagerLoads([])->get(['id'])->pluck('id')->all();
+    $groups = Group::pluck('id')->all();
     $groupsCount = $faker->numberBetween(0, count($groups));
 
     return [
@@ -19,7 +19,7 @@ $factory->define(App\User::class, function (Faker $faker) {
 });
 
 $factory->state(App\User::class, 'profile', function ($faker) {
-    $shippingMethods = ShippingMethod::setEagerLoads([])->get(['id'])->pluck('id')->all();
+    $shippingMethods = ShippingMethod::pluck('id')->all();
     $shippingMethodsCount = $faker->numberBetween(1, count($shippingMethods));
 
     return [
@@ -32,7 +32,7 @@ $factory->state(App\User::class, 'profile', function ($faker) {
 });
 
 $factory->state(App\User::class, 'profile_with_real_images', function ($faker) {
-    $shippingMethods = ShippingMethod::setEagerLoads([])->get(['id'])->pluck('id')->all();
+    $shippingMethods = ShippingMethod::pluck('id')->all();
     $shippingMethodsCount = $faker->numberBetween(1, count($shippingMethods));
 
     return [

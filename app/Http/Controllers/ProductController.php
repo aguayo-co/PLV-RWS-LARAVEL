@@ -8,6 +8,7 @@ use App\Notifications\ProductHidden;
 use App\Notifications\ProductRejected;
 use App\Product;
 use App\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -217,5 +218,13 @@ class ProductController extends Controller
         }
 
         return $product;
+    }
+
+    protected function setVisibility(Collection $collection)
+    {
+        $collection->load(['brand', 'campaigns', 'colors', 'category.parent', 'size.parent', 'condition', 'user']);
+        $collection->each(function ($product) {
+            $product->append(['color_ids', 'campaign_ids']);
+        });
     }
 }

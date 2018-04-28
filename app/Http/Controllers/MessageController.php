@@ -7,6 +7,7 @@ use App\User;
 use Carbon\Carbon;
 use Cmgmyr\Messenger\Models\Message;
 use Cmgmyr\Messenger\Models\Participant;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

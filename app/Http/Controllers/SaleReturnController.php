@@ -115,7 +115,7 @@ class SaleReturnController extends Controller
             ->where('status', '<', Sale::STATUS_COMPLETED)
             ->whereDoesntHave('products', function ($query) {
                 $query->whereNotNull('sale_return_id');
-            })->select('id');
+            });
         if ($user->hasRole('admin')) {
             return Rule::in($salesIdsQuery->pluck('id')->all());
         }
@@ -125,7 +125,7 @@ class SaleReturnController extends Controller
         $salesIds = $salesIdsQuery
             ->whereHas('order', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
-            })->select('id')->pluck('id')->all();
+            })->pluck('id')->all();
         return Rule::in($salesIds);
     }
 

@@ -48,8 +48,7 @@ class Product extends Model
         'color_ids',
         'campaign_ids',
     ];
-    protected $with = ['brand', 'campaigns', 'colors', 'category.parent', 'size.parent', 'condition', 'user'];
-    protected $appends = ['images', 'color_ids', 'campaign_ids'];
+    protected $appends = ['images'];
 
     protected function getEditableAttribute()
     {

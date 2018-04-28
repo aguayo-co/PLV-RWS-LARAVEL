@@ -19,8 +19,8 @@ class User extends Authenticatable
     use Notifiable;
     use HasRoles;
     use HasApiTokens;
-    use HasSingleFile;
     // use SaveLater; # HasSingleFile uses it already.
+    use HasSingleFile;
 
     /**
      * The attributes that are mass assignable.
@@ -50,36 +50,12 @@ class User extends Authenticatable
     protected $hidden = [
         'email',
         'password',
-        'products',
-        # By default, hide everything that is self referenced.
-        # If not, this might lead to recursion.
-        # Important to ->load(['followers:id', 'following:id']) on collections
-        # if need to show its _ids or _count attributes.
-        'following',
-        'followers',
-        'following_ids',
-        'followers_ids',
-        'following_count',
-        'followers_count',
     ];
 
     protected $appends = [
         'cover',
         'picture',
-        'shipping_method_ids',
-        'favorites_ids',
-        'group_ids',
-        'credits',
-        'purchased_products_count',
-        'published_products_count',
-        'sold_products_count',
-        # These should be hidden to avoid circular references.
-        'following_ids',
-        'followers_ids',
-        'following_count',
-        'followers_count',
     ];
-    protected $with = ['roles', 'groups', 'shippingMethods', 'favorites:id'];
 
     public static function boot()
     {

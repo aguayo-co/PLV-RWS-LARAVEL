@@ -8,15 +8,16 @@ use App\Notifications\EmailChanged;
 use App\Notifications\Welcome;
 use App\User;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Laravel\Passport\Token;
-use Spatie\Permission\Exceptions\UnauthorizedException;
 
 class UserController extends Controller
 {
+    use UserVisibility;
     protected $modelClass = User::class;
 
     public static $allowedWhereIn = ['id', 'email'];
@@ -106,7 +107,7 @@ class UserController extends Controller
         if (array_get($user->getChanges(), 'email')) {
             $user->notify(new EmailChanged);
         }
-        $user = $this->setVisibility(parent::postUpdate($request, $user));
+        $user = parent::postUpdate($request, $user);
 
         // Last, set api_token so it gets sent with the response.
         // DO NOT do this before parent call, as it refreshes the model
@@ -124,25 +125,7 @@ class UserController extends Controller
         $user = parent::postStore($request, $user);
         $user->notify(new Welcome);
         $user->api_token = $user->createToken('PrilovRegister')->accessToken;
-        return $this->setVisibility($user);
-    }
-
-    public function show(Request $request, Model $user)
-    {
-        return $this->setVisibility(parent::show($request, $user));
-    }
-
-    protected function setVisibility($data)
-    {
-        $loggedUser = auth()->user();
-        switch (true) {
-            // Show email for admins and for same user.
-            case $data instanceof Model && $data->is($loggedUser):
-            case $loggedUser && $loggedUser->hasRole('admin'):
-                $data = $data->makeVisible('email');
-        }
-        return $data->load(['followers:id', 'following:id'])
-            ->makeVisible(['followers_ids', 'following_ids', 'following_count', 'followers_count']);
+        return $user;
     }
 
     public function delete(Request $request, Model $user)
@@ -165,10 +148,6 @@ class UserController extends Controller
             throw (new ModelNotFoundException)->setModel(User::class);
         }
 
-        $pagination = parent::index($request);
-        $users = $pagination->getCollection();
-        $users = $this->setVisibility($users);
-        $pagination->setCollection($users);
-        return $pagination;
+        return parent::index($request);
     }
 }

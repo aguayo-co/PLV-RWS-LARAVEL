@@ -57,7 +57,7 @@ class RouteServiceProvider extends ServiceProvider
                 return $rating;
             }
 
-            \App\Sale::where('id', $saleId)->setEagerLoads([])->select('id')->firstOrFail();
+            \App\Sale::where('id', $saleId)->select('id')->firstOrFail();
 
             $rating = new \App\Rating();
             $rating->sale_id = $saleId;

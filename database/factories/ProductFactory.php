@@ -12,10 +12,10 @@ use Faker\Generator as Faker;
 use Illuminate\Http\UploadedFile;
 
 $factory->define(Product::class, function (Faker $faker) {
-    $colors = Color::setEagerLoads([])->get(['id'])->pluck('id')->all();
+    $colors = Color::pluck('id')->all();
     $colors_count = $faker->numberBetween(1, 2);
 
-    $campaigns = Campaign::setEagerLoads([])->get(['id'])->pluck('id')->all();
+    $campaigns = Campaign::pluck('id')->all();
     $campaigns_count = $faker->numberBetween(0, count($campaigns));
 
     return [

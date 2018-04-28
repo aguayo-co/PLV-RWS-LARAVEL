@@ -15,8 +15,6 @@ class MenuItem extends Model
         'name', 'url', 'icon', 'parent_id', 'menu_id',
     ];
 
-    protected $with = ['children'];
-
     /**
      * Get the menu this item belongs to.
      */

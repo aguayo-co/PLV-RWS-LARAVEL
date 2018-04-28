@@ -103,7 +103,7 @@ trait OrderControllerRules
             // Sale validation done on a different Rule.
             if ($sale) {
                 $shippingMethodIds = DB::table('shipping_method_user')->where('user_id', $sale->user_id)
-                    ->select('shipping_method_id')->pluck('shipping_method_id');
+                    ->pluck('shipping_method_id');
                 if (!$shippingMethodIds->contains($value)) {
                     return $fail(__('validation.in', ['values' => $shippingMethodIds->implode(', ')]));
                 }

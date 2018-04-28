@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Notifications\PasswordChanged;
 use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -13,6 +14,8 @@ use Laravel\Passport\Token;
 
 class ResetPasswordController extends Controller
 {
+    use UserVisibility;
+
     /*
     |--------------------------------------------------------------------------
     | Password Reset Controller
@@ -46,6 +49,8 @@ class ResetPasswordController extends Controller
         $user = $this->getUser($request, $email);
 
         $this->resetPassword($user, $request->password);
+
+        $this->setVisibility(Collection::wrap($user));
 
         return $user;
     }

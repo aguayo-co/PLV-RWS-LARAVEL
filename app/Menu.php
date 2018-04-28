@@ -15,8 +15,6 @@ class Menu extends Model
         'name',
     ];
 
-    protected $with = ['items'];
-
     /**
      * Get the route key for the model.
      *

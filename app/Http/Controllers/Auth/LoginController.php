@@ -3,14 +3,17 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Database\Eloquent\Model;
 use App\User;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
+    use UserVisibility;
+
     /*
     |--------------------------------------------------------------------------
     | Login Controller
@@ -110,7 +113,9 @@ class LoginController extends Controller
 
         $user->api_token = $user->createToken('PrilovLogin')->accessToken;
 
-        return $this->setVisibility($user);
+        $this->setVisibility(Collection::wrap($user));
+
+        return $user;
     }
 
     /**
@@ -146,11 +151,5 @@ class LoginController extends Controller
     protected function guard()
     {
         return auth()->guard('web');
-    }
-
-    protected function setVisibility(User $user)
-    {
-        return $user->load(['followers:id', 'following:id'])
-            ->makeVisible(['followers_ids', 'following_ids', 'following_count', 'followers_count', 'email']);
     }
 }

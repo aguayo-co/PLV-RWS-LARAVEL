@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Rules\EmptyWith;
 use App\MenuItem;
+use App\Rules\EmptyWith;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
@@ -30,5 +31,13 @@ class MenuItemController extends AdminController
             'parent_id' => $requiredParentId . 'integer|empty_with:menu_id|exists:menu_items,id|different:id',
             'menu_id' => $requiredMenuId . 'integer|empty_with:parent_id|exists:menus,id',
         ];
+    }
+
+    /**
+     * Bring up to two levels of children for a MenuItem.
+     */
+    protected function setVisibility(Collection $collection)
+    {
+        $collection->load('children.children');
     }
 }

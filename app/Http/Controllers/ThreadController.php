@@ -7,6 +7,7 @@ use App\User;
 use Carbon\Carbon;
 use Cmgmyr\Messenger\Models\Message;
 use Cmgmyr\Messenger\Models\Participant;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -125,5 +126,10 @@ class ThreadController extends Controller
         }
 
         return parent::postStore($request, $thread);
+    }
+
+    protected function setVisibility(Collection $collection)
+    {
+        $collection->load('messages', 'participants.user');
     }
 }

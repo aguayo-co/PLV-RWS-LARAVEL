@@ -6,6 +6,7 @@ use App\Http\Traits\CanFilter;
 use App\Http\Traits\CanOrderBy;
 use App\Http\Traits\CanSearch;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -142,7 +143,13 @@ class Controller extends BaseController
         $alter = $this->alterIndexQuery();
         $query = call_user_func($this->modelClass . '::when', $alter, $alter);
         $query = $this->applyParamsToQuery($request, $query);
-        return $query->Paginate($request->items);
+        $pagination = $query->Paginate($request->items);
+
+        $collection = $pagination->getCollection();
+        $this->setVisibility($collection);
+        $pagination->setCollection($collection);
+
+        return $pagination;
     }
 
     /**
@@ -154,6 +161,7 @@ class Controller extends BaseController
      */
     public function show(Request $request, Model $model)
     {
+        $this->setVisibility(Collection::wrap($model));
         return $model;
     }
 
@@ -217,6 +225,7 @@ class Controller extends BaseController
             return call_user_func($this->modelClass . '::create', $this->alterFillData($data));
         });
         $model = $this->postStore($request, $model);
+        $this->setVisibility(Collection::wrap($model));
         return $model;
     }
 
@@ -239,6 +248,7 @@ class Controller extends BaseController
             });
         }
         $model = $this->postUpdate($request, $model);
+        $this->setVisibility(Collection::wrap($model));
         return $model;
     }
 
@@ -269,5 +279,14 @@ class Controller extends BaseController
     public function ownerDelete(Request $request, Model $model)
     {
         return $this->delete($request, $model);
+    }
+
+    /**
+     * Set visibility of attributes and objects.
+     *
+     * Should eager load() necessary relations.
+     */
+    protected function setVisibility(Collection $collection)
+    {
     }
 }

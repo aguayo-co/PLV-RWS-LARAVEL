@@ -2,7 +2,6 @@
 
 namespace App;
 
-use App\Geoname;
 use Illuminate\Database\Eloquent\Model;
 
 class Address extends Model
@@ -53,6 +52,9 @@ class Address extends Model
 
     protected function getRegionAttribute()
     {
+        if (!$this->geoname) {
+            return null;
+        }
         $region = Geoname::where('feature_code', 'ADM1')
             ->where('admin1_code', $this->geoname->admin1_code)->first();
         return data_get($region, 'name');
@@ -60,6 +62,9 @@ class Address extends Model
 
     protected function getProvinceAttribute()
     {
+        if (!$this->geoname) {
+            return null;
+        }
         $province = Geoname::where('feature_code', 'ADM2')
             ->where('admin2_code', $this->geoname->admin2_code)->first();
         return data_get($province, 'name');

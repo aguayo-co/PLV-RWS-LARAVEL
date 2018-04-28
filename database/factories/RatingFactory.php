@@ -6,7 +6,7 @@ use App\Sale;
 $factory->define(App\Rating::class, function (Faker $faker) {
     $seller_rating = $faker->optional()->numberBetween(-1, 1);
     $buyer_rating = $faker->optional()->numberBetween(-1, 1);
-    $ids = Sale::select('id')->setEagerLoads([])->get()->pluck('id')->all();
+    $ids = Sale::pluck('id')->all();
     return [
         'sale_id' => $faker->unique()->randomElement($ids),
         'seller_rating' => $seller_rating,

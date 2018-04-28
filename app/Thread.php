@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Storage;
 
 class Thread extends BaseThread
 {
-    protected $with = ['messages', 'participants'];
     protected $fillable = ['subject', 'product_id', 'private'];
 
     /**

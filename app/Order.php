@@ -2,9 +2,10 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Traits\HasStatuses;
 use App\Traits\HasStatusHistory;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
@@ -17,8 +18,6 @@ class Order extends Model
     const STATUS_CANCELED = 99;
 
     protected $fillable = ['shipping_information', 'coupon_id'];
-    protected $with = ['sales', 'creditsTransactions', 'payments', 'coupon'];
-    protected $appends = ['total', 'due', 'coupon_discount', 'used_credits'];
 
     /**
      * Get the user that buys this.
@@ -64,7 +63,7 @@ class Order extends Model
      */
     public function getProductsAttribute()
     {
-        return $this->sales->pluck('products')->flatten();
+        return Collection::wrap($this->sales->pluck('products')->flatten());
     }
 
     /**
@@ -72,7 +71,7 @@ class Order extends Model
      */
     public function getReturnedProductsAttribute()
     {
-        return $this->sales->pluck('returned_products')->flatten();
+        return Collection::wrap($this->sales->pluck('returned_products')->flatten());
     }
 
     /**

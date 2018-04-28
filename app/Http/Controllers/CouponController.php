@@ -43,4 +43,12 @@ class CouponController extends Controller
             'campaign_ids.*' => 'integer|exists:campaigns,id',
         ];
     }
+
+    protected function setVisibility(Collection $collection)
+    {
+        $collection->load(['brands', 'campaigns']);
+        $collection->each(function ($coupon) {
+            $coupon->append(['brands_ids', 'campaigns_ids']);
+        });
+    }
 }

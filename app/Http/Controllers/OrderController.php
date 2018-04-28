@@ -6,13 +6,14 @@ use App\Address;
 use App\Coupon;
 use App\CreditsTransaction;
 use App\Http\Controllers\Order\CouponRules;
-use App\Http\Controllers\Order\OrderControllerRules;
 use App\Http\Controllers\Order\EnsureShippingInformation;
+use App\Http\Controllers\Order\OrderControllerRules;
 use App\Http\Traits\CurrentUserOrder;
 use App\Order;
 use App\Payment;
 use App\Product;
 use App\Sale;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -256,7 +257,7 @@ class OrderController extends Controller
         // Calculate coupon_id form coupon_code.
         if (array_has($data, 'coupon_code')) {
             $couponCode = array_get($data, 'coupon_code');
-            $data['coupon_id'] = $couponCode ? Coupon::where('code', $couponCode)->select('id')->first()->id : null;
+            $data['coupon_id'] = $couponCode ? Coupon::where('code', $couponCode)->pluck('id')->first() : null;
         }
         array_forget($data, 'coupon_code');
 
@@ -272,7 +273,7 @@ class OrderController extends Controller
     }
 
     /**
-     * Show method to set .
+     * Show method to set Shipping Information when it has none.
      */
     public function show(Request $request, Model $order)
     {
@@ -331,5 +332,13 @@ class OrderController extends Controller
         }
 
         return parent::postUpdate($request, $order);
+    }
+
+    protected function setVisibility(Collection $collection)
+    {
+        $collection->load(['user', 'sales.products', 'sales.user', 'creditsTransactions', 'payments', 'coupon']);
+        $collection->each(function ($order) {
+            $order->append(['total', 'due', 'coupon_discount', 'used_credits', 'shipping_cost']);
+        });
     }
 }

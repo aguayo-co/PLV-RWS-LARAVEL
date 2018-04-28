@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Sale;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
 
 /**
@@ -110,44 +108,11 @@ class SaleController extends Controller
         };
     }
 
-    public function index(Request $request)
+    protected function setVisibility(Collection $collection)
     {
-        $pagination = parent::index($request);
-        $sales = $pagination->getCollection();
-        $sales = $this->setVisibility($sales);
-        $pagination->setCollection($sales);
-        return $pagination;
-    }
-
-    public function postStore(Request $request, Model $sale)
-    {
-        return $this->setVisibility(parent::postStore($request, $sale));
-    }
-
-    public function postUpdate(Request $request, Model $sale)
-    {
-        return $this->setVisibility(parent::postUpdate($request, $sale));
-    }
-
-    public function show(Request $request, Model $sale)
-    {
-        return $this->setVisibility(parent::show($request, $sale));
-    }
-
-    protected function setVisibility($data)
-    {
-        $data = $data->load(['order.user']);
-        $this->hideOrderSales($data);
-        return $data;
-    }
-
-    protected function hideOrderSales($data)
-    {
-        if (! $data instanceof Collection) {
-            $data = new Collection([$data]);
-        }
-        $data->each(function ($item) {
-            $item->order->makeHidden('sales');
+        $collection->load(['user', 'order.user', 'products', 'shippingMethod', 'creditsTransactions', 'returns']);
+        $collection->each(function ($sale) {
+            $sale->append(['returned_products_ids', 'total', 'commission']);
         });
     }
 }
