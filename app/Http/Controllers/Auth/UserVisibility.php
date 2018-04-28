@@ -15,7 +15,22 @@ trait UserVisibility
             case $loggedUser && $loggedUser->hasRole('admin'):
                 $collection->makeVisible('email');
         }
-        $collection->load(['followers:id', 'following:id', 'shippingMethods', 'favorites:id']);
+
+        $collection->load([
+            'followers:id',
+            'following:id',
+            'shippingMethods',
+            'favorites:id',
+            'groups',
+            'products:id,status',
+        ]);
+        $collection->makeHidden([
+            'followers',
+            'following',
+            'favorites',
+            'groups',
+            'products',
+        ]);
         $collection->each(function ($user) {
             $user->append([
                 'followers_ids',
@@ -25,8 +40,6 @@ trait UserVisibility
                 'shipping_method_ids',
                 'favorites_ids',
                 'group_ids',
-                'credits',
-                'purchased_products_count',
                 'published_products_count',
                 'sold_products_count',
             ]);

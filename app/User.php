@@ -2,12 +2,12 @@
 
 namespace App;
 
-use App\Order;
 use App\Traits\HasSingleFile;
 use App\Traits\SaveLater;
 use Cmgmyr\Messenger\Traits\Messagable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Passport\HasApiTokens;
 use Spatie\Permission\Models\Role;
@@ -211,26 +211,15 @@ class User extends Authenticatable
         return $this->favorites->pluck('id');
     }
 
-    protected function getPurchasedProductsCountAttribute()
-    {
-        $user = $this;
-        return Product::where('status', '>=', Product::STATUS_PAYMENT)
-            ->where('status', '<=', Product::STATUS_SOLD_RETURNED)
-            ->whereHas('sales.order', function ($query) use ($user) {
-                $query->where('user_id', $user->id)
-                    ->where('status', Order::STATUS_PAYED);
-            })->count();
-    }
-
     protected function getPublishedProductsCountAttribute()
     {
-        return $this->products()->where('status', '>=', Product::STATUS_APPROVED)
+        return $this->products->where('status', '>=', Product::STATUS_APPROVED)
             ->where('status', '<=', Product::STATUS_AVAILABLE)->count();
     }
 
     protected function getSoldProductsCountAttribute()
     {
-        return $this->products()->where('status', '>=', Product::STATUS_PAYMENT)
+        return $this->products->where('status', '>=', Product::STATUS_PAYMENT)
             ->where('status', '<=', Product::STATUS_SOLD_RETURNED)->count();
     }
     #                                   #
@@ -244,18 +233,6 @@ class User extends Authenticatable
     public function creditsTransactions()
     {
         return $this->hasMany('App\CreditsTransaction');
-    }
-
-    /**
-     * Calculate available credits, including the ones being used
-     * on the current shopping cart.
-     */
-    protected function getCreditsAttribute()
-    {
-        $user = $this;
-        return $this->CreditsTransactions()->whereDoesntHave('order', function ($query) use ($user) {
-            $query->where(['user_id' => $user->id, 'status' => Order::STATUS_SHOPPING_CART]);
-        })->sum('amount');
     }
     #                                 #
     # End CreditsTransaction methods. #
@@ -296,4 +273,58 @@ class User extends Authenticatable
     #                                 #
     # End Following-Follower methods. #
     #                                 #
+
+    /**
+     * Order users by their group_ids relation.
+     * Always shows users with no groups at the end.
+     *
+     * Can change the direction based on the lowest id of all
+     * the groups a user belongs to.
+     */
+    public function scopeOrderedByGroup($query, $direction = 'asc')
+    {
+        $subQuery = DB::table('group_user')
+            ->select('user_id')
+            ->selectRaw('MIN(group_id) as group_id')
+            ->groupBy('user_id')
+            ->toSql();
+        return $query
+            ->leftJoin(DB::raw('(' . $subQuery . ') group_user'), 'group_user.user_id', '=', $this->getTable() . '.id')
+            ->addSelect('users.*')
+            ->selectRaw('group_id IS NOT NULL as has_group')
+            ->orderBy('has_group', 'desc')
+            ->orderBy('group_user.group_id', $direction)->orderBy('group_user.group_id');
+    }
+
+    /**
+     * Calculate number of products purchased by the user.
+     */
+    public function scopeWithPurchasedProductsCount($query)
+    {
+        return $query->leftJoin('orders', 'orders.user_id', '=', 'users.id')
+            ->leftJoin('sales', 'sales.order_id', '=', 'orders.id')
+            ->leftJoin('product_sale', 'product_sale.sale_id', '=', 'sales.id')
+            ->leftJoin('products', 'product_sale.product_id', '=', 'products.id')
+            ->addSelect('users.*')
+            ->selectRaw('COUNT(IF(products.status > ? AND sales.status BETWEEN ? AND ?, 1, NULL)) as purchased_products_count')
+            ->addBinding([Product::STATUS_PAYMENT, Sale::STATUS_COMPLETED, Sale::STATUS_COMPLETED_PARTIAL], 'select')
+            ->groupBy(['users.id']);
+    }
+
+    /**
+     * Calculate available credits, including the ones being used
+     * on the current shopping cart.
+     */
+    public function scopeWithCredits($query)
+    {
+        return $query->leftJoin('credits_transactions', 'credits_transactions.user_id', '=', 'users.id')
+            ->leftJoin('orders as tr_orders', 'tr_orders.id', '=', 'credits_transactions.order_id')
+            ->where(function ($query) {
+                $query->whereNull('credits_transactions.order_id')
+                    ->orWhere('tr_orders.status', '!=', Order::STATUS_SHOPPING_CART);
+            })
+            ->addSelect('users.*')
+            ->selectRaw('SUM(credits_transactions.amount) as credits')
+            ->groupBy(['users.id']);
+    }
 }

@@ -81,6 +81,31 @@ class UserController extends Controller
     }
 
     /**
+     * Apply custom scopes.
+     */
+    protected function alterIndexQuery()
+    {
+        return function ($query) {
+            $orderBy = explode(',', request()->query('orderby'));
+            $direction = null;
+            if (in_array('group_id', $orderBy)) {
+                $direction = 'asc';
+            }
+            if (in_array('-group_id', $orderBy)) {
+                $direction = 'desc';
+            }
+
+            if ($direction) {
+                $query = $query->OrderedByGroup($direction);
+            }
+            return $query->WithPurchasedProductsCount()
+                ->WithCredits();
+        };
+        return;
+    }
+
+
+    /**
      * Reset all tokens after password change.
      */
     public function postUpdate(Request $request, Model $user)
@@ -135,9 +160,6 @@ class UserController extends Controller
         return $deleted;
     }
 
-    /**
-     * Apply visibility settings to Index query.
-     */
     public function index(Request $request)
     {
         // Quick email existence validation.

@@ -48,6 +48,10 @@ class RouteServiceProvider extends ServiceProvider
         Route::model('slider', \App\Slider::class);
         Route::model('thread', \App\Thread::class);
         Route::model('user', \App\User::class);
+        Route::bind('user_scoped', function ($userId) {
+            return \App\User::WithPurchasedProductsCount()
+                ->WithCredits()->findOrFail($userId);
+        });
 
         // A Rating does not exist on first access.
         // Create a rating for the given SaleId if one does not exist.

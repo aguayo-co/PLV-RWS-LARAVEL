@@ -26,7 +26,7 @@ Route::name('api.')->group(function () {
             ->name('password.reset');
     });
 
-    Route::get('users/{user}', 'Auth\UserController@show')->name('user.get')->where('user', ID_REGEX);
+    Route::get('users/{user_scoped}', 'Auth\UserController@show')->name('user.get')->where('user_scoped', ID_REGEX);
 
     Route::get('regions', 'AddressController@regions')->name('regions');
 
@@ -67,7 +67,8 @@ Route::name('api.')->group(function () {
     # Only authenticated requests here.
     Route::middleware('auth:api')->group(function () {
         # Routes for user account and profile administration.
-        Route::patch('users/{user}', 'Auth\UserController@update')->name('user.update')->where('user', ID_REGEX);
+        Route::patch('users/{user_scoped}', 'Auth\UserController@update')
+            ->name('user.update')->where('user_scoped', ID_REGEX);
         Route::delete('users/{user}', 'Auth\UserController@delete')
             ->name('user.delete')->where('user', ID_REGEX);
 
