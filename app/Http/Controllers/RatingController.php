@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Rating;
-use Illuminate\Database\Eloquent\Model;
 use App\Sale;
-use Illuminate\Http\Response;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
 
 /**
@@ -17,7 +18,10 @@ use Illuminate\Validation\Rule;
 class RatingController extends Controller
 {
     protected $modelClass = Rating::class;
+    # sale_id is the primary key, no id column.
     public static $allowedWhereIn = ['sale_id'];
+    public static $allowedWhereHas = ['sellers_ids' => 'sale,user_id', 'buyers_ids' => 'sale.order,user_id'];
+    public static $allowedWhereBetween = ['status'];
 
     public function __construct()
     {
@@ -80,5 +84,27 @@ class RatingController extends Controller
             'buyer_rating' => 'required_with:buyer_comment|integer|between:-1,1',
             'buyer_comment' => 'required_with:buyer_rating|string|max:10000',
         ];
+    }
+
+    protected function setVisibility(Collection $collection)
+    {
+        $user = auth()->user();
+        if ($user->hasRole('admin')) {
+            return;
+        }
+
+        // For unpublished ratings, hide rating and comment that were
+        // not set by the current user.
+        $unpublished = $collection->where('status', Rating::STATUS_UNPUBLISHED);
+        $unpublished->load(['sale:id,user_id,order_id', 'sale.order:id,user_id'])->makeHidden(['sale']);
+        $unpublished->each(function ($rating) use ($user) {
+            // Rating not published, hide ratings not made by current user.
+            if ($rating->sale->user_id !== $user->id) {
+                $rating->makeHidden(['seller_rating', 'seller_comment']);
+            }
+            if ($rating->sale->order->user_id !== $user->id) {
+                $rating->makeHidden(['buyer_rating', 'buyer_comment']);
+            }
+        });
     }
 }

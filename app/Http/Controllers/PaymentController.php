@@ -25,7 +25,8 @@ class PaymentController extends Controller
 
     protected $modelClass = Payment::class;
 
-    public static $allowedWhereIn = ['id', 'gateway', 'status'];
+    public static $allowedWhereIn = ['id', 'gateway'];
+    public static $allowedWhereBetween = ['status'];
 
     public function __construct()
     {

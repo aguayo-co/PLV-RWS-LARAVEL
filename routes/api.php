@@ -60,14 +60,17 @@ Route::name('api.')->group(function () {
     Route::get('products', 'ProductController@index')->name('products');
     Route::get('products/{product}', 'ProductController@show')->name('product.get')->where('product', ID_REGEX);
 
-    Route::prefix('threads')
-        ->group(base_path('routes/api/threads.php'));
+    Route::prefix('threads')->group(base_path('routes/api/threads.php'));
+    Route::prefix('ratings')->group(base_path('routes/api/ratings.php'));
 
     # Auth routes.
     # Only authenticated requests here.
     Route::middleware('auth:api')->group(function () {
         # Routes for user account and profile administration.
         Route::patch('users/{user}', 'Auth\UserController@update')->name('user.update')->where('user', ID_REGEX);
+        Route::delete('users/{user}', 'Auth\UserController@delete')
+            ->name('user.delete')->where('user', ID_REGEX);
+
         Route::get('users/{user}/addresses', 'AddressController@index')
             ->name('user.addresses.get')->where('user', ID_REGEX);
         Route::post('users/{user}/addresses', 'AddressController@store')
@@ -78,8 +81,6 @@ Route::name('api.')->group(function () {
             ->name('user.address.update')->where(['user' => ID_REGEX, 'address' => ID_REGEX]);
         Route::delete('users/{user}/addresses/{address}', 'AddressController@ownerDelete')
             ->name('user.address.delete')->where(['user' => ID_REGEX, 'address' => ID_REGEX]);
-        Route::delete('users/{user}', 'Auth\UserController@delete')
-            ->name('user.delete')->where('user', ID_REGEX);
 
         # Routes for Product administration.
         Route::post('products', 'ProductController@store')->name('product.create');
@@ -87,11 +88,6 @@ Route::name('api.')->group(function () {
             ->name('product.update')->where('product', ID_REGEX);
         Route::delete('products/{product}', 'ProductController@delete')
             ->name('product.delete')->where('product', ID_REGEX);
-
-        # Routes for Sales' rating.
-        Route::get('ratings/{rating}', 'RatingController@show')->name('rating.get')->where('rating', ID_REGEX);
-        Route::patch('ratings/{rating}', 'RatingController@update')->name('rating.update')->where('rating', ID_REGEX);
-        Route::delete('ratings/{rating}', 'RatingController@delete')->name('rating.delete')->where('rating', ID_REGEX);
 
         # Routes for shopping cart and payments.
         Route::get('/shopping_cart', 'OrderController@getShoppingCart')->name('shopping_cart');
