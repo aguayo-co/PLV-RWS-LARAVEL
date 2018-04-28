@@ -10,7 +10,9 @@ use App\Http\Controllers\Controller;
 trait CanFilter
 {
     public static $allowedWhereIn = ['id'];
-    public static $allowedWhereHas = []; # Example: ['query_name' => 'relation' , 'color_ids' => 'colors']
+    //  Examples:
+    // ['query_name' => 'relation,[column]', 'color_ids' => 'colors',  'sellers_ids' => 'sale,user_id']
+    public static $allowedWhereHas = [];
     public static $allowedWhereBetween = [];
     public static $allowedWhereDates = ['created_at', 'updated_at'];
     public static $allowedWhereLike = [];
@@ -28,7 +30,7 @@ trait CanFilter
         $filters = $filters ?: [];
         $readyFilters = [];
         foreach (array_only($filters, $allowed) as $column => $values) {
-            $readyFilters[$column] = array_filter(explode(',', $values));
+            $readyFilters[$column] = array_filter(explode(',', $values), 'strlen');
         }
         return $readyFilters;
     }
@@ -46,7 +48,7 @@ trait CanFilter
         $filters = $filters ?: [];
         $readyFilters = [];
         foreach (array_only($filters, array_keys($allowed)) as $filter => $values) {
-            $readyFilters[$allowed[$filter]] = array_filter(explode(',', $values));
+            $readyFilters[$allowed[$filter]] = array_filter(explode(',', $values), 'strlen');
         }
         return $readyFilters;
     }
@@ -64,7 +66,7 @@ trait CanFilter
         $filters = $filters ?: [];
         $readyFilters = [];
         foreach (array_only($filters, $allowed) as $column => $values) {
-            $readyFilters[$column] = array_slice(array_filter(explode(',', $values)), 0, 2);
+            $readyFilters[$column] = array_slice(array_filter(explode(',', $values), 'strlen'), 0, 2);
         }
         return $readyFilters;
     }
@@ -139,12 +141,21 @@ trait CanFilter
             $query = $query->wherein($column, $in);
         }
         foreach ($this->getWhereHas($filters, $allowedWhereHas) as $relation => $in) {
-            $query = $query->whereHas($relation, function ($q) use ($in) {
-                $q->whereIn('id', $in);
+            $relation = explode(',', $relation);
+            $column = array_get($relation, 1, 'id');
+            $query = $query->whereHas($relation[0], function ($q) use ($column, $in) {
+                $q->whereIn($column, $in);
             });
         }
         foreach ($this->getWhereBetween($filters, $allowedWhereBetween) as $column => $between) {
-            $query = $query->whereBetween($column, $between);
+            switch (count($between)) {
+                case 2:
+                    $query = $query->whereBetween($column, $between);
+                    break;
+                case 1:
+                    $query = $query->where($column, $between[0]);
+                    break;
+            }
         }
         foreach ($this->getWhereDates($filters, $allowedWhereDates) as $column => $between) {
             $query = $query->whereBetween($column, $between);
