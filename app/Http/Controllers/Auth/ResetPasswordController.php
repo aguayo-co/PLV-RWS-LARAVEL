@@ -38,7 +38,7 @@ class ResetPasswordController extends Controller
 
 
     /**
-     * Send a reset link to the given user.
+     * Reset the password for a user.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  $email
@@ -49,6 +49,11 @@ class ResetPasswordController extends Controller
         $user = $this->getUser($request, $email);
 
         $this->resetPassword($user, $request->password);
+
+        $user = User::WithPurchasedProductsCount()
+            ->WithCredits()->findOrFail($user->id);
+
+        $user->api_token = $user->createToken('PrilovResetPassword')->accessToken;
 
         $this->setVisibility(Collection::wrap($user));
 
@@ -77,7 +82,6 @@ class ResetPasswordController extends Controller
         $user->password = $password;
         $user->save();
         $this->broker()->deleteToken($user);
-        $user->api_token = $user->createToken('PrilovResetPassword')->accessToken;
         Token::destroy($user->tokens->pluck('id')->all());
         event(new PasswordReset($user));
         $user->notify(new PasswordChanged);

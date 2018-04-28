@@ -79,11 +79,11 @@ class Controller extends BaseController
      */
     protected function validate(array $data, Model $model = null)
     {
-        # This is a hack to ensure we don't pass a string we can't put in the DB.
         if (!$rules = $this->validationRules($data, $model)) {
             return;
         }
 
+        # This is a hack to ensure we don't pass a string we can't put in the DB.
         foreach ($rules as &$rule) {
             if (is_string($rule) && strpos($rule, 'string') !== false) {
                 $rule = $rule . '|max:' . Schema::getFacadeRoot()::$defaultStringLength;

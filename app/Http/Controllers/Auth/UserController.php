@@ -132,11 +132,11 @@ class UserController extends Controller
         if (array_get($user->getChanges(), 'email')) {
             $user->notify(new EmailChanged);
         }
-        $user = parent::postUpdate($request, $user);
+
+        $user = User::WithPurchasedProductsCount()
+                ->WithCredits()->findOrFail($user->id);
 
         // Last, set api_token so it gets sent with the response.
-        // DO NOT do this before parent call, as it refreshes the model
-        // and it gets lost.
         if ($apiToken) {
             $user->api_token = $apiToken;
         }
@@ -147,7 +147,10 @@ class UserController extends Controller
     public function postStore(Request $request, Model $user)
     {
         event(new Registered($user));
-        $user = parent::postStore($request, $user);
+
+        $user = User::WithPurchasedProductsCount()
+            ->WithCredits()->findOrFail($user->id);
+
         $user->notify(new Welcome);
         $user->api_token = $user->createToken('PrilovRegister')->accessToken;
         return $user;

@@ -111,6 +111,9 @@ class LoginController extends Controller
 
         $user = $this->guard()->user();
 
+        $user = User::WithPurchasedProductsCount()
+            ->WithCredits()->findOrFail($user->id);
+
         $user->api_token = $user->createToken('PrilovLogin')->accessToken;
 
         $this->setVisibility(Collection::wrap($user));

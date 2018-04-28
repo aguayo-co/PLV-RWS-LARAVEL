@@ -69,23 +69,19 @@ class User extends Authenticatable
      */
     protected function validateSeller()
     {
-        $role = Role::where(['name' => 'seller'])->first();
-
-        if (!$role) {
-            return;
-        }
-
         switch (false) {
             case $this->about:
             case $this->favorite_address_id:
             case $this->shipping_method_ids->isNotEmpty():
             case $this->phone:
             case $this->picture:
-                $this->removeRole($role);
-                $this->load('roles');
+                if ($this->hasRole('seller')) {
+                    $this->removeRole('seller');
+                    $this->load('roles');
+                }
                 return;
             default:
-                $this->ensureRole($role);
+                $this->ensureRole('seller');
         }
     }
 
