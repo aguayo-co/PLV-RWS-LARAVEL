@@ -112,6 +112,7 @@ class ProductController extends Controller
             'status' => ['integer', Rule::in(Product::getStatuses())],
             'images' => $required . 'array',
             'images.*' => 'image',
+            'image_instagram' => 'nullable|image',
             'delete_images' => 'array',
             'delete_images.*' => 'string',
         ];

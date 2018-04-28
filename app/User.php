@@ -3,7 +3,6 @@
 namespace App;
 
 use App\Traits\HasSingleFile;
-use App\Traits\SaveLater;
 use Cmgmyr\Messenger\Traits\Messagable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -19,7 +18,6 @@ class User extends Authenticatable
     use Notifiable;
     use HasRoles;
     use HasApiTokens;
-    // use SaveLater; # HasSingleFile uses it already.
     use HasSingleFile;
 
     /**

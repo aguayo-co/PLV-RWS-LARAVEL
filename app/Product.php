@@ -2,16 +2,16 @@
 
 namespace App;
 
+use App\Traits\HasSingleFile;
 use App\Traits\HasStatuses;
-use App\Traits\SaveLater;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class Product extends Model
 {
-    use SaveLater;
     use HasStatuses;
+    use HasSingleFile;
 
     const STATUS_UNPUBLISHED = 0;
     const STATUS_REJECTED = 1;
@@ -44,11 +44,12 @@ class Product extends Model
         'condition_id',
         'status',
         'images',
+        'image_instagram',
         'delete_images',
         'color_ids',
         'campaign_ids',
     ];
-    protected $appends = ['images'];
+    protected $appends = ['images', 'image_instagram'];
 
     protected function getEditableAttribute()
     {
@@ -143,6 +144,16 @@ class Product extends Model
                 Storage::delete($this->image_path . $image);
             }
         }
+    }
+
+    protected function getImageInstagramAttribute()
+    {
+        return $this->getFileUrl('image_instagram');
+    }
+
+    protected function setImageInstagramAttribute($cover)
+    {
+        $this->setFile('image_instagram', $cover);
     }
 
     public function favoritedBy()
