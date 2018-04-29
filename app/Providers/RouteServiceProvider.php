@@ -50,7 +50,7 @@ class RouteServiceProvider extends ServiceProvider
         Route::model('user', \App\User::class);
         Route::bind('user_scoped', function ($userId) {
             return \App\User::WithPurchasedProductsCount()
-                ->WithCredits()->findOrFail($userId);
+                ->withCredits()->findOrFail($userId);
         });
 
         // A Rating does not exist on first access.

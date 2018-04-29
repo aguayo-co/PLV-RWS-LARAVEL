@@ -99,8 +99,8 @@ class UserController extends Controller
             if ($direction) {
                 $query = $query->OrderedByGroup($direction);
             }
-            return $query->WithPurchasedProductsCount()
-                ->WithCredits();
+            return $query->withPurchasedProductsCount()
+                ->withCredits();
         };
         return;
     }
@@ -135,7 +135,7 @@ class UserController extends Controller
         }
 
         $user = User::WithPurchasedProductsCount()
-                ->WithCredits()->findOrFail($user->id);
+                ->withCredits()->findOrFail($user->id);
 
         // Last, set api_token so it gets sent with the response.
         if ($apiToken) {
@@ -150,7 +150,7 @@ class UserController extends Controller
         event(new Registered($user));
 
         $user = User::WithPurchasedProductsCount()
-            ->WithCredits()->findOrFail($user->id);
+            ->withCredits()->findOrFail($user->id);
 
         $user->notify(new Welcome);
         $user->api_token = $user->createToken('PrilovRegister')->accessToken;

@@ -22,6 +22,7 @@ class CreateCreditsTransactionsTable extends Migration
             $table->foreign('sale_id')->references('id')->on('sales');
             $table->integer('order_id')->unsigned()->nullable();
             $table->foreign('order_id')->references('id')->on('orders');
+            $table->integer('transfer_status')->unsigned()->nullable()->index();
             $table->json('extra');
             $table->timestamps();
         });

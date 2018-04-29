@@ -2,12 +2,17 @@
 
 namespace App;
 
+use App\Traits\HasStatuses;
 use Illuminate\Database\Eloquent\Model;
 
 class CreditsTransaction extends Model
 {
+    use HasStatuses;
 
-    protected $fillable = ['user_id', 'amount', 'sale_id', 'order_id', 'extra'];
+    protected $fillable = ['user_id', 'amount', 'sale_id', 'order_id', 'extra', 'transfer_status'];
+
+    const STATUS_PENDING = 0;
+    const STATUS_COMPLETED = 1;
 
     /**
      * Get the user that owns the address.

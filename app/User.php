@@ -329,7 +329,7 @@ class User extends Authenticatable
                     ->orWhere('tr_orders.status', '!=', Order::STATUS_SHOPPING_CART);
             })
             ->addSelect('users.*')
-            ->selectRaw('SUM(credits_transactions.amount) as credits')
+            ->selectRaw('CAST(SUM(credits_transactions.amount) AS SIGNED) credits')
             ->groupBy(['users.id']);
     }
 }
