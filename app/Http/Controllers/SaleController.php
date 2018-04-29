@@ -112,6 +112,8 @@ class SaleController extends Controller
     {
         $collection->load(['user', 'order.user', 'products', 'shippingMethod', 'creditsTransactions', 'returns']);
         $collection->each(function ($sale) {
+            $sale->user->makeVisible(['email']);
+            $sale->order->user->makeVisible(['email']);
             $sale->append(['returned_products_ids', 'total', 'commission']);
         });
     }

@@ -189,7 +189,7 @@ class OrderController extends Controller
             'used_credits' => [
                 'integer',
                 'between:0,' . $availableCredits,
-                $this->getorderInShoppingCartRule($order),
+                $this->getOrderInShoppingCartRule($order),
             ],
 
             'sales' => 'array',
@@ -251,7 +251,7 @@ class OrderController extends Controller
 
         // Remove 'sales' from $data since it is not fillable.
         array_forget($data, 'sales');
-        // Remove 'used_credits' from $data since it calculated, and not store din Order.
+        // Remove 'used_credits' from $data since it calculated, and not stored in Order.
         array_forget($data, 'used_credits');
 
         // Calculate coupon_id form coupon_code.
@@ -315,13 +315,16 @@ class OrderController extends Controller
             $order->payments[0]->save();
         }
 
-        $usedCredits = $request->used_credits;
-        if ($usedCredits > 0) {
-            CreditsTransaction::updateOrCreate(
-                ['order_id' => $order->id, 'user_id' => $order->user->id, 'extra->origin' => 'order'],
-                ['amount' => -$usedCredits, 'extra' => ['origin' => 'order']]
-            );
-        }
+        $this->setOrderCredits($request->used_credits);
+        return parent::postUpdate($request, $order);
+    }
+
+    /**
+     * Set the credits to be used in the order by creating, updating or deleting
+     * a CreditsTransaction model.
+     */
+    protected function setOrderCredits($usedCredits)
+    {
         if ((string) $usedCredits === "0") {
             $transaction = CreditsTransaction::where(
                 ['order_id' => $order->id, 'user_id' => $order->user->id, 'extra->origin' => 'order']
@@ -329,15 +332,23 @@ class OrderController extends Controller
             if ($transaction) {
                 $transaction->delete();
             }
+            return;
         }
 
-        return parent::postUpdate($request, $order);
+        CreditsTransaction::updateOrCreate(
+            ['order_id' => $order->id, 'user_id' => $order->user->id, 'extra->origin' => 'order'],
+            ['amount' => -$usedCredits, 'extra' => ['origin' => 'order']]
+        );
     }
 
     protected function setVisibility(Collection $collection)
     {
         $collection->load(['user', 'sales.products', 'sales.user', 'creditsTransactions', 'payments', 'coupon']);
         $collection->each(function ($order) {
+            $order->user->makeVisible(['email']);
+            $order->sales->each(function ($sale) {
+                $sale->user->makeVisible(['email']);
+            });
             $order->append(['total', 'due', 'coupon_discount', 'used_credits', 'shipping_cost']);
         });
     }
