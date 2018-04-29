@@ -28,10 +28,10 @@ class CreditsTransactionController extends Controller
      */
     public static function validateUserCanCreateTransaction($request, $next)
     {
-        // $user = auth()->user();
-        // if ($user->hasRole('admin')) {
-        //     return $next($request);
-        // }
+        $user = auth()->user();
+        if ($user->hasRole('admin')) {
+            return $next($request);
+        }
 
         // When the user is not admin, it can ONLY create a transfer request.
         // When creating a transfer_request `transfer_status` must be 0.
