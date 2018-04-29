@@ -27,6 +27,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'about',
+        'bank_account',
         'cover',
         'email',
         'first_name',
@@ -41,11 +42,12 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be hidden for arrays.
+     * The attributes that should be hidden.
      *
      * @var array
      */
     protected $hidden = [
+        'bank_account',
         'email',
         'password',
     ];
@@ -188,6 +190,16 @@ class User extends Authenticatable
         return "{$this->first_name} {$this->last_name}";
     }
 
+    public function setBankAccountAttribute($value)
+    {
+        $this->attributes['bank_account'] = json_encode($value);
+    }
+
+    public function getBankAccountAttribute($value)
+    {
+        return json_decode($value, true);
+    }
+
     #                                     #
     # Begin Products Information methods. #
     #                                     #
@@ -219,7 +231,6 @@ class User extends Authenticatable
     #                                   #
     # End Products Information methods. #
     #                                   #
-
 
     #                                   #
     # Begin CreditsTransaction methods. #

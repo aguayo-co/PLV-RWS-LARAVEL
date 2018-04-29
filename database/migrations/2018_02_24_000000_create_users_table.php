@@ -21,6 +21,7 @@ class CreateUsersTable extends Migration
             $table->string('last_name');
             $table->string('phone')->nullable();
             $table->text('about')->nullable();
+            $table->json('bank_account')->nullable();
             $table->boolean('vacation_mode')->default(false);
             $table->timestamps();
         });

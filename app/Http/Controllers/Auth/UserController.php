@@ -51,6 +51,7 @@ class UserController extends Controller
             'picture' => 'image',
             'cover' => 'image',
             'vacation_mode' => 'boolean',
+            'bank_account' => 'nullable|array',
             'favorite_address_id' => [
                 'integer',
                 Rule::exists('addresses', 'id')->where(function ($query) use ($user) {

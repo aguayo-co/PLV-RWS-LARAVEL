@@ -10,10 +10,10 @@ trait UserVisibility
     {
         $loggedUser = auth()->user();
         switch (true) {
-            // Show email for admins and for same user.
+            // Show private info for admins and for same user.
             case $collection->count() === 1 && $collection->first()->is($loggedUser):
             case $loggedUser && $loggedUser->hasRole('admin'):
-                $collection->makeVisible('email');
+                $collection->makeVisible(['email', 'bank_account']);
         }
 
         $collection->load([
