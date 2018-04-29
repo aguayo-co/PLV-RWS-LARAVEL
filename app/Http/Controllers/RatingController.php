@@ -20,7 +20,7 @@ class RatingController extends Controller
     protected $modelClass = Rating::class;
     # sale_id is the primary key, no id column.
     public static $allowedWhereIn = ['sale_id', 'seller_rating', 'buyer_rating'];
-    public static $allowedWhereHas = ['sellers_ids' => 'sale,user_id', 'buyers_ids' => 'sale.order,user_id'];
+    public static $allowedWhereHas = ['seller_id' => 'sale,user_id', 'buyer_id' => 'sale.order,user_id'];
     public static $allowedWhereBetween = ['status'];
 
     public function __construct()
