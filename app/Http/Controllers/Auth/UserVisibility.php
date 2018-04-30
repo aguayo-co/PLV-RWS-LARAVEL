@@ -17,30 +17,31 @@ trait UserVisibility
         }
 
         $collection->load([
+            'favorites:id',
             'followers:id',
             'following:id',
-            'shippingMethods',
-            'favorites:id',
-            'groups',
+            'groups:id',
             'products:id,status',
+            'shippingMethods:id',
         ]);
         $collection->makeHidden([
+            'favorites',
             'followers',
             'following',
-            'favorites',
             'groups',
             'products',
+            'shippingMethods',
         ]);
         $collection->each(function ($user) {
             $user->append([
-                'followers_ids',
-                'following_ids',
-                'following_count',
-                'followers_count',
-                'shipping_method_ids',
                 'favorites_ids',
+                'followers_count',
+                'followers_ids',
+                'following_count',
+                'following_ids',
                 'group_ids',
                 'published_products_count',
+                'shipping_method_ids',
                 'sold_products_count',
             ]);
         });

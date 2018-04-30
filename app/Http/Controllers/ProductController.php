@@ -223,9 +223,34 @@ class ProductController extends Controller
 
     protected function setVisibility(Collection $collection)
     {
-        $collection->load(['brand', 'campaigns', 'colors', 'category.parent', 'size.parent', 'condition', 'user']);
+        $collection->load([
+            'brand',
+            'campaigns',
+            'category.parent',
+            'colors',
+            'condition',
+
+            'size.parent',
+
+            'user.followers:id',
+            'user.following:id',
+            'user.groups',
+            'user.shippingMethods',
+        ]);
         $collection->each(function ($product) {
-            $product->append(['color_ids', 'campaign_ids']);
+            $product->append([
+                'color_ids', 'campaign_ids'
+            ]);
+            $product->user->makeHidden([
+                'followers', 'following',
+            ]);
+            $product->user->append([
+                'followers_count',
+                'following_count',
+                'following_count',
+                'followers_count',
+                'shipping_method_ids',
+            ]);
         });
     }
 }

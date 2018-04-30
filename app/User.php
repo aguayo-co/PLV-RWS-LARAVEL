@@ -258,12 +258,12 @@ class User extends Authenticatable
 
     protected function getFollowersIdsAttribute()
     {
-        return $this->followers->pluck('id')->all();
+        return $this->followers->pluck('id');
     }
 
     protected function getFollowingIdsAttribute()
     {
-        return $this->following->pluck('id')->all();
+        return $this->following->pluck('id');
     }
 
     public function followers()
