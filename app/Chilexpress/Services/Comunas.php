@@ -29,7 +29,6 @@ trait Comunas
         $clientOptions = array(
             'login'    => "UsrTestServicios",
             'password' => "U$\$vr2\$tS2T",
-            'cache_wsdl' => WSDL_CACHE_NONE,
             'exceptions' => true,
             'stream_context' => stream_context_create(array(
                 'ssl' => array(

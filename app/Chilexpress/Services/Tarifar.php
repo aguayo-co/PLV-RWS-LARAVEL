@@ -4,6 +4,7 @@ namespace App\Chilexpress\Services;
 
 use App\ChilexpressGeodata;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Cache;
 
 trait Tarifar
 {
@@ -33,10 +34,15 @@ trait Tarifar
             'DimLargoPza' => $length,
         ];
 
+        $cacheKey = implode('.', $data);
+
+        if ($cost = Cache::get($cacheKey)) {
+            return $cost;
+        }
+
         $clientOptions = array(
             'login'    => "UsrTestServicios",
             'password' => "U$\$vr2\$tS2T",
-            'cache_wsdl' => WSDL_CACHE_NONE,
             'exceptions' => true,
             'stream_context' => stream_context_create(array(
                 'ssl' => array(
@@ -63,13 +69,16 @@ trait Tarifar
         $result = $client->__soapCall($route, [ $route => [ $method => $data ] ]);
 
         if ($result->respValorizarCourier->CodEstado !== 0) {
-            return null;
+            return;
         }
 
         $servicio = collect($result->respValorizarCourier->Servicios)->firstWhere('CodServicio', 3);
         if (!$servicio) {
             $servicio = collect($result->respValorizarCourier->Servicios)->first();
         }
-        return $servicio->ValorServicio;
+        $valor = $servicio->ValorServicio;
+
+        Cache::put($cacheKey, $valor, 1440);
+        return $valor;
     }
 }
