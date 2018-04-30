@@ -39,7 +39,7 @@ class ThreadController extends Controller
             return $next($request);
         }
 
-        if ($thread->hasParticipant($user)) {
+        if ($thread->hasParticipant($user->id)) {
             return $next($request);
         }
 
