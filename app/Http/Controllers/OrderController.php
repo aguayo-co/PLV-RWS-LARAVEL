@@ -345,7 +345,16 @@ class OrderController extends Controller
 
     protected function setVisibility(Collection $collection)
     {
-        $collection->load(['user', 'sales.products', 'sales.user', 'creditsTransactions', 'payments', 'coupon']);
+        $collection->load([
+            'coupon',
+            'creditsTransactions',
+            'payments',
+            'sales.products.brand',
+            'sales.products.condition',
+            'sales.products.size',
+            'sales.user',
+            'user',
+        ]);
         $collection->each(function ($order) {
             $order->user->makeVisible(['email']);
             $order->sales->each(function ($sale) {

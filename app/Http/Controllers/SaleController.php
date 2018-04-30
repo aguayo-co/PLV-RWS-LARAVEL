@@ -110,7 +110,16 @@ class SaleController extends Controller
 
     protected function setVisibility(Collection $collection)
     {
-        $collection->load(['user', 'order.user', 'products', 'shippingMethod', 'creditsTransactions', 'returns']);
+        $collection->load([
+            'creditsTransactions',
+            'order.user',
+            'products.brand',
+            'products.condition',
+            'products.size',
+            'returns',
+            'shippingMethod',
+            'user',
+        ]);
         $collection->each(function ($sale) {
             $sale->user->makeVisible(['email']);
             $sale->order->user->makeVisible(['email']);
