@@ -318,7 +318,10 @@ class OrderController extends Controller
         if ($request->has('used_credits')) {
             $this->setOrderCredits($request->used_credits, $order);
         }
-        return parent::postUpdate($request, $order);
+
+        $order = parent::postUpdate($request, $order);
+        $this->ensureShippingInformation($order);
+        return $order;
     }
 
     /**

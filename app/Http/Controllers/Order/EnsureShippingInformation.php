@@ -14,6 +14,10 @@ trait EnsureShippingInformation
      */
     protected function ensureShippingInformation($order)
     {
+        if ($order->status !== Order::STATUS_SHOPPING_CART) {
+            return;
+        }
+
         // Set address from user's favorite.
         if (!data_get($order, 'shipping_information.address') && $order->user->favorite_address_id) {
             $shippingInformation = $order->shipping_information;
