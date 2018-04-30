@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Order;
 
 use App\Address;
+use App\Order;
 
 trait EnsureShippingInformation
 {
