@@ -31,7 +31,7 @@ class Sale extends Model
     const STATUS_CANCELED = 99;
 
     protected $fillable = ['shipment_details', 'status'];
-    protected $appends = ['shipping_label'];
+    protected $appends = ['shipping_label', 'shipping_cost'];
 
     protected $dispatchesEvents = [
         'saved' => SaleSaved::class,
@@ -107,11 +107,13 @@ class Sale extends Model
      */
     public function getShippingCostAttribute()
     {
-        if (!$this->shipping_method) {
+
+        $shippingMethodSlug = data_get($this->shippingMethod, 'slug');
+
+        if (!$shippingMethodSlug) {
             return 0;
         }
-
-        if (strpos($this->shipping_method->name, 'chilexpress') === false) {
+        if (strpos($shippingMethodSlug, 'chilexpress') === false) {
             return 0;
         }
 
@@ -131,7 +133,11 @@ class Sale extends Model
         $shipTo = new Address(array_only($shippingAddress, ['geonameid']));
 
         $chilexpress = app()->get('chilexpress');
-        return $chilexpress->tarifar($shipFrom, $shipTo, 0.5, 10, 10, 10);
+        try {
+            return $chilexpress->tarifar($shipFrom, $shipTo, 0.5, 10, 10, 10);
+        } catch (\SoapFault $e) {
+            return 0;
+        }
     }
 
     public function getReturnedCommissionAttribute()
@@ -193,7 +199,7 @@ class Sale extends Model
         try {
             $label = $this->generateShippingLabel();
         } catch (\SoapFault $e) {
-            return -1;
+            return 'Error';
         }
 
         if ($label === -1) {
@@ -210,11 +216,11 @@ class Sale extends Model
 
     protected function generateShippingLabel()
     {
-        $shippingMethodName = data_get($this->shippingMethod, 'slug');
-        if (!$shippingMethodName) {
+        $shippingMethodSlug = data_get($this->shippingMethod, 'slug');
+        if (!$shippingMethodSlug) {
             return;
         }
-        if (strpos($shippingMethodName, 'chilexpress') === false) {
+        if (strpos($shippingMethodSlug, 'chilexpress') === false) {
             return;
         }
 
