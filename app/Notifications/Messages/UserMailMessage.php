@@ -14,6 +14,12 @@ class UserMailMessage extends MailMessage
         $this->user = $user;
     }
 
+    /**
+     * Set the view for the subject and for the body of the email.
+     *
+     * The view for the subject is the same as the one form the
+     * body with "-subject" appended at the end.
+     */
     public function view($view, array $data = [])
     {
         parent::view($view, $data);
@@ -21,6 +27,9 @@ class UserMailMessage extends MailMessage
         return $this;
     }
 
+    /**
+     * Append user to email data.
+     */
     public function data()
     {
         return array_merge(parent::data(), ['user' => $this->user]);
