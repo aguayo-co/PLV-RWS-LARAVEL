@@ -315,7 +315,9 @@ class OrderController extends Controller
             $order->payments[0]->save();
         }
 
-        $this->setOrderCredits($request->used_credits);
+        if ($request->has('used_credits')) {
+            $this->setOrderCredits($request->used_credits, $order);
+        }
         return parent::postUpdate($request, $order);
     }
 
@@ -323,7 +325,7 @@ class OrderController extends Controller
      * Set the credits to be used in the order by creating, updating or deleting
      * a CreditsTransaction model.
      */
-    protected function setOrderCredits($usedCredits)
+    protected function setOrderCredits($usedCredits, $order)
     {
         if ((string) $usedCredits === "0") {
             $transaction = CreditsTransaction::where(
