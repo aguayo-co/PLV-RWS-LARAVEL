@@ -37,7 +37,7 @@ trait Tarifar
             'login'    => "UsrTestServicios",
             'password' => "U$\$vr2\$tS2T",
             'cache_wsdl' => WSDL_CACHE_NONE,
-            'exceptions' => 0,
+            'exceptions' => true,
             'stream_context' => stream_context_create(array(
                 'ssl' => array(
                     'verify_peer' => false,
@@ -61,10 +61,6 @@ trait Tarifar
         $client->__setSoapHeaders($header);
 
         $result = $client->__soapCall($route, [ $route => [ $method => $data ] ]);
-
-        if (is_soap_fault($result)) {
-            return null;
-        }
 
         if ($result->respValorizarCourier->CodEstado !== 0) {
             return null;

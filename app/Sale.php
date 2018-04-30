@@ -190,30 +190,38 @@ class Sale extends Model
             return;
         }
 
-        $label = $this->generateShippingLabel();
+        try {
+            $label = $this->generateShippingLabel();
+        } catch (\SoapFault $e) {
+            return -1;
+        }
+
+        if ($label === -1) {
+            return 'Error';
+        }
+
+        if (!$label) {
+            return null;
+        }
+
         $this->setContentToFile('shipping_label', $label, 'jpeg');
         return $this->getFileUrl('shipping_label');
     }
 
-    protected function setShippingLabelAttribute($cover)
-    {
-        $this->setFile('shipping_label', $cover);
-    }
-
     protected function generateShippingLabel()
     {
-        $shippingMethodName = data_get($this->shipping_method, 'name');
+        $shippingMethodName = data_get($this->shippingMethod, 'slug');
         if (!$shippingMethodName) {
-            return 0;
+            return;
         }
         if (strpos($shippingMethodName, 'chilexpress') === false) {
-            return 0;
+            return;
         }
 
         $order = $this->order;
         $shippingAddress = data_get($order->shipping_information, 'address');
         if (!$shippingAddress) {
-            return 0;
+            return;
         }
 
         $chilexpress = app()->get('chilexpress');
@@ -222,6 +230,7 @@ class Sale extends Model
             ->where('id', $this->user->favorite_address_id)->first();
 
         $ref = "{$order->id}-{$this->id}";
+
         return $chilexpress->order($ref, $this->user, $order->user, $shipFrom, $shipTo, 0.5, 10, 10, 10);
     }
     #                                 #

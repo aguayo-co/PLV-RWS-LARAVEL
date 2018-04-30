@@ -61,13 +61,11 @@ trait DigitalTO
             ],
         ];
 
-        // eval(\Psy\sh());
-
         $clientOptions = array(
             'login'    => "UsrTestServicios",
             'password' => "U$\$vr2\$tS2T",
             'cache_wsdl' => WSDL_CACHE_NONE,
-            'exceptions' => 0,
+            'exceptions' => true,
             'stream_context' => stream_context_create(array(
                 'ssl' => array(
                     'verify_peer' => false,
@@ -78,15 +76,10 @@ trait DigitalTO
         );
 
         $client = new \SoapClient(dirname(__DIR__) . "/wsdl/GenerarOTDigitalIndividualC2C.wsdl", $clientOptions);
-
         $result = $client->__soapCall($route, [ $route => [ $method => $data ] ]);
 
-        if (is_soap_fault($result)) {
-            return null;
-        }
-
         if ($result->respGenerarIntegracionAsistida->EstadoOperacion->codigoEstado !== 0) {
-            return null;
+            return -1;
         }
 
         return $result->respGenerarIntegracionAsistida->DatosEtiqueta->imagenEtiqueta;
