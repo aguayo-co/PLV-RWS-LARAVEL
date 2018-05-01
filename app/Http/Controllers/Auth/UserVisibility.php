@@ -14,6 +14,7 @@ trait UserVisibility
             case $collection->count() === 1 && $collection->first()->is($loggedUser):
             case $loggedUser && $loggedUser->hasRole('admin'):
                 $collection->makeVisible(['email', 'bank_account']);
+                $collection->load(['roles']);
         }
 
         $collection->load([
