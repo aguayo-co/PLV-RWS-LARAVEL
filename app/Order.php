@@ -13,6 +13,7 @@ class Order extends Model
     use HasStatusHistory;
 
     const STATUS_SHOPPING_CART = 10;
+    const STATUS_TRANSACTION = 11;
     const STATUS_PAYMENT = 20;
     const STATUS_PAYED = 30;
     const STATUS_CANCELED = 99;
@@ -55,7 +56,7 @@ class Order extends Model
 
     public function getUsedCreditsAttribute()
     {
-        return -$this->creditsTransactions->sum('amount');
+        return -$this->creditsTransactions->where('amount', '<', 0)->sum('amount');
     }
 
     /**
@@ -79,7 +80,11 @@ class Order extends Model
      */
     public function getTotalAttribute()
     {
-        return $this->products->sum('price');
+        if ($this->products->count()) {
+            return $this->products->sum('price');
+        }
+        $total = data_get($this->extra, 'total', 0);
+        return $total;
     }
 
     /**
@@ -96,7 +101,7 @@ class Order extends Model
      */
     public function getDueAttribute()
     {
-        $total = $this->products->sum('price');
+        $total = $this->total;
         $credited = $this->used_credits;
         $discount = $this->coupon_discount;
         $shippingCost = $this->shipping_cost;
@@ -178,6 +183,16 @@ class Order extends Model
     }
 
     public function getShippingInformationAttribute($value)
+    {
+        return json_decode($value, true);
+    }
+
+    public function setExtraAttribute($value)
+    {
+        $this->attributes['extra'] = json_encode($value);
+    }
+
+    public function getExtraAttribute($value)
     {
         return json_decode($value, true);
     }

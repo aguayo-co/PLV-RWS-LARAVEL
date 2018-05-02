@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\ChilexpressGeodata;
+use App\Events\PaymentSuccessful;
 use App\Gateways\Gateway;
 use App\Http\Controllers\Order\CouponRules;
 use App\Http\Controllers\Order\EnsureShippingInformation;
@@ -58,7 +59,9 @@ class PaymentController extends Controller
      */
     protected function validationRules(array $data, ?Model $order)
     {
-        return [];
+        return [
+            'total' => 'integer'
+        ];
     }
 
     /**
@@ -66,15 +69,38 @@ class PaymentController extends Controller
      */
     protected function validateOrderCanCheckout($order)
     {
+        switch ($order->status) {
+            case Order::STATUS_TRANSACTION:
+                $this->validateTransactionOrder($order);
+                break;
+
+            case Order::STATUS_SHOPPING_CART:
+                $this->validateShoppingCartOrder($order);
+                break;
+
+            default:
+                abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Order can not proceed to Check Out.');
+        }
+    }
+
+    protected function validateTransactionOrder($order)
+    {
+        if ($order->sales->count()) {
+            abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Transaction order can not have sales.');
+        }
+
+        if ($order->coupon) {
+            abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Transaction order can not have coupon.');
+        }
+    }
+
+    protected function validateShoppingCartOrder($order)
+    {
         if ($order->coupon) {
             Validator::make(
                 ['coupon_code' => $order->coupon->code],
                 ['coupon_code' => $this->getCouponRules($order)]
             )->validate();
-        }
-
-        if ($order->status !== Order::STATUS_SHOPPING_CART) {
-            abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Order is not in Shopping Cart.');
         }
 
         if (!$order->products->where('saleable', true)->count()) {
@@ -143,13 +169,27 @@ class PaymentController extends Controller
      */
     public function store(Request $request)
     {
-        $order = $this->currentUserOrder();
+        $data = $request->all();
+        $total = array_get($data, 'total');
+        switch (true) {
+            case $total === null:
+                $order = $this->currentUserOrder();
+                break;
+
+            default:
+                $order = $this->currentUserOrder(Order::STATUS_TRANSACTION);
+                $order->extra = [
+                    'product' => 'credits',
+                    'total' => $total
+                ];
+                $order->save();
+        }
 
         return $this->generatePayment($request, $order);
     }
 
     /**
-     * Create a new payment for give order.
+     * Create a new payment for the given order.
      */
     public function generatePayment(Request $request, Order $order)
     {
@@ -182,25 +222,6 @@ class PaymentController extends Controller
     }
 
     /**
-     * Mark Order and its Sales as Payed.
-     */
-    public function approveOrder($order)
-    {
-        // We want to fire events.
-        foreach ($order->sales as $sale) {
-            $sale->status = Sale::STATUS_PAYED;
-            $sale->save();
-        }
-        foreach ($order->products as $product) {
-            $product->status = Product::STATUS_SOLD;
-            $product->save();
-        }
-
-        $order->status = Order::STATUS_PAYED;
-        $order->save();
-    }
-
-    /**
      * Process a callback from the gateway.
      */
     public function gatewayCallback(Request $request, $gateway)
@@ -210,7 +231,7 @@ class PaymentController extends Controller
             $payment = $gateway->processCallback($request->all());
 
             if ($payment->status === Payment::STATUS_SUCCESS) {
-                $this->approveOrder($payment->order);
+                event(new PaymentSuccessful($payment));
             }
         });
 

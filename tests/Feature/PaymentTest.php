@@ -70,7 +70,7 @@ class PaymentTest extends TestCase
         $url = route('api.orders.payment.create', $sale->order);
         $response = $this->actingAs($this->user)->json('GET', $url);
         $response->assertStatus(422)
-            ->assertJsonFragment(['Order is not in Shopping Cart.']);
+            ->assertJsonFragment(['Order can not proceed to Check Out.']);
     }
 
     public function testPaymentNeedsProducts()

@@ -13,6 +13,9 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
+        'App\Events\PaymentSuccessful' => [
+            'App\Listeners\ApproveOrder',
+        ],
         'App\Events\SaleSaved' => [
             'App\Listeners\ProcessSaleCredits',
         ],

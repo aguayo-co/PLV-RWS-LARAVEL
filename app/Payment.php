@@ -25,8 +25,6 @@ class Payment extends Model
     {
         parent::boot();
         static::creating(function ($payment) {
-            // This field does not really needs to be unique absolutely.
-            // Will be used with the `id` field to make a unique combination.
             // This is needed to reduce the possibility of duplicate transaction
             // ids for the payment gateways.
             // Duplicate transaction ids might be common in test mode where tables

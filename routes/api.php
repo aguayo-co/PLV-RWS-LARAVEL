@@ -90,15 +90,17 @@ Route::name('api.')->group(function () {
         Route::delete('products/{product}', 'ProductController@delete')
             ->name('product.delete')->where('product', ID_REGEX);
 
-        # Routes for shopping cart and payments.
+        # Routes for shopping cart.
         Route::get('/shopping_cart', 'OrderController@getShoppingCart')->name('shopping_cart');
         Route::patch('/shopping_cart', 'OrderController@updateShoppingCart')->name('shopping_cart.update');
 
+        # Routes for Payments.
+        Route::get('payments', 'PaymentController@index')->name('payments');
+        Route::post('payments', 'PaymentController@store')->name('payment.create');
+
+        # Alternative routes for payment methods.
         Route::get('/shopping_cart/payment', 'PaymentController@store')->name('shopping_cart.payment.create');
         Route::get('/orders/{order}/payment', 'PaymentController@generatePayment')
             ->name('orders.payment.create')->where('order', ID_REGEX);
-
-        # Routes for Payments.
-        Route::get('payments', 'PaymentController@index')->name('payments');
     });
 });

@@ -71,7 +71,7 @@ trait OrderControllerRules
             // If no Sale found, skip.
             // Sale validation done on a different Rule.
             if ($sale) {
-                if ($sale->status > Sale::STATUS_SHOPPING_CART) {
+                if ($sale->status !== Sale::STATUS_SHOPPING_CART) {
                     return $fail(__('No se puede modificar Orden que no está en ShoppingCart.'));
                 }
             }
@@ -85,7 +85,7 @@ trait OrderControllerRules
     {
         return function ($attribute, $value, $fail) use ($order) {
             // If no Order found, skip.
-            if ($order && $order->status > Order::STATUS_SHOPPING_CART) {
+            if ($order && $order->status !== Order::STATUS_SHOPPING_CART) {
                 return $fail(__('No se puede modificar Orden que no está en ShoppingCart.'));
             }
         };

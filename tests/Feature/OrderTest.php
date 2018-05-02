@@ -8,6 +8,8 @@ use App\Campaign;
 use App\Category;
 use App\Color;
 use App\Condition;
+use App\Http\Traits\CurrentUserOrder;
+use App\Order;
 use App\Product;
 use App\Sale;
 use App\ShippingMethod;
@@ -88,5 +90,32 @@ class OrderTest extends TestCase
         $response = $this->actingAs($this->user)->json('PATCH', $url, $requestData);
         $response->assertStatus(422)
             ->assertJsonFragment(['La orden no ha sido pagada.']);
+    }
+
+    public function testCurrentUserOrderLowerStatus()
+    {
+        $this->actingAs($this->user);
+        $mock = $this->getMockForTrait(CurrentUserOrder::class);
+        $order = $mock->currentUserOrder(Order::STATUS_SHOPPING_CART - 1);
+
+        $this->assertEquals($order->status, Order::STATUS_SHOPPING_CART);
+    }
+
+    public function testCurrentUserOrderUpperStatus()
+    {
+        $this->actingAs($this->user);
+        $mock = $this->getMockForTrait(CurrentUserOrder::class);
+        $order = $mock->currentUserOrder(Order::STATUS_TRANSACTION + 1);
+
+        $this->assertEquals($order->status, Order::STATUS_TRANSACTION);
+    }
+
+    public function testCurrentUserOrderDefaultStatus()
+    {
+        $this->actingAs($this->user);
+        $mock = $this->getMockForTrait(CurrentUserOrder::class);
+        $order = $mock->currentUserOrder();
+
+        $this->assertEquals($order->status, Order::STATUS_SHOPPING_CART);
     }
 }
