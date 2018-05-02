@@ -88,6 +88,7 @@ class SelfOrAdminTest extends TestCase
         Role::create(['name' => 'admin']);
 
         $this->user->assignRole('admin');
+        $this->user->load('roles');
         $this->request->user_id = $this->user->id + 1;
 
         $this->route->parameters = [];

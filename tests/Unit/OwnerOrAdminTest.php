@@ -87,6 +87,7 @@ class OwnerOrAdminTest extends TestCase
         Role::create(['name' => 'admin']);
 
         $this->users[0]->assignRole('admin');
+        $this->users[0]->load('roles');
         $this->artisan('db:seed', ['--class' => 'GeonamesSeeder']);
         $address = factory(Address::class)->make(['user_id' => $this->users[1]->id]);
         $this->route->parameters = [$address];
