@@ -27,6 +27,6 @@ $factory->state(App\Coupon::class, 'random', function ($faker) {
         'minimum_price' => $faker->numberBetween(0, 10000),
         'minimum_commission' => $faker->numberBetween(0, 100),
         'first_purchase_only' => $faker->boolean,
-        'status' => $faker->randomElement(Coupon::getStatuses()),
+        'status' => $faker->randomElement(App\Coupon::getStatuses()),
     ];
 });
