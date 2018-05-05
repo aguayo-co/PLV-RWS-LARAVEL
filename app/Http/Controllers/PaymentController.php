@@ -12,6 +12,7 @@ use App\Order;
 use App\Payment;
 use App\Product;
 use App\Sale;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -236,5 +237,12 @@ class PaymentController extends Controller
         });
 
         return 'Prilov!';
+    }
+
+    protected function setVisibility(Collection $collection)
+    {
+        $collection->load([
+            'order.user',
+        ]);
     }
 }
