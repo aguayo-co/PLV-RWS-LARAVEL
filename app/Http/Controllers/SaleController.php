@@ -116,6 +116,7 @@ class SaleController extends Controller
             'products.brand',
             'products.condition',
             'products.size',
+            'products.user',
             'returns',
             'shippingMethod',
             'user',

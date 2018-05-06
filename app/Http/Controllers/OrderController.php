@@ -355,6 +355,7 @@ class OrderController extends Controller
             'sales.products.brand',
             'sales.products.condition',
             'sales.products.size',
+            'sales.products.user',
             'sales.user.shippingMethods',
             'user',
         ]);
