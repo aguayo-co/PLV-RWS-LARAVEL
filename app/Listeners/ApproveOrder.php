@@ -7,6 +7,7 @@ use App\Events\PaymentSuccessful;
 use App\Order;
 use App\Payment;
 use App\Sale;
+use App\Product;
 
 class ApproveOrder
 {
