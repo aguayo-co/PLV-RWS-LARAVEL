@@ -111,6 +111,7 @@ class SaleController extends Controller
     protected function setVisibility(Collection $collection)
     {
         $collection->load([
+            'creditsTransactions',
             'order.creditsTransactions',
             'order.user',
             'products.brand',
