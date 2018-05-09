@@ -78,9 +78,12 @@ trait DigitalTO
         $result = $client->__soapCall($route, [ $route => [ $method => $data ] ]);
 
         if ($result->respGenerarIntegracionAsistida->EstadoOperacion->codigoEstado !== 0) {
+            Log::warning("SOAP Chilexpress service failed.", [
+                'estado' => $result->respGenerarIntegracionAsistida->EstadoOperacion
+            ]);
             return -1;
         }
 
-        return $result->respGenerarIntegracionAsistida->DatosEtiqueta->imagenEtiqueta;
+        return $result->respGenerarIntegracionAsistida->DatosEtiqueta;
     }
 }
