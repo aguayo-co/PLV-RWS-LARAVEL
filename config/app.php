@@ -162,6 +162,11 @@ return [
         App\Providers\RouteServiceProvider::class,
         App\Providers\ChilexpressServiceProvider::class,
 
+        /*
+         * Intervention Images Service Provider
+         */
+        Intervention\Image\ImageServiceProvider::class
+
     ],
 
     /*
@@ -210,7 +215,8 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-
+        // Intervention Image Facade
+        'Image' => Intervention\Image\Facades\Image::class
     ],
 
 ];
