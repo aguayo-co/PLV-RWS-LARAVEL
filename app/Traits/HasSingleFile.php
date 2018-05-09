@@ -62,6 +62,8 @@ trait HasSingleFile
 
     protected function getFileUrl($attribute)
     {
+        $url = null;
+
         $path = $this->getBasePathFor($attribute);
         if ($url = Cache::get($path)) {
             return $url;
@@ -69,9 +71,8 @@ trait HasSingleFile
 
         if ($files = Storage::files($path)) {
             $url = asset(Storage::url($files[0]));
-            cache::put($path, $url, 1440);
-            return $url;
         }
-        return;
+        cache::put($path, $url, 1440);
+        return $url;
     }
 }
