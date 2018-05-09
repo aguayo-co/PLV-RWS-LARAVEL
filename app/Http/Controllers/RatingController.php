@@ -26,7 +26,6 @@ class RatingController extends Controller
     public function __construct()
     {
         parent::__construct();
-        $this->middleware('owner_or_admin')->only('show');
         $this->middleware(self::class . '::validateUserCanRate')->only('update');
         $this->middleware(self::class . '::validateCanBeRated')->only('update');
     }
