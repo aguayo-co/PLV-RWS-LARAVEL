@@ -7,6 +7,7 @@ use App\Traits\HasStatuses;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image;
 
 class Product extends Model
 {
@@ -126,8 +127,11 @@ class Product extends Model
         }
 
         foreach ($images as $image) {
-            $filename = uniqid() . '.' . $image->extension();
-            $image->storeAs($this->image_path, $filename);
+            # Use Intervention Image to process the image
+            $processedImage = Image::make($image)->encode('jpg', 80);
+            $processedImage->stream();
+            $filename = uniqid() . '.jpg';
+            Storage::put($this->image_path.$filename, $processedImage->__toString());
         }
         # Timestamps might not get updated if this was the only attribute that
         # changed in the model. Force timestamp update.
