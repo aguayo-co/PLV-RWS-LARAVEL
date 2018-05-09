@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Notifications\AccountClosed;
 use App\Notifications\EmailChanged;
 use App\Notifications\Welcome;
+use App\Product;
 use App\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Database\Eloquent\Collection;
@@ -105,6 +106,69 @@ class UserController extends Controller
         return;
     }
 
+    protected function processFollowing(Request $request, Model $user)
+    {
+        if ($request->following_add) {
+            $user->following()->syncWithoutDetaching($request->following_add);
+        }
+        if ($request->following_remove) {
+            $user->following()->detach($request->following_remove);
+        }
+    }
+
+    protected function processFavorites(Request $request, Model $user)
+    {
+        if ($request->favorites_add) {
+            $user->favorites()->syncWithoutDetaching($request->favorites_add);
+        }
+        if ($request->favorites_remove) {
+            $user->favorites()->detach($request->favorites_remove);
+        }
+    }
+
+    protected function processVacationMode(Request $request, Model $user)
+    {
+        $vacationMode = $request->vacation_mode;
+        if ($vacationMode === null) {
+            return;
+        }
+
+        switch ($vacationMode) {
+            case true:
+                $this->setProductsToVacationMode($user);
+                break;
+
+            case false:
+                $this->removeProductsFromVacationMode($user);
+                break;
+        }
+    }
+
+    /**
+     * Set the given user's available products status to ON_VACATION.
+     */
+    protected function setProductsToVacationMode(Model $user)
+    {
+        $products = $user->products()
+            ->whereBetween('status', [Product::STATUS_APPROVED, Product::STATUS_AVAILABLE])
+            ->get();
+        foreach ($products as $product) {
+            $product->status = Product::STATUS_ON_VACATION;
+            $product->save();
+        }
+    }
+
+    /**
+     * Remove the given user's products status from ON_VACATION to AVAILABLE.
+     */
+    protected function removeProductsFromVacationMode(Model $user)
+    {
+        $products = $user->products()->where('status', Product::STATUS_ON_VACATION)->get();
+        foreach ($products as $product) {
+            $product->status = Product::STATUS_AVAILABLE;
+            $product->save();
+        }
+    }
 
     /**
      * Reset all tokens after password change.
@@ -117,19 +181,11 @@ class UserController extends Controller
             $apiToken = $user->createToken('PrilovChangePassword')->accessToken;
         }
 
-        if ($request->following_add) {
-            $user->following()->syncWithoutDetaching($request->following_add);
-        }
-        if ($request->following_remove) {
-            $user->following()->detach($request->following_remove);
-        }
+        $this->processFollowing($request, $user);
+        $this->processFavorites($request, $user);
 
-        if ($request->favorites_add) {
-            $user->favorites()->syncWithoutDetaching($request->favorites_add);
-        }
-        if ($request->favorites_remove) {
-            $user->favorites()->detach($request->favorites_remove);
-        }
+        $this->processVacationMode($request, $user);
+
         if (array_get($user->getChanges(), 'email')) {
             $user->notify(new EmailChanged);
         }

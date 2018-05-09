@@ -19,6 +19,7 @@ class Product extends Model
     const STATUS_APPROVED = 10;
     const STATUS_AVAILABLE = 19;
     const STATUS_UNAVAILABLE = 20;
+    const STATUS_ON_VACATION = 29;
     const STATUS_PAYMENT = 30;
     const STATUS_SOLD = 31;
     const STATUS_SOLD_RETURNED = 32;

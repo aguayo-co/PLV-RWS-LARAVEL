@@ -89,7 +89,7 @@ class UsersTest extends TestCase
 
         $user = factory(User::class)->create();
         $headers = [
-            'Authorization' => 'Bearer ' . $user->createToken('PrilovRegister')->accessToken
+            'Authorization' => 'Bearer ' . $user->createToken('PrilovTest')->accessToken
         ];
 
         $url = route('api.user.update', $user->id);
