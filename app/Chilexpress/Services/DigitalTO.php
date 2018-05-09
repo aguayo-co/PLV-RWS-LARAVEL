@@ -20,6 +20,16 @@ trait DigitalTO
      */
     public function order($ref, $seller, $buyer, $origen, $destino, $weight, $height, $width, $length)
     {
+        if (!$origen->chilexpressGeodata) {
+            Log::error('DigitalTO: Origen address has no ChilexpressGeodata.', ['address' => $origen]);
+            return -1;
+        }
+
+        if (!$destino->chilexpressGeodata) {
+            Log::error('DigitalTO: Destino address has no ChilexpressGeodata.', ['address' => $destino]);
+            return -1;
+        }
+
         $route = "IntegracionAsistidaOp";
 
         $method = 'reqGenerarIntegracionAsistida';
