@@ -24,6 +24,7 @@ trait UserVisibility
             'groups:id',
             'products:id,status',
             'shippingMethods:id',
+            'ratings',
         ]);
         $collection->makeHidden([
             'favorites',
@@ -32,6 +33,7 @@ trait UserVisibility
             'groups',
             'products',
             'shippingMethods',
+            'ratings',
         ]);
         $collection->each(function ($user) {
             $user->append([
@@ -44,6 +46,9 @@ trait UserVisibility
                 'published_products_count',
                 'shipping_method_ids',
                 'sold_products_count',
+                'ratings_negative_count',
+                'ratings_neutral_count',
+                'ratings_positive_count',
             ]);
         });
     }

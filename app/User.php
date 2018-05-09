@@ -244,6 +244,35 @@ class User extends Authenticatable
     #                                 #
 
     #                                   #
+    # Begin Ratings methods.            #
+    #                                   #
+    public function ratings()
+    {
+        return $this->hasManyThrough('App\Rating', 'App\Sale');
+    }
+
+    protected function getRatingsNegativeCountAttribute()
+    {
+        return $this->ratings->whereStrict('status', Rating::STATUS_PUBLISHED)
+            ->whereStrict('buyer_rating', -1)->count();
+    }
+
+    protected function getRatingsNeutralCountAttribute()
+    {
+        return $this->ratings->whereStrict('status', Rating::STATUS_PUBLISHED)
+            ->whereStrict('buyer_rating', 0)->count();
+    }
+
+    protected function getRatingsPositiveCountAttribute()
+    {
+        return $this->ratings->whereStrict('status', Rating::STATUS_PUBLISHED)
+            ->whereStrict('buyer_rating', 1)->count();
+    }
+    #                                 #
+    # End Ratings methods.            #
+    #                                 #
+
+    #                                   #
     # Begin Following-Follower methods. #
     #                                   #
     protected function getFollowersCountAttribute()
