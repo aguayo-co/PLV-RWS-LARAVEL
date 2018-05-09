@@ -25,7 +25,7 @@ class AddressController extends Controller
         return [
             'number' => $required . 'string',
             'street' => $required . 'string',
-            'additional' => 'string',
+            'additional' => 'nullable|string',
             'commune' => [
                 trim($required, '|'),
                 'string',

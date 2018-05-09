@@ -15,6 +15,8 @@ class CreditsTransactionController extends Controller
 {
     protected $modelClass = CreditsTransaction::class;
 
+    public static $allowedWhereBetween = ['transfer_status'];
+
     public function __construct()
     {
         parent::__construct();

@@ -172,7 +172,7 @@ trait Comunas
         if ($chilexpressGeodata && $chilexpressGeodata->comuna_cod !== $comuna->CodComuna) {
             Log::error(
                 'Duplicado en Geonames para comuna de Chilexpress.',
-                ['comuna' => $comuna, - 'chilexpressGeodata' => $chilexpressGeodata, 'geoname' => $geoname]
+                ['comuna' => $comuna, 'chilexpressGeodata' => $chilexpressGeodata, 'geoname' => $geoname]
             );
         }
 

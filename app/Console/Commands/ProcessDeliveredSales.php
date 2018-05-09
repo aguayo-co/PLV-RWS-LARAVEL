@@ -39,19 +39,20 @@ class ProcessDeliveredSales extends Command
      */
     public function handle()
     {
-        $sales = Sale::where(function ($query) {
-            $dateBefore = now()->subDays(config('prilov.sales.days_delivered_to_completed'));
+        $sales = Sale::whereBetween('status', [Sale::STATUS_DELIVERED, Sale::STATUS_RECEIVED])
+            ->where(function ($query) {
+                $dateBefore = now()->subDays(config('prilov.sales.days_delivered_to_completed'));
 
-            $deliveredStatus = Sale::STATUS_DELIVERED;
-            $deliveredJsonPath = "`status_history`->'$.\"{$deliveredStatus}\".\"date\".\"date\"'";
-            $deliveredDate = DB::raw("CAST(JSON_UNQUOTE({$deliveredJsonPath}) as DATETIME)");
+                $deliveredStatus = Sale::STATUS_DELIVERED;
+                $deliveredJsonPath = "`status_history`->'$.\"{$deliveredStatus}\".\"date\".\"date\"'";
+                $deliveredDate = DB::raw("CAST(JSON_UNQUOTE({$deliveredJsonPath}) as DATETIME)");
 
-            $receivedStatus = Sale::STATUS_RECEIVED;
-            $receivedJsonPath = "`status_history`->'$.\"{$receivedStatus}\".\"date\".\"date\"'";
-            $receivedDate = DB::raw("CAST(JSON_UNQUOTE({$receivedJsonPath}) as DATETIME)");
+                $receivedStatus = Sale::STATUS_RECEIVED;
+                $receivedJsonPath = "`status_history`->'$.\"{$receivedStatus}\".\"date\".\"date\"'";
+                $receivedDate = DB::raw("CAST(JSON_UNQUOTE({$receivedJsonPath}) as DATETIME)");
 
-            $query->where($deliveredDate, '<', $dateBefore)->orWhere($receivedDate, '<', $dateBefore);
-        })->whereBetween('status', [Sale::STATUS_DELIVERED, Sale::STATUS_RECEIVED])->get();
+                $query->where($deliveredDate, '<', $dateBefore)->orWhere($receivedDate, '<', $dateBefore);
+            })->get();
 
         // We want to fire events.
         foreach ($sales as $sale) {

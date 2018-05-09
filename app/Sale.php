@@ -8,6 +8,7 @@ use App\Traits\HasSingleFile;
 use App\Traits\HasStatuses;
 use App\Traits\HasStatusHistory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class Sale extends Model
 {
@@ -197,20 +198,29 @@ class Sale extends Model
         }
 
         try {
-            $label = $this->generateShippingLabel();
+            $labelData = $this->generateShippingLabel();
         } catch (\SoapFault $e) {
+            Log::warning('SOAP Chilexpress service failed.', ['error' => $e]);
             return 'Error';
         }
 
-        if ($label === -1) {
+        if ($labelData === -1) {
             return 'Error';
         }
 
-        if (!$label) {
+        if (!$labelData) {
             return null;
         }
 
-        $this->setContentToFile('shipping_label', $label, 'jpeg');
+        $this->setContentToFile('shipping_label', $labelData->imagenEtiqueta, 'jpeg');
+
+        // Do not store image data in DB.
+        unset($labelData->xmlSalidaEpl);
+        unset($labelData->imagenEtiqueta);
+        $shipmentDetails = $this->shipment_details ?: [];
+        $this->shipment_details = ['label_data' => $labelData] + $shipmentDetails;
+        $this->save();
+
         return $this->getFileUrl('shipping_label');
     }
 
@@ -227,6 +237,7 @@ class Sale extends Model
         $order = $this->order;
         $shippingAddress = data_get($order->shipping_information, 'address');
         if (!$shippingAddress) {
+            Log::info('ShippingLabel: No shipping address.');
             return;
         }
 

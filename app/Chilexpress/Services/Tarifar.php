@@ -5,6 +5,7 @@ namespace App\Chilexpress\Services;
 use App\ChilexpressGeodata;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 trait Tarifar
 {
@@ -22,6 +23,16 @@ trait Tarifar
      */
     public function tarifar($origen, $destino, $weight, $height, $width, $length)
     {
+        if (!$origen->chilexpressGeodata) {
+            Log::error('Tarifar: Origen address has no ChilexpressGeodata.', ['address' => $origen]);
+            return;
+        }
+
+        if (!$destino->chilexpressGeodata) {
+            Log::error('Tarifar: Destino address has no ChilexpressGeodata.', ['address' => $destino]);
+            return;
+        }
+
         $route = "TarificarCourier";
 
         $method = 'reqValorizarCourier';

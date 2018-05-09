@@ -18,7 +18,7 @@ trait HasSingleFile
         $snakeClass = snake_case(class_basename(self::class));
         $snakeAttribute = snake_case($attribute);
         $idPath = implode(str_split(str_pad($this->id, 9, 0, STR_PAD_LEFT), 3), '/');
-        return 'public/' . $snakeClass . '/' . $snakeAttribute . '/' . $idPath . '/original/';
+        return 'public/' . $snakeClass . '/' . $snakeAttribute . '/' . $idPath . '/';
     }
 
     protected function setFile($attribute, $file)
@@ -62,6 +62,8 @@ trait HasSingleFile
 
     protected function getFileUrl($attribute)
     {
+        $url = null;
+
         $path = $this->getBasePathFor($attribute);
         if ($url = Cache::get($path)) {
             return $url;
@@ -69,9 +71,8 @@ trait HasSingleFile
 
         if ($files = Storage::files($path)) {
             $url = asset(Storage::url($files[0]));
-            cache::put($path, $url, 1440);
-            return $url;
         }
-        return;
+        cache::put($path, $url, 1440);
+        return $url;
     }
 }

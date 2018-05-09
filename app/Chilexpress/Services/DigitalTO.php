@@ -20,6 +20,16 @@ trait DigitalTO
      */
     public function order($ref, $seller, $buyer, $origen, $destino, $weight, $height, $width, $length)
     {
+        if (!$origen->chilexpressGeodata) {
+            Log::error('DigitalTO: Origen address has no ChilexpressGeodata.', ['address' => $origen]);
+            return -1;
+        }
+
+        if (!$destino->chilexpressGeodata) {
+            Log::error('DigitalTO: Destino address has no ChilexpressGeodata.', ['address' => $destino]);
+            return -1;
+        }
+
         $route = "IntegracionAsistidaOp";
 
         $method = 'reqGenerarIntegracionAsistida';
@@ -78,9 +88,12 @@ trait DigitalTO
         $result = $client->__soapCall($route, [ $route => [ $method => $data ] ]);
 
         if ($result->respGenerarIntegracionAsistida->EstadoOperacion->codigoEstado !== 0) {
+            Log::warning("SOAP Chilexpress service failed.", [
+                'estado' => $result->respGenerarIntegracionAsistida->EstadoOperacion
+            ]);
             return -1;
         }
 
-        return $result->respGenerarIntegracionAsistida->DatosEtiqueta->imagenEtiqueta;
+        return $result->respGenerarIntegracionAsistida->DatosEtiqueta;
     }
 }
