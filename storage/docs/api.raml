@@ -1,0 +1,443 @@
+#%RAML 1.0
+title: Prilov Api
+version: 0.9.5
+documentation: !include documentation.raml
+
+types: !include types.raml
+
+resourceTypes:
+  getCollection:
+    get:
+      description: Get all the <<resourcePathName | !pluralize | !uppercamelcase>>
+      is: [ paginated, sortable, filterable ]
+
+  collection:
+    get:
+      description: Get all the <<resourcePathName | !pluralize | !uppercamelcase>>
+      is: [ paginated, sortable, filterable ]
+    post:
+      is: [ createItemPost, needAdmin ]
+
+  singleItem:
+    get:
+      is: [ singleItemResponse ]
+    patch:
+      is: [ singleItemResponse, responseError, needAdmin ]
+      description: Update the given <<resourcePathName | !singularize | !uppercamelcase>>
+      body:
+        application/json:
+          type: <<resourcePathName | !singularize | !uppercamelcase>>Request
+    delete:
+      is: [ responseError, needAdmin, singleItemDelete ]
+
+/api/users:
+  description: !include users-description.md
+  type: getCollection
+  get:
+    is: [ needAdmin, searchable ]
+    queryParameters:
+      email:
+        type: string
+        description: "Correo para revisar si existe. Con este parámetro la ruta es pública."
+  post:
+    is: [ withToken, createItemPost ]
+  /{user-id}:
+    type: singleItem
+    patch:
+      is: [ needOwner ]
+    /addresses:
+      type: collection
+      get:
+        is: [ needAdmin ]
+      post:
+        is: [ needOwner ]
+      /{addresses-id}:
+        type: singleItem
+        get:
+          is: [ needAdmin, needOwner ]
+        patch:
+          is: [ needOwner ]
+        delete:
+          is: [ needOwner ]
+
+  /login:
+    post:
+      is: [ withToken, responseError ]
+      description: "Logs in an User"
+      body:
+        application/json:
+          type: Auth
+          example:  {
+            email: "marie@curie.com",
+            password: "asd|@123"
+          }
+  /password/recovery/{email}:
+    get:
+      description: "Requires a password recovery link for an user"
+      responses:
+        200:
+          description: "A reset link has been send to the email specified"
+        400:
+          body:
+            application/json:
+              type: DetailedAnswer
+              example:
+                {
+                  "message": "There was an error on the request",
+                  "errors": {
+                    "attempts": [
+                      "Too many password request for the given email"
+                    ],
+                    "email": [
+                      "The given email is invalid or empty"
+                    ]
+                  }
+                }
+    post:
+      is: [ responseError ]
+      description: "Validates a password reset token"
+      body:
+        application/json:
+          type: object
+          properties:
+            token: string
+      responses:
+        200:
+          description: "The provided password token is valid"
+  /password/reset/{email}:
+    post:
+      is: [ withToken, responseError ]
+      description: "Resets the password for the given user."
+      body:
+        application/json:
+          type: object
+          properties:
+            password: string
+            token: string
+      responses:
+        200:
+          description: "Password changed succesfully."
+
+/api/menus:
+  type: collection
+  /{menu-slug}:
+    type: singleItem
+/api/menu_items:
+  type: collection
+  /{menu_item-id}:
+    type: singleItem
+
+/api/products:
+  description: !include products-description.md
+  type: collection
+  get:
+    is: [ searchable ]
+  post:
+    is: [ needOwner ]
+  /{product-id}:
+    type: singleItem
+    patch:
+      is: [ needOwner ]
+
+/api/shipping_methods:
+  type: collection
+  /{shipping_method-slug}:
+    type: singleItem
+
+/api/banners:
+  type: collection
+  /{banner-slug}:
+    type: singleItem
+/api/brands:
+  type: collection
+  /{brand-slug}:
+    type: singleItem
+/api/campaigns:
+  type: collection
+  /{campaign-slug}:
+    type: singleItem
+/api/categories:
+  description: !include categories-description.md
+  type: collection
+  /{category-slug}:
+    type: singleItem
+    /{subcategory-slug}:
+      type: singleItem
+/api/colors:
+  type: collection
+  /{color-slug}:
+    type: singleItem
+/api/conditions:
+  type: collection
+  /{condition-slug}:
+    type: singleItem
+/api/sizes:
+  type: collection
+  /{size-id}:
+    type: singleItem
+/api/groups:
+  type: collection
+  /{group-slug}:
+    type: singleItem
+/api/sliders:
+  description: !include sliders-description.md
+  type: collection
+  /{sliders-slug}:
+    type: singleItem
+
+/api/coupons:
+  type: collection
+  get:
+    is: [needAdmin]
+  /{coupon-id}:
+    type: singleItem
+    get:
+      is: [needAdmin]
+
+/api/orders:
+  description: !include orders-description.md
+  type: getCollection
+  get:
+    is: [needOwner, needAdmin]
+  /{order-id}:
+    type: singleItem
+    get:
+      is: [needOwner, needAdmin]
+    /payment:
+      get:
+        description: !include payment-description.md
+        is: [ hasType: {type: Payment}, needOwner, needAdmin ]
+        queryParameters:
+          gateway:
+            type: string
+            description: "La pasarela de pagos a usar."
+
+/api/payments:
+  description: !include payments-description.md
+  type: getCollection
+  get:
+    is: [ needAdmin ]
+
+/api/shopping_cart:
+  description: !include shopping-cart-description.md
+  get:
+    description: |
+      Retrieve the current user Order.
+      This is an alias for `GET: /orders/{order-id}`
+    is: [ hasType: {type: OrderExpanded}, needOwner ]
+  patch:
+    is: [ responseError, hasType: {type: OrderExpanded}, needOwner ]
+    description: |
+      Update the current user Order.
+      This is an alias for `PATCH: /orders/{order-id}`
+    body:
+      application/json:
+        type: OrderRequest
+  /payment:
+    get:
+      description: |
+        Retrieve the payment information for the current user Order.
+        This is an alias for `GET: /orders/{order-id}/payment`
+      is: [ hasType: {type: Payment}, needOwner ]
+      queryParameters:
+        gateway:
+          type: string
+          description: "La pasarela de pagos a usar."
+
+/callback/gateway/transfer:
+  description: !include callback-description.md
+  post:
+    is: [needAdmin]
+    body:
+      application/json:
+        properties:
+          status: bool
+          reference: string
+    responses:
+      200:
+        description: "Request proccessed correctly."
+      4XX:
+        description: "Invalid request."
+
+/api/sales:
+  description: !include sales-description.md
+  type: getCollection
+  get:
+    is: [needOwner, needAdmin]
+  /{sale-id}:
+    type: singleItem
+    get:
+      is: [needOwner, needAdmin]
+
+/api/sale_returns:
+  description: !include sale-returns-description.md
+  type: collection
+  get:
+    is: [needOwner, needAdmin]
+  /{sale_return-id}:
+    type: singleItem
+    get:
+      is: [needOwner, needAdmin]
+
+/api/ratings:
+  description: !include ratings-description.md
+  type: getCollection
+  /{rating-id}:
+    type: singleItem
+    patch:
+      is: [needOwner, needAdmin]
+
+/api/credits_transactions:
+  description: !include credits-transactions-description.md
+  type: collection
+  get:
+    is: [needOwner, needAdmin]
+  post:
+    is: [ needOwner ]
+  /{sale-id}:
+    type: singleItem
+    get:
+      is: [needOwner, needAdmin]
+
+/api/threads:
+  description: !include threads-description.md
+  type: collection
+  /{thread-id}:
+    get:
+      is: [ singleItemResponse ]
+    delete:
+      is: [ responseError, needAdmin, singleItemDelete ]
+    /messages:
+      post:
+        is: [ createItemPost, needOwner, needAdmin ]
+      /{message-id}:
+        delete:
+          is: [ responseError, needAdmin, singleItemDelete ]
+
+##############################################
+##  Trait definitions                       ##
+##############################################
+
+traits:
+  needOwner:
+    securedBy: [token: { scopes: [ owner ] }]
+  needAdmin:
+    securedBy: [token: { scopes: [ admin ] }]
+
+  paginated:
+    queryParameters:
+      items?:
+        type: integer
+        description: "Número de items por página."
+      page?:
+        type: integer
+        description: "Número de página."
+    responses:
+      200:
+        body:
+          application/json:
+            type: object
+            properties:
+              current_page: integer
+              first_page_url: string
+              from: integer
+              last_page: integer
+              last_page_url: string
+              next_page_url: string
+              path: string
+              per_page: integer
+              prev_page_url: string
+              to: integer
+              total: integer
+              data: <<resourcePathName | !singularize | !uppercamelcase>>Expanded[]
+
+  sortable:
+    queryParameters:
+      orderby?:
+        type: string
+        description: "Criteros de ordenamiento de los resultados."
+  filterable:
+    queryParameters:
+      filter?:
+        type: object
+        properties:
+          //:
+            type: string
+        description: "Criteros de filtrado de los resultados."
+  searchable:
+    queryParameters:
+      q?:
+        type: string
+        description: "Criteros de búsqueda de los resultados."
+
+  responseError:
+    responses:
+      4XX:
+        description: "Invalid request."
+        body:
+          application/json:
+            type: DetailedAnswer
+            example:
+              {
+                "message": "The given data was invalid.",
+                "errors": {
+                  "field_name_1": [
+                    "Invalid data provided for field_name_1."
+                  ],
+                  "field_name_2": [
+                    "field_name_2 is required."
+                  ]
+                }
+              }
+
+  singleItemResponse:
+    description: Retrieve the given <<resourcePathName | !singularize | !uppercamelcase>>
+    is: [ hasType: {type: <<resourcePathName | !singularize | !uppercamelcase>>Expanded} ]
+      404:
+        description: "<<resourcePathName | !singularize | !uppercamelcase>> not found."
+
+  singleItemDelete:
+    description: Delete the given <<resourcePathName | !singularize | !uppercamelcase>>
+    responses:
+      200:
+        body:
+          application/json:
+            type: DetailedAnswer
+            example:
+              {
+                "message": "Object deleted"
+              }
+
+  createItemPost:
+    description: Create a new <<resourcePathName | !singularize | !uppercamelcase>>
+    body:
+      multipart/form-data:
+        type: <<resourcePathName | !singularize | !uppercamelcase>>Request
+      application/json:
+        type: <<resourcePathName | !singularize | !uppercamelcase>>Request
+    is: [ responseError, hasType: {type: <<resourcePathName | !singularize | !uppercamelcase>>Expanded} ]
+
+  withToken:
+    is: [hasType: {type: UserWithToken}]
+
+  hasType:
+    responses:
+      200:
+        body:
+          application/json:
+            type: <<type>>
+
+
+##############################################
+##  Security Schemes definitions            ##
+##############################################
+
+securitySchemes:
+  token:
+    type: Pass Through
+    description: "Authentication by header"
+    describedBy:
+      headers:
+        Authorization:
+          description: "Use the Bearer keyword. Example Authorization Bearer [API_key]"
+          type: string

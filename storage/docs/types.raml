@@ -1,0 +1,460 @@
+BaseObject:
+  properties:
+    id?: datetime
+    created_at?: datetime
+    updated_at?: datetime
+Property:
+  properties:
+    name: string
+PropertyBaseObject:
+  type: [BaseObject, Property]
+  properties:
+    slug: string
+
+
+DetailedAnswer:
+  properties:
+    message: string
+    errors?:
+      properties:
+        /^[a-z_]*$/: string[]
+
+##############################################
+##  Independent Models                     ##
+##############################################
+
+BannerRequest:
+  type: Property
+  properties:
+    title: string
+    subtitle: string
+    image?: file
+    button_text?: string
+    url: string
+Banner:
+  type: [BannerRequest, PropertyBaseObject]
+    image: string
+BannerExpanded:
+  type: Banner
+
+MenuRequest:
+  type: Property
+Menu:
+  type: [MenuRequest, PropertyBaseObject]
+MenuExpanded:
+  type: Menu
+  properties:
+    items: MenuItem[]
+
+MenuItemRequest:
+  properties:
+    name: string
+    url?: string
+    parent_id?: number
+    menu_id?: number
+    icon?: string
+MenuItem:
+  type: [MenuItemRequest, BaseObject]
+MenuItemExpanded:
+  type: MenuItem
+
+SliderBase:
+  type: Property
+  properties:
+    priority: integer
+    url: string
+    main_text: string
+    small_text?: string
+    button_text?: string
+    orientation: string
+    font_color: string
+SliderRequest:
+  type: SliderBase
+  properties:
+    image: file
+    image_mobile: file
+Slider:
+  type: [SliderBase, PropertyBaseObject]
+  properties:
+    image: string
+    image_mobile: string
+SliderExpanded:
+  type: Slider
+
+##############################################
+##  Product related                         ##
+##############################################
+
+BrandRequest:
+  type: Property
+  properties:
+    url?: string
+Brand:
+  type: [BrandRequest, PropertyBaseObject]
+BrandExpanded:
+  type: Brand
+
+CampaignRequest:
+  type: Property
+Campaign:
+  type: [CampaignRequest, PropertyBaseObject]
+CampaignExpanded:
+  type: Campaign
+
+CategoryRequest:
+  type: Property
+  properties:
+    parent_id?: number
+Category:
+  type: [CategoryRequest, PropertyBaseObject]
+CategoryExpanded:
+  type: Category
+  properties:
+    parent?: Category
+    children?: Category[]
+
+ColorRequest:
+  type: Property
+  properties:
+    hex_code: string
+Color:
+  type: [ColorRequest, PropertyBaseObject]
+ColorExpanded:
+  type: Color
+
+ConditionRequest:
+  type: Property
+Condition:
+  type: [ConditionRequest, PropertyBaseObject]
+ConditionExpanded:
+  type: Condition:
+
+SizeRequest:
+  properties:
+    name: string
+    parent_id?: number
+Size:
+  type: [SizeRequest, BaseObject]
+SizeExpanded:
+  type: Size
+  properties:
+    parent?: Size
+    children?: Size[]
+
+ProductBase:
+  properties:
+    title: string
+    description: string
+    dimensions: string
+    originalPrice: number
+    price: number
+    commission: number
+    user_id: integer
+    brand_id: integer
+    category_id: integer
+    size_id: integer
+    color_ids: integer[]
+    campaign_ids?: integer[]
+    condition_id: integer
+    status: integer
+ProductRequest:
+  type: ProductBase
+  properties:
+    images: file[]
+    images_remove?: string[]
+    image_instagram: file
+Product:
+  type: [ProductBase, BaseObject]
+  properties:
+    images: string[]
+    image_instagram: string
+    slug: string
+ProductExpanded:
+  type: Product
+  properties:
+    user: User
+    brand: Brand
+    category: Category
+    size: Size
+    colors: Color[]
+    campaign: Campaign[]
+    condition: Condition
+    size: Size
+
+##############################################
+##  User related                            ##
+##############################################
+
+AddressRequest:
+  properties:
+    number: string
+    street: string
+    additional: string
+    commune: string
+Address:
+  type: [AddressRequest, BaseObject]
+  properties:
+    user_id: integer
+    geoname_id: string
+    region: string
+    province: string
+AddressExpanded:
+  type: Address
+
+GroupRequest:
+  type: Property
+Group:
+  type: [GroupRequest, PropertyBaseObject]
+GroupExpanded:
+  type: Group
+
+UserBase:
+  properties:
+    email: string
+    first_name: string
+    last_name: string
+    about?: string
+    phone?: string
+    favorite_address_id?: integer
+    group_ids?: integer[]
+    shipping_method_ids?: integer[]
+    bank_account: array
+UserRequest:
+  type: UserBase
+  properties:
+    password?: string
+    cover?: file
+    picture?: file
+    following_add?: integer[]
+    following_remove?: integer[]
+    favorites_add?: integer[]
+    favorites_remove?: integer[]
+User:
+  type: [UserBase, BaseObject]
+  properties:
+    cover?: string
+    picture?: string
+    followers_id?: integer[]
+    following_ids: integer[]
+UserExpanded:
+  type: User
+  properties:
+    shipping_methods: ShippingMethod[]
+    followers_ids: integer[]
+    following_ids: integer[]
+    followers_count: integer
+    following_count: integer
+    favorites_ids: integer[]
+    credits: integer
+    purchased_products_count: integer
+    published_products_count: integer
+    sold_products_count: integer
+UserWithToken:
+  type: UserExpanded
+  properties:
+    api_token: string
+
+Auth:
+  properties:
+    email: string
+    password: string
+
+
+##############################################
+##  Orders and Sales related                ##
+##############################################
+
+CouponRequest:
+  properties:
+    status: integer
+    description: string
+    code: string
+    valid_from?: datetime
+    valid_to?: datetime
+    minimum_price?: integer
+    minimum_commission?: integer
+    first_purchase_only?: boolean
+    discount_value?: integer
+    discount_type?: string
+    brands_ids: integer[]
+    campaigns_ids: integer[]
+Coupon:
+  type: [CouponRequest, BaseObject]
+  properties:
+CouponExpanded:
+  type: Coupon
+  properties:
+    brands: Brand[]
+    campaigns: Campaign[]
+
+OrderRequest:
+  properties:
+    address_id?: integer
+    add_product_ids?: integer[]
+    remove_product_ids?: integer[]
+    coupon_code?: string
+    transfer_receipt?: file
+    sales?:
+      properties:
+        /^[0-9]*$/:
+          properties:
+            shipping_method_id?: integer
+            status?: integer
+Order:
+  type: BaseObject
+  properties:
+    user_id: integer
+    status: integer
+    status_history: object
+    total: integer
+    due: integer
+    coupon_discount: integer
+    shipping_information: object
+    coupon_id?: string
+    used_credits?: integer
+OrderExpanded:
+  type: Order
+  properties:
+    credits_transactions?: CreditsTransaction[]
+    sales: Sale[]
+    coupon?: Coupon
+SaleOrder:
+  type: Order
+  properties:
+    credits_transactions?: CreditsTransaction[]
+    user: User
+    coupon?: Coupon
+
+SaleRequest:
+  properties:
+    status?: integer
+    shipment_details?: object
+Sale:
+  type: BaseObject
+  properties:
+    order_id: integer
+    user_id: integer
+    shipping_method_id?: integer
+    shipment_details?: object
+    status: integer
+    status_history: object
+SaleExpanded:
+  type: Sale
+  properties:
+    credits_transactions: CreditsTransaction[]
+    order: SaleOrder
+    products: Product[]
+    shipping_method: ShippingMethod
+    returned_products_ids: integer[]
+    returns: SaleReturn[]
+
+SaleReturnRequest:
+  properties:
+    reason?: string
+    sale_id?: integer
+    products_ids?: integer[]
+    status?: integer
+    shipment_details?: object
+SaleReturn:
+  type: [SaleReturnRequest, BaseObject]
+  status_history: object
+SaleReturnExpanded:
+  type: SaleReturn
+
+RatingRequest:
+  properties:
+    sale_id?: string
+    seller_rating?: integer
+    seller_comment?: string
+    buyer_rating?: integer
+    buyer_comment?: string
+Rating:
+  type: [RatingRequest]
+  properties:
+    status: integer
+    created_at?: datetime
+    updated_at?: datetime
+RatingExpanded:
+  type: Rating
+
+Payment:
+  type: BaseObject
+  properties:
+    uniqid: string
+    order_id: integer
+    gateway: string
+    status: integer
+    request: object
+    attempts: object[]
+    request_data: object
+    transfer_receipt: string
+PaymentExpanded:
+  type: Payment
+
+CreditsTransactionRequest:
+  properties:
+    user_id: integer
+    amount: integer
+    sale_id?: integer
+    order_id?: integer
+    transfer_status?: integer
+    extra: object
+CreditsTransaction:
+  type: [CreditsTransactionRequest, BaseObject]
+CreditsTransactionExpanded:
+  type: [CreditsTransaction]
+
+ShippingMethodRequest:
+  type: Property
+  properties:
+    descriptionSeller: string
+    descriptionBuyer: string
+ShippingMethod:
+  type: [ShippingMethodRequest, PropertyBaseObject]
+ShippingMethodExpanded:
+  type: ShippingMethod
+
+##############################################
+##  Threads and Messages related            ##
+##############################################
+
+Participant:
+  type: BaseObject
+  properties:
+    thread_id: integer
+    user_id: integer
+    last_read: datetime
+
+MessageRequest:
+  properties:
+    thread_id: integer
+    user_id: integer
+    body: string
+    recipients: integer[]
+Message:
+  type: BaseObject
+  properties:
+    thread_id: integer
+    user_id: integer
+    body: string
+MessageExpanded:
+  type: Message
+
+ThreadRequest:
+  properties:
+    subject: string
+    private: boolean
+    product_id?: integer
+    recipients: integer[]
+    body: string
+Thread:
+  type: BaseObject
+  properties:
+    subject: string
+    private: boolean
+    product_id?: integer
+ThreadExpanded:
+  type: Thread
+  properties:
+    participants: Participant[]
+    messages: Message[]
