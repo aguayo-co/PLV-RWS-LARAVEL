@@ -137,6 +137,7 @@ class Sale extends Model
         try {
             return $chilexpress->tarifar($shipFrom, $shipTo, 0.5, 10, 10, 10);
         } catch (\SoapFault $e) {
+            Log::warning('SOAP Chilexpress service failed.', ['error' => $e]);
             return;
         }
     }

@@ -4,6 +4,7 @@ namespace App\Chilexpress\Services;
 
 use App\ChilexpressGeodata;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
@@ -45,6 +46,8 @@ trait Tarifar
             'DimLargoPza' => $length,
         ];
 
+        Log::warning('Data', ['data' => $data]);
+
         $cacheKey = implode('.', $data);
 
         if ($cost = Cache::get($cacheKey)) {
@@ -55,25 +58,25 @@ trait Tarifar
             'login'    => "UsrTestServicios",
             'password' => "U$\$vr2\$tS2T",
             'exceptions' => true,
-            'stream_context' => stream_context_create(array(
-                'ssl' => array(
-                    'verify_peer' => false,
-                    'verify_peer_name' => false,
-                    'allow_self_signed' => true //can fiddle with this one.
-                )
-            ))
         );
 
-        $client = new \SoapClient(dirname(__DIR__) . "/wsdl/WSDL_Tarificacion_QA.wsdl", $clientOptions);
+        switch (App::environment()) {
+            case 'production':
+                $client = new \SoapClient('http://ws.ssichilexpress.cl/TarificarCourier?wsdl', $clientOptions);
+                break;
+
+            default:
+                $client = new \SoapClient('http://qaws.ssichilexpress.cl/TarificarCourier?wsdl', $clientOptions);
+                $client->__setLocation('http://qaws.ssichilexpress.cl/TarificarCourier');
+        }
+
         $headerBody = array(
             'transaccion' => array(
                 'fechaHora'            => date('Y-m-d\TH:i:s.Z\Z', time()),
                 'idTransaccionNegocio' => '0',
-                'sistema'              => 'TEST',
-                'usuario'              => 'TEST'
+                'sistema'              => 'ED',
             )
         );
-
         $header = new \SoapHeader("http://www.chilexpress.cl/TarificaCourier/", 'headerRequest', $headerBody);
         $client->__setSoapHeaders($header);
 
@@ -83,7 +86,8 @@ trait Tarifar
             return;
         }
 
-        $servicio = collect($result->respValorizarCourier->Servicios)->firstWhere('CodServicio', 3);
+        $servicio = collect($result->respValorizarCourier->Servicios)
+            ->firstWhere('CodServicio', env('CHILEXPRESS_CODSERVICIO'));
         if (!$servicio) {
             $servicio = collect($result->respValorizarCourier->Servicios)->first();
         }

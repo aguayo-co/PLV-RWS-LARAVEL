@@ -132,7 +132,7 @@ class Product extends Model
             $processedImage = Image::make($image)->encode('jpg', 80);
             $processedImage->stream();
             $filename = uniqid() . '.jpg';
-            Storage::put($this->image_path.$filename, $processedImage->__toString());
+            Storage::put($this->image_path . $filename, $processedImage->__toString());
         }
         # Timestamps might not get updated if this was the only attribute that
         # changed in the model. Force timestamp update.

@@ -2,6 +2,9 @@
 
 namespace App\Chilexpress\Services;
 
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
+
 trait DigitalTO
 {
     /**
@@ -35,9 +38,9 @@ trait DigitalTO
         $method = 'reqGenerarIntegracionAsistida';
         $data = [
             'codigoProducto' => '3',
-            'codigoServicio' => '3',
+            'codigoServicio' => env('CHILEXPRESS_CODSERVICIO'),
             'comunaOrigen' => $origen->chilexpressGeodata->name,
-            'numeroTCC' => '22106942',
+            'numeroTCC' => env('CHILEXPRESS_TCC'),
             'referenciaEnvio' => 'PRILOV - ' . $ref,
             'referenciaEnvio2' => null,
             'eoc' => '0',
@@ -72,19 +75,21 @@ trait DigitalTO
         ];
 
         $clientOptions = array(
-            'login'    => "UsrTestServicios",
-            'password' => "U$\$vr2\$tS2T",
+            'login'    => env('CHILEXPRESS_USER'),
+            'password' => env('CHILEXPRESS_PASS'),
             'exceptions' => true,
-            'stream_context' => stream_context_create(array(
-                'ssl' => array(
-                    'verify_peer' => false,
-                    'verify_peer_name' => false,
-                    'allow_self_signed' => true //can fiddle with this one.
-                )
-            ))
         );
 
-        $client = new \SoapClient(dirname(__DIR__) . "/wsdl/GenerarOTDigitalIndividualC2C.wsdl", $clientOptions);
+        switch (App::environment()) {
+            case 'production':
+                $client = new \SoapClient('http://ws.ssichilexpress.cl/OSB/GenerarOTDigitalIndividualC2C?wsdl', $clientOptions);
+                break;
+
+            default:
+                $client = new \SoapClient('http://qaws.ssichilexpress.cl/OSB/GenerarOTDigitalIndividualC2C?wsdl', $clientOptions);
+                $client->__setLocation('http://qaws.ssichilexpress.cl/OSB/GenerarOTDigitalIndividualC2C');
+        }
+
         $result = $client->__soapCall($route, [ $route => [ $method => $data ] ]);
 
         if ($result->respGenerarIntegracionAsistida->EstadoOperacion->codigoEstado !== 0) {

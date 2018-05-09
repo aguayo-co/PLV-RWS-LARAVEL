@@ -4,6 +4,7 @@ namespace App\Chilexpress\Services;
 
 use App\ChilexpressGeodata;
 use App\Geoname;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 
 trait Regiones
@@ -22,31 +23,18 @@ trait Regiones
         $method = 'reqObtenerRegion';
 
         $clientOptions = array(
-            'login'    => "UsrTestServicios",
-            'password' => "U$\$vr2\$tS2T",
             'exceptions' => true,
-            'stream_context' => stream_context_create(array(
-                'ssl' => array(
-                    'verify_peer' => false,
-                    'verify_peer_name' => false,
-                    'allow_self_signed' => true //can fiddle with this one.
-                )
-            ))
         );
 
-        $client = new \SoapClient(dirname(__DIR__) . "/wsdl/WSDL_GeoReferencia_QA.wsdl", $clientOptions);
-        $headerBody = array(
-            'transaccion' => array(
-                'fechaHora'            => date('Y-m-d\TH:i:s.Z\Z', time()),
-                'idTransaccionNegocio' => '0',
-                'sistema'              => 'TEST',
-                'usuario'              => 'TEST',
-                'oficinaCaja'          => 'TEST',
-            )
-        );
+        switch (App::environment()) {
+            case 'production':
+                $client = new \SoapClient('http://ws.ssichilexpress.cl/GeoReferencia?wsdl', $clientOptions);
+                break;
 
-        $header = new \SoapHeader("http://www.chilexpress.cl/CorpGR/", 'headerRequest', $headerBody);
-        $client->__setSoapHeaders($header);
+            default:
+                $client = new \SoapClient('http://qaws.ssichilexpress.cl/GeoReferencia?wsdl', $clientOptions);
+                $client->__setLocation('http://qaws.ssichilexpress.cl/GeoReferencia');
+        }
 
         $result = $client->__soapCall($route, [ $route => [ $method => [] ] ]);
 
