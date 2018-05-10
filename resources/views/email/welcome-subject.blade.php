@@ -1,1 +1,1 @@
-{{ $view_name }}
+Cool ¡Ya eres una Prilover!

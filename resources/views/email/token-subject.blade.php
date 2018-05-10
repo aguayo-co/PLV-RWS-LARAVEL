@@ -1,1 +1,1 @@
-{{ $view_name }}
+¿Olvidaste tu contraseña? ¡Tranquila, te la cambiamos muy rápido!

@@ -1,1 +1,1 @@
-{{ $view_name }}
+Yees! Tu nueva contraseña está lista
