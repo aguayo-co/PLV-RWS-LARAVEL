@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Notifications\AccountClosed;
 use App\Notifications\EmailChanged;
+use App\Notifications\BankAccountChanged;
 use App\Notifications\Welcome;
 use App\Product;
 use App\User;
@@ -188,6 +189,10 @@ class UserController extends Controller
 
         if (array_get($user->getChanges(), 'email')) {
             $user->notify(new EmailChanged);
+        }
+
+        if (array_get($user->getChanges(), 'bank_account')) {
+            $user->notify(new BankAccountChanged);
         }
 
         $user = User::WithPurchasedProductsCount()

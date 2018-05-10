@@ -1,1 +1,1 @@
-{{ $view_name }}
+Yees! Cambiaste tu correo
