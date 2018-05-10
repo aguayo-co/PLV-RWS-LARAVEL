@@ -45,7 +45,7 @@
     }
 
     body {
-      font-family: 'Montserrat';
+      font-family: 'Montserrat', Arial, Helvetica, sans-serif;
       line-height: 1.4;
       background-color: #ffffff;
     }
@@ -92,7 +92,7 @@
 
     .cell__txt {
       font-size: 20px;
-      font-family: 'Montserrat';
+      font-family: 'Montserrat', Arial, Helvetica, sans-serif;
       line-height: 1.4;
     }
 
@@ -123,7 +123,7 @@
       font-size: 30px;
       font-weight: bold;
       border-bottom: 1px solid #979797;
-      font-family: 'Montserrat';
+      font-family: 'Montserrat', Arial, Helvetica, sans-serif;
       line-height: 1.4;
     }
 
@@ -137,7 +137,7 @@
 
     .txt {
       font-size: 18px;
-      font-family: 'Montserrat';
+      font-family: 'Montserrat', Arial, Helvetica, sans-serif;
       line-height: 1.4;
     }
 
@@ -164,7 +164,7 @@
       padding: 20px 0;
       font-size: 16px;
       font-weight: bold;
-      font-family: 'Montserrat';
+      font-family: 'Montserrat', Arial, Helvetica, sans-serif;
       line-height: 1.4;
     }
 
@@ -188,14 +188,14 @@
       padding: 20px;
       margin: 0;
       font-size: 14px;
-      font-family: 'Montserrat';
+      font-family: 'Montserrat', Arial, Helvetica, sans-serif;
       line-height: 1.4;
     }
 
   </style>
 </head>
 
-<body style="font-family:'Montserrat';line-height:1.4;background-color:#ffffff;">
+<body style="font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;background-color:#ffffff;">
   <table class="table_main" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:0;margin-bottom:0;margin-right:auto;margin-left:auto;background-color:#ffffff;">
     <tbody>
       <tr>
@@ -206,7 +206,7 @@
               <tr class="row" style="width:100%;">
                 <td class="cell cell_header" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;text-align:center;background-color:#000000;">
                   <a href="{{ env('APP_URL') }}" class="header" style="display:inline-block;padding-top:20px;padding-bottom:10px;padding-right:0;padding-left:0;">
-                    <img src="{{ env('APP_URL') }}/static/img/mailing/brand.jpg" alt="Prilov.com" class="img img_brand" style="width:200px;">
+                    <img src="{{ env('APP_URL') }}static/img/mailing/brand.jpg" alt="Prilov.com" class="img img_brand" style="width:200px;">
                   </a>
                 </td>
               </tr>
@@ -217,32 +217,32 @@
                   <table class="table__small" style="max-width:460px;border-collapse:collapse;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
                     <tr class="row" style="width:100%;">
                       <td class="cell spacing_title center" style="padding-top:40px;padding-bottom:10px;padding-right:20px;padding-left:20px;text-align:center;">
-                        <p class="title" style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;display:inline-block;font-size:30px;font-weight:bold;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#979797;font-family:'Montserrat';line-height:1.4;">Recuperar contraseña</p>
+                        <p class="title" style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;display:inline-block;font-size:30px;font-weight:bold;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#979797;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Recuperar contraseña</p>
                       </td>
                     </tr>
                     <tr class="row" style="width:100%;">
-                      <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat';line-height:1.4;">Hola
+                      <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Hola
                         <span class="highlight" style="color:#f65a66;">{{ $user->first_name }}</span>, si pediste recuperar tu contraseña, haz click en este enlace:
                       </td>
                     </tr>
                     <tr class="row" style="width:100%;">
-                      <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat';line-height:1.4;">
-                        <a href="{{ env('APP_URL') }}/password/token/{{ $token }}/{{ $user->email }}" class="anchor center" style="text-align:center;color:#000000;border-bottom-width:2px;border-bottom-style:solid;border-bottom-color:#f65a66;text-decoration:none;text-transform:none;">Recuperar contraseña</a>
+                      <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">
+                        <a href="{{ env('APP_URL') }}password/token/{{ $token }}/{{ $user->email }}" class="anchor center" style="text-align:center;color:#000000;border-bottom-width:2px;border-bottom-style:solid;border-bottom-color:#f65a66;text-decoration:none;text-transform:none;">Recuperar contraseña</a>
                       </td>
                     </tr>
                     <tr class="row" style="width:100%;">
-                      <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat';line-height:1.4;">Si no pediste restablecer tu contraseña, avísanos ;)</td>
+                      <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Si no pediste restablecer tu contraseña, avísanos ;)</td>
                     </tr>
                     <tr class="row" style="width:100%;">
-                      <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat';line-height:1.4;">Cualquier duda, escríbenos. Siempre estaremos felices de ayudarte.</td>
+                      <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Cualquier duda, escríbenos. Siempre estaremos felices de ayudarte.</td>
                     </tr>
                     <tr class="row" style="width:100%;">
-                      <td class="cell spacing txt highlight" align="center" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;color:#f65a66;font-size:18px;font-family:'Montserrat';line-height:1.4;">Kisses!</td>
+                      <td class="cell spacing txt highlight" align="center" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;color:#f65a66;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Kisses!</td>
                     </tr>
                     <tr class="row" style="width:100%;">
-                      <td class="cell center txt spacing_pre-footer" style="padding-top:40px;padding-bottom:40px;padding-right:20px;padding-left:20px;text-align:center;font-size:18px;font-family:'Montserrat';line-height:1.4;">
+                      <td class="cell center txt spacing_pre-footer" style="padding-top:40px;padding-bottom:40px;padding-right:20px;padding-left:20px;text-align:center;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">
                         <a href="{{ env('APP_URL') }}" class="author" style="display:inline-block;">
-                          <img src="{{ env('APP_URL') }}/static/img/mailing/brand_footer.jpg" alt="Prilov.com" class="img author__img" style="width:100px;">
+                          <img src="{{ env('APP_URL') }}static/img/mailing/brand_footer.jpg" alt="Prilov.com" class="img author__img" style="width:100px;">
                         </a>
                       </td>
                     </tr>
@@ -256,23 +256,23 @@
                   <table width="600" cellpadding="0" cellspacing="0" border="0">
                     <tbody>
                       <tr>
-                        <td class="footer__title" style="padding-top:20px;padding-bottom:20px;padding-right:0;padding-left:0;font-size:16px;font-weight:bold;font-family:'Montserrat';line-height:1.4;">Síguenos</td>
+                        <td class="footer__title" style="padding-top:20px;padding-bottom:20px;padding-right:0;padding-left:0;font-size:16px;font-weight:bold;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Síguenos</td>
                       </tr>
                       <tr>
                         <td>
                           <a href="https://www.instagram.com/prilovchile/?hl=es-la" class="footer__link" title="Síguenos en Instragram" style="display:inline-block;padding-top:0;padding-bottom:0;padding-right:16px;padding-left:16px;">
-                            <img src="{{ env('APP_URL') }}/static/img/mailing/instagram.jpg" alt="Instragram" class="img">
+                            <img src="{{ env('APP_URL') }}static/img/mailing/instagram.jpg" alt="Instragram" class="img">
                           </a>
                           <a href="https://twitter.com/prilovchile?lang=es" class="footer__link" title="Síguenos en Twitter" style="display:inline-block;padding-top:0;padding-bottom:0;padding-right:16px;padding-left:16px;">
-                            <img src="{{ env('APP_URL') }}/static/img/mailing/twitter.jpg" alt="Twitter" class="img">
+                            <img src="{{ env('APP_URL') }}static/img/mailing/twitter.jpg" alt="Twitter" class="img">
                           </a>
                           <a href="https://www.facebook.com/prilovchile" class="footer__link" title="Síguenos en Facebook" style="display:inline-block;padding-top:0;padding-bottom:0;padding-right:16px;padding-left:16px;">
-                            <img src="{{ env('APP_URL') }}/static/img/mailing/facebook.jpg" alt="Facebook" class="img">
+                            <img src="{{ env('APP_URL') }}static/img/mailing/facebook.jpg" alt="Facebook" class="img">
                           </a>
                         </td>
                       </tr>
                       <tr>
-                        <td class="footer__txt" style="padding-top:20px;padding-bottom:20px;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:14px;font-family:'Montserrat';line-height:1.4;">
+                        <td class="footer__txt" style="padding-top:20px;padding-bottom:20px;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">
                           Copyright © 2017 prilov.com. Todos los derechos reservados.
                         </td>
                       </tr>

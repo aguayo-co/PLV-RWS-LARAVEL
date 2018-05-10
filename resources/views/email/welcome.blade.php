@@ -98,7 +98,7 @@
       display: inline-block;
       margin: 50px 0 40px;
       font-size: 32px;
-      font-family: 'Montserrat';
+      font-family: 'Montserrat', Arial, Helvetica, sans-serif;
       line-height: 1.4;
       text-align: center;
       text-transform: uppercase;
@@ -121,7 +121,7 @@
       text-align: center;
       font-size: 18px;
       text-transform: uppercase;
-      font-family: 'Montserrat';
+      font-family: 'Montserrat', Arial, Helvetica, sans-serif;
       line-height: 1.4;
     }
 
@@ -130,13 +130,13 @@
       width: 90%;
       margin: 0 auto 30px;
       font-size: 18px;
-      font-family: 'Montserrat';
+      font-family: 'Montserrat', Arial, Helvetica, sans-serif;
       line-height: 1.4;
     }
 
     .txt-kiss {
       font-size: 18px;
-      font-family: 'Montserrat';
+      font-family: 'Montserrat', Arial, Helvetica, sans-serif;
       line-height: 1.4;
     }
 
@@ -149,7 +149,7 @@
       border: 2px solid #000000;
       text-decoration: none;
       font-size: 14px;
-      font-family: 'Montserrat';
+      font-family: 'Montserrat', Arial, Helvetica, sans-serif;
       line-height: 1.4;
       text-align: center;
       color: #000000;
@@ -168,7 +168,7 @@
       margin-top: 30px;
       display: block;
       color: #ffffff;
-      font-family: 'Montserrat';
+      font-family: 'Montserrat', Arial, Helvetica, sans-serif;
       line-height: 1.4;
       background-color: #f65a66;
     }
@@ -181,7 +181,7 @@
       line-height: 1.4;
       text-align: center;
       font-size: 18px;
-      font-family: 'Montserrat';
+      font-family: 'Montserrat', Arial, Helvetica, sans-serif;
       line-height: 1.4;
       text-transform: uppercase;
     }
@@ -199,7 +199,7 @@
       border-bottom: 2px solid #f65a66;
       text-decoration: none;
       font-size: 14px;
-      font-family: 'Montserrat';
+      font-family: 'Montserrat', Arial, Helvetica, sans-serif;
       line-height: 1.4;
     }
 
@@ -237,7 +237,7 @@
       max-width: 300px;
       margin: 0 auto 24px;
       text-align: center;
-      font-family: 'Montserrat';
+      font-family: 'Montserrat', Arial, Helvetica, sans-serif;
       line-height: 1.4;
     }
 
@@ -246,7 +246,7 @@
       text-align: left;
       margin: 0;
       font-size: 14px;
-      font-family: 'Montserrat';
+      font-family: 'Montserrat', Arial, Helvetica, sans-serif;
       line-height: 1.4;
     }
 
@@ -260,68 +260,68 @@
       <tr>
         <td class="cell cell_header" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;text-align:center;background-color:#000000;">
           <a href="{{ env('APP_URL') }}" class="header" style="display:inline-block;padding-top:20px;padding-bottom:10px;padding-right:0;padding-left:0;">
-            <img src="{{ env('APP_URL') }}/static/img/mailing/brand.jpg" alt="Prilov.com" class="img img_brand" style="width:200px;">
+            <img src="{{ env('APP_URL') }}static/img/mailing/brand.jpg" alt="Prilov.com" class="img img_brand" style="width:200px;">
           </a>
         </td>
       </tr>
       <!-- end Header -->
       <tr class="row" style="width:100%;">
         <td class="cell center" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;text-align:center;">
-          <h1 class="title" style="display:inline-block;margin-top:50px;margin-bottom:40px;margin-right:0;margin-left:0;font-size:32px;font-family:'Montserrat';line-height:1.4;text-align:center;text-transform:uppercase;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#979797;">Hola
+          <h1 class="title" style="display:inline-block;margin-top:50px;margin-bottom:40px;margin-right:0;margin-left:0;font-size:32px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;text-align:center;text-transform:uppercase;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#979797;">Hola
             <span class="highlight" style="color:#f65a66;">{{ $user->first_name }}</span>
           </h1>
         </td>
       </tr>
       <tr class="row" style="width:100%;">
         <td class="cell" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;">
-          <p class="kicker" style="display:block;width:92%;margin-top:0;margin-bottom:40px;margin-right:auto;margin-left:auto;line-height:1.4;text-align:center;font-size:18px;text-transform:uppercase;font-family:'Montserrat';">Bienvenida a la comunidad de Prilovers.</p>
-          <p class="kicker" style="display:block;width:92%;margin-top:0;margin-bottom:40px;margin-right:auto;margin-left:auto;line-height:1.4;text-align:center;font-size:18px;text-transform:uppercase;font-family:'Montserrat';">¡Ya somos más de
+          <p class="kicker" style="display:block;width:92%;margin-top:0;margin-bottom:40px;margin-right:auto;margin-left:auto;line-height:1.4;text-align:center;font-size:18px;text-transform:uppercase;font-family:'Montserrat', Arial, Helvetica, sans-serif;">Bienvenida a la comunidad de Prilovers.</p>
+          <p class="kicker" style="display:block;width:92%;margin-top:0;margin-bottom:40px;margin-right:auto;margin-left:auto;line-height:1.4;text-align:center;font-size:18px;text-transform:uppercase;font-family:'Montserrat', Arial, Helvetica, sans-serif;">¡Ya somos más de
             <span class="highlight" style="color:#f65a66;">50.000</span> mujeres que compartimos nuestro clóset!</p>
         </td>
       </tr>
       <tr class="row" style="width:100%;">
         <td class="cell center" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;text-align:center;">
-          <p class="txt" style="display:block;width:90%;margin-top:0;margin-bottom:30px;margin-right:auto;margin-left:auto;font-size:18px;font-family:'Montserrat';line-height:1.4;">Para empezar el camino a la felicidad máxima, puedes:</p>
+          <p class="txt" style="display:block;width:90%;margin-top:0;margin-bottom:30px;margin-right:auto;margin-left:auto;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Para empezar el camino a la felicidad máxima, puedes:</p>
         </td>
       </tr>
       <tr class="row" style="width:100%;">
         <td class="cell" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;">
-          <a href="{{ env('APP_URL') }}/publicar-venta" class="btn btn_solid" style="display:block;width:70%;max-width:410px;padding-top:18px;padding-bottom:18px;padding-right:6px;padding-left:6px;margin-top:0;margin-bottom:20px;margin-right:auto;margin-left:auto;border-width:2px;border-style:solid;border-color:#000000;text-decoration:none;font-size:14px;font-family:'Montserrat';line-height:1.4;text-align:center;background-color:#000000;color:#ffffff;">Subir la ropa que ya no usas</a>
+          <a href="{{ env('APP_URL') }}publicar-venta" class="btn btn_solid" style="display:block;width:70%;max-width:410px;padding-top:18px;padding-bottom:18px;padding-right:6px;padding-left:6px;margin-top:0;margin-bottom:20px;margin-right:auto;margin-left:auto;border-width:2px;border-style:solid;border-color:#000000;text-decoration:none;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;text-align:center;background-color:#000000;color:#ffffff;">Subir la ropa que ya no usas</a>
         </td>
       </tr>
       <tr class="row" style="width:100%;">
         <td class="cell center" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;text-align:center;">
-          <a href="{{ env('APP_URL') }}" class="link nav__link" style="display:inline-block;margin-top:5px;margin-bottom:5px;margin-right:5px;margin-left:5px;text-align:center;color:#000000;border-bottom-width:2px;border-bottom-style:solid;border-bottom-color:#f65a66;text-decoration:none;font-size:14px;font-family:'Montserrat';line-height:1.4;padding-top:30px;">Visitar el shop y quizás comprar una nueva joyita</a>
+          <a href="{{ env('APP_URL') }}" class="link nav__link" style="display:inline-block;margin-top:5px;margin-bottom:5px;margin-right:5px;margin-left:5px;text-align:center;color:#000000;border-bottom-width:2px;border-bottom-style:solid;border-bottom-color:#f65a66;text-decoration:none;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;padding-top:30px;">Visitar el shop y quizás comprar una nueva joyita</a>
         </td>
       </tr>
       <tr class="row" style="width:100%;">
-        <td class="cell cell_highlight" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;margin-top:30px;display:block;color:#ffffff;font-family:'Montserrat';line-height:1.4;background-color:#f65a66;">
-          <p class="byline" style="display:block;width:92%;padding-top:20px;padding-bottom:20px;padding-right:0;padding-left:0;margin-top:0;margin-bottom:0;margin-right:auto;margin-left:auto;line-height:1.4;text-align:center;font-size:18px;font-family:'Montserrat';text-transform:uppercase;">Si quieres ser una Prilover experta, te recomendamos revisar nuestros tips:</p>
+        <td class="cell cell_highlight" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;margin-top:30px;display:block;color:#ffffff;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;background-color:#f65a66;">
+          <p class="byline" style="display:block;width:92%;padding-top:20px;padding-bottom:20px;padding-right:0;padding-left:0;margin-top:0;margin-bottom:0;margin-right:auto;margin-left:auto;line-height:1.4;text-align:center;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;text-transform:uppercase;">Si quieres ser una Prilover experta, te recomendamos revisar nuestros tips:</p>
         </td>
       </tr>
       <tr class="row" style="width:100%;">
         <td class="cell center" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;text-align:center;">
           <nav class="nav" style="display:block;margin-bottom:30px;">
-            <a href="{{ env('APP_URL') }}/como-funciona-prilov" class="link nav__link" style="display:inline-block;margin-top:5px;margin-bottom:5px;margin-right:5px;margin-left:5px;text-align:center;color:#000000;border-bottom-width:2px;border-bottom-style:solid;border-bottom-color:#f65a66;text-decoration:none;font-size:14px;font-family:'Montserrat';line-height:1.4;padding-top:30px;">Cómo funciona</a>
-            <a href="{{ env('APP_URL') }}/como-vender" class="link nav__link" style="display:inline-block;margin-top:5px;margin-bottom:5px;margin-right:5px;margin-left:5px;text-align:center;color:#000000;border-bottom-width:2px;border-bottom-style:solid;border-bottom-color:#f65a66;text-decoration:none;font-size:14px;font-family:'Montserrat';line-height:1.4;padding-top:30px;">Cómo vender</a>
-            <a href="{{ env('APP_URL') }}/como-comprar" class="link nav__link" style="display:inline-block;margin-top:5px;margin-bottom:5px;margin-right:5px;margin-left:5px;text-align:center;color:#000000;border-bottom-width:2px;border-bottom-style:solid;border-bottom-color:#f65a66;text-decoration:none;font-size:14px;font-family:'Montserrat';line-height:1.4;padding-top:30px;">Cómo comprar</a>
-            <a href="{{ env('APP_URL') }}/preguntas-frecuentes" class="link nav__link" style="display:inline-block;margin-top:5px;margin-bottom:5px;margin-right:5px;margin-left:5px;text-align:center;color:#000000;border-bottom-width:2px;border-bottom-style:solid;border-bottom-color:#f65a66;text-decoration:none;font-size:14px;font-family:'Montserrat';line-height:1.4;padding-top:30px;">Preguntas frecuentes</a>
+            <a href="{{ env('APP_URL') }}como-funciona-prilov" class="link nav__link" style="display:inline-block;margin-top:5px;margin-bottom:5px;margin-right:5px;margin-left:5px;text-align:center;color:#000000;border-bottom-width:2px;border-bottom-style:solid;border-bottom-color:#f65a66;text-decoration:none;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;padding-top:30px;">Cómo funciona</a>
+            <a href="{{ env('APP_URL') }}como-vender" class="link nav__link" style="display:inline-block;margin-top:5px;margin-bottom:5px;margin-right:5px;margin-left:5px;text-align:center;color:#000000;border-bottom-width:2px;border-bottom-style:solid;border-bottom-color:#f65a66;text-decoration:none;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;padding-top:30px;">Cómo vender</a>
+            <a href="{{ env('APP_URL') }}como-comprar" class="link nav__link" style="display:inline-block;margin-top:5px;margin-bottom:5px;margin-right:5px;margin-left:5px;text-align:center;color:#000000;border-bottom-width:2px;border-bottom-style:solid;border-bottom-color:#f65a66;text-decoration:none;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;padding-top:30px;">Cómo comprar</a>
+            <a href="{{ env('APP_URL') }}preguntas-frecuentes" class="link nav__link" style="display:inline-block;margin-top:5px;margin-bottom:5px;margin-right:5px;margin-left:5px;text-align:center;color:#000000;border-bottom-width:2px;border-bottom-style:solid;border-bottom-color:#f65a66;text-decoration:none;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;padding-top:30px;">Preguntas frecuentes</a>
           </nav>
         </td>
       </tr>
       <tr class="row" style="width:100%;">
         <td class="cell" align="center" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;">
-          <p class="byline" style="display:block;width:92%;padding-top:20px;padding-bottom:20px;padding-right:0;padding-left:0;margin-top:0;margin-bottom:0;margin-right:auto;margin-left:auto;line-height:1.4;text-align:center;font-size:18px;font-family:'Montserrat';text-transform:uppercase;">Cualquier duda, escríbenos. Siempre estaremos felices de ayudarte.
+          <p class="byline" style="display:block;width:92%;padding-top:20px;padding-bottom:20px;padding-right:0;padding-left:0;margin-top:0;margin-bottom:0;margin-right:auto;margin-left:auto;line-height:1.4;text-align:center;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;text-transform:uppercase;">Cualquier duda, escríbenos. Siempre estaremos felices de ayudarte.
           </p>
           <p>
-            <span class="highlight txt-kiss" style="color:#f65a66;font-size:18px;font-family:'Montserrat';line-height:1.4;">Kisses!</span>
+            <span class="highlight txt-kiss" style="color:#f65a66;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Kisses!</span>
           </p>
         </td>
       </tr>
       <tr class="row" style="width:100%;">
         <td class="cell center" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;text-align:center;">
           <a href="{{ env('APP_URL') }}" class="author" style="display:inline-block;margin-top:24px;margin-bottom:50px;margin-right:0;margin-left:0;">
-            <img src="{{ env('APP_URL') }}/static/img/mailing/brand_footer.jpg" alt="Prilov.com" class="img">
+            <img src="{{ env('APP_URL') }}static/img/mailing/brand_footer.jpg" alt="Prilov.com" class="img">
           </a>
         </td>
       </tr>
@@ -331,17 +331,17 @@
           <h4 class="footer__title" style="display:inline-block;width:100%;margin-top:14px;margin-bottom:30px;margin-right:0;margin-left:0;">Síguenos</h4>
           <nav class="footer__nav" style="display:inline-block;margin-bottom:24px;">
             <a href="https://www.instagram.com/prilovchile/?hl=es-la" class="footer__link" title="Síguenos en Instragram" style="display:inline-block;margin-top:0;margin-bottom:0;margin-right:16px;margin-left:16px;">
-              <img src="{{ env('APP_URL') }}/static/img/mailing/instagram.jpg" alt="Instragram" class="img">
+              <img src="{{ env('APP_URL') }}static/img/mailing/instagram.jpg" alt="Instragram" class="img">
             </a>
             <a href="https://twitter.com/prilovchile?lang=es" class="footer__link" title="Síguenos en Twitter" style="display:inline-block;margin-top:0;margin-bottom:0;margin-right:16px;margin-left:16px;">
-              <img src="{{ env('APP_URL') }}/static/img/mailing/twitter.jpg" alt="Twitter" class="img">
+              <img src="{{ env('APP_URL') }}static/img/mailing/twitter.jpg" alt="Twitter" class="img">
             </a>
             <a href="https://www.facebook.com/prilovchile" class="footer__link" title="Síguenos en Facebook" style="display:inline-block;margin-top:0;margin-bottom:0;margin-right:16px;margin-left:16px;">
-              <img src="{{ env('APP_URL') }}/static/img/mailing/facebook.jpg" alt="Facebook" class="img">
+              <img src="{{ env('APP_URL') }}static/img/mailing/facebook.jpg" alt="Facebook" class="img">
             </a>
           </nav>
-          <div class="footer__copyright" style="display:block;max-width:300px;margin-top:0;margin-bottom:24px;margin-right:auto;margin-left:auto;text-align:center;font-family:'Montserrat';line-height:1.4;">
-            <p class="footer__txt" style="display:inline-block;text-align:left;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:14px;font-family:'Montserrat';line-height:1.4;">Copyright © 2017 prilov.com. Todos los derechos reservados.</p>
+          <div class="footer__copyright" style="display:block;max-width:300px;margin-top:0;margin-bottom:24px;margin-right:auto;margin-left:auto;text-align:center;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">
+            <p class="footer__txt" style="display:inline-block;text-align:left;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Copyright © 2017 prilov.com. Todos los derechos reservados.</p>
           </div>
         </td>
       </tr>
