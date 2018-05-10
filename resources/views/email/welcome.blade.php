@@ -259,8 +259,8 @@
       <!-- Header -->
       <tr>
         <td class="cell cell_header" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;text-align:center;background-color:#000000;">
-          <a href="{{ env('APP_URL') }}" class="header" style="display:inline-block;padding-top:20px;padding-bottom:10px;padding-right:0;padding-left:0;">
-            <img src="{{ env('APP_URL') }}static/img/mailing/brand.jpg" alt="Prilov.com" class="img img_brand" style="width:200px;">
+          <a href="{{ env('APP_FRONT_URL') }}" class="header" style="display:inline-block;padding-top:20px;padding-bottom:10px;padding-right:0;padding-left:0;">
+            <img src="{{ env('APP_FRONT_URL') }}static/img/mailing/brand.jpg" alt="Prilov.com" class="img img_brand" style="width:200px;">
           </a>
         </td>
       </tr>
@@ -286,12 +286,12 @@
       </tr>
       <tr class="row" style="width:100%;">
         <td class="cell" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;">
-          <a href="{{ env('APP_URL') }}publicar-venta" class="btn btn_solid" style="display:block;width:70%;max-width:410px;padding-top:18px;padding-bottom:18px;padding-right:6px;padding-left:6px;margin-top:0;margin-bottom:20px;margin-right:auto;margin-left:auto;border-width:2px;border-style:solid;border-color:#000000;text-decoration:none;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;text-align:center;background-color:#000000;color:#ffffff;">Subir la ropa que ya no usas</a>
+          <a href="{{ env('APP_FRONT_URL') }}publicar-venta" class="btn btn_solid" style="display:block;width:70%;max-width:410px;padding-top:18px;padding-bottom:18px;padding-right:6px;padding-left:6px;margin-top:0;margin-bottom:20px;margin-right:auto;margin-left:auto;border-width:2px;border-style:solid;border-color:#000000;text-decoration:none;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;text-align:center;background-color:#000000;color:#ffffff;">Subir la ropa que ya no usas</a>
         </td>
       </tr>
       <tr class="row" style="width:100%;">
         <td class="cell center" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;text-align:center;">
-          <a href="{{ env('APP_URL') }}" class="link nav__link" style="display:inline-block;margin-top:5px;margin-bottom:5px;margin-right:5px;margin-left:5px;text-align:center;color:#000000;border-bottom-width:2px;border-bottom-style:solid;border-bottom-color:#f65a66;text-decoration:none;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;padding-top:30px;">Visitar el shop y quizás comprar una nueva joyita</a>
+          <a href="{{ env('APP_FRONT_URL') }}" class="link nav__link" style="display:inline-block;margin-top:5px;margin-bottom:5px;margin-right:5px;margin-left:5px;text-align:center;color:#000000;border-bottom-width:2px;border-bottom-style:solid;border-bottom-color:#f65a66;text-decoration:none;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;padding-top:30px;">Visitar el shop y quizás comprar una nueva joyita</a>
         </td>
       </tr>
       <tr class="row" style="width:100%;">
@@ -302,10 +302,10 @@
       <tr class="row" style="width:100%;">
         <td class="cell center" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;text-align:center;">
           <nav class="nav" style="display:block;margin-bottom:30px;">
-            <a href="{{ env('APP_URL') }}como-funciona-prilov" class="link nav__link" style="display:inline-block;margin-top:5px;margin-bottom:5px;margin-right:5px;margin-left:5px;text-align:center;color:#000000;border-bottom-width:2px;border-bottom-style:solid;border-bottom-color:#f65a66;text-decoration:none;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;padding-top:30px;">Cómo funciona</a>
-            <a href="{{ env('APP_URL') }}como-vender" class="link nav__link" style="display:inline-block;margin-top:5px;margin-bottom:5px;margin-right:5px;margin-left:5px;text-align:center;color:#000000;border-bottom-width:2px;border-bottom-style:solid;border-bottom-color:#f65a66;text-decoration:none;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;padding-top:30px;">Cómo vender</a>
-            <a href="{{ env('APP_URL') }}como-comprar" class="link nav__link" style="display:inline-block;margin-top:5px;margin-bottom:5px;margin-right:5px;margin-left:5px;text-align:center;color:#000000;border-bottom-width:2px;border-bottom-style:solid;border-bottom-color:#f65a66;text-decoration:none;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;padding-top:30px;">Cómo comprar</a>
-            <a href="{{ env('APP_URL') }}preguntas-frecuentes" class="link nav__link" style="display:inline-block;margin-top:5px;margin-bottom:5px;margin-right:5px;margin-left:5px;text-align:center;color:#000000;border-bottom-width:2px;border-bottom-style:solid;border-bottom-color:#f65a66;text-decoration:none;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;padding-top:30px;">Preguntas frecuentes</a>
+            <a href="{{ env('APP_FRONT_URL') }}como-funciona-prilov" class="link nav__link" style="display:inline-block;margin-top:5px;margin-bottom:5px;margin-right:5px;margin-left:5px;text-align:center;color:#000000;border-bottom-width:2px;border-bottom-style:solid;border-bottom-color:#f65a66;text-decoration:none;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;padding-top:30px;">Cómo funciona</a>
+            <a href="{{ env('APP_FRONT_URL') }}como-vender" class="link nav__link" style="display:inline-block;margin-top:5px;margin-bottom:5px;margin-right:5px;margin-left:5px;text-align:center;color:#000000;border-bottom-width:2px;border-bottom-style:solid;border-bottom-color:#f65a66;text-decoration:none;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;padding-top:30px;">Cómo vender</a>
+            <a href="{{ env('APP_FRONT_URL') }}como-comprar" class="link nav__link" style="display:inline-block;margin-top:5px;margin-bottom:5px;margin-right:5px;margin-left:5px;text-align:center;color:#000000;border-bottom-width:2px;border-bottom-style:solid;border-bottom-color:#f65a66;text-decoration:none;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;padding-top:30px;">Cómo comprar</a>
+            <a href="{{ env('APP_FRONT_URL') }}preguntas-frecuentes" class="link nav__link" style="display:inline-block;margin-top:5px;margin-bottom:5px;margin-right:5px;margin-left:5px;text-align:center;color:#000000;border-bottom-width:2px;border-bottom-style:solid;border-bottom-color:#f65a66;text-decoration:none;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;padding-top:30px;">Preguntas frecuentes</a>
           </nav>
         </td>
       </tr>
@@ -320,8 +320,8 @@
       </tr>
       <tr class="row" style="width:100%;">
         <td class="cell center" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;text-align:center;">
-          <a href="{{ env('APP_URL') }}" class="author" style="display:inline-block;margin-top:24px;margin-bottom:50px;margin-right:0;margin-left:0;">
-            <img src="{{ env('APP_URL') }}static/img/mailing/brand_footer.jpg" alt="Prilov.com" class="img">
+          <a href="{{ env('APP_FRONT_URL') }}" class="author" style="display:inline-block;margin-top:24px;margin-bottom:50px;margin-right:0;margin-left:0;">
+            <img src="{{ env('APP_FRONT_URL') }}static/img/mailing/brand_footer.jpg" alt="Prilov.com" class="img">
           </a>
         </td>
       </tr>
@@ -331,13 +331,13 @@
           <h4 class="footer__title" style="display:inline-block;width:100%;margin-top:14px;margin-bottom:30px;margin-right:0;margin-left:0;">Síguenos</h4>
           <nav class="footer__nav" style="display:inline-block;margin-bottom:24px;">
             <a href="https://www.instagram.com/prilovchile/?hl=es-la" class="footer__link" title="Síguenos en Instragram" style="display:inline-block;margin-top:0;margin-bottom:0;margin-right:16px;margin-left:16px;">
-              <img src="{{ env('APP_URL') }}static/img/mailing/instagram.jpg" alt="Instragram" class="img">
+              <img src="{{ env('APP_FRONT_URL') }}static/img/mailing/instagram.jpg" alt="Instragram" class="img">
             </a>
             <a href="https://twitter.com/prilovchile?lang=es" class="footer__link" title="Síguenos en Twitter" style="display:inline-block;margin-top:0;margin-bottom:0;margin-right:16px;margin-left:16px;">
-              <img src="{{ env('APP_URL') }}static/img/mailing/twitter.jpg" alt="Twitter" class="img">
+              <img src="{{ env('APP_FRONT_URL') }}static/img/mailing/twitter.jpg" alt="Twitter" class="img">
             </a>
             <a href="https://www.facebook.com/prilovchile" class="footer__link" title="Síguenos en Facebook" style="display:inline-block;margin-top:0;margin-bottom:0;margin-right:16px;margin-left:16px;">
-              <img src="{{ env('APP_URL') }}static/img/mailing/facebook.jpg" alt="Facebook" class="img">
+              <img src="{{ env('APP_FRONT_URL') }}static/img/mailing/facebook.jpg" alt="Facebook" class="img">
             </a>
           </nav>
           <div class="footer__copyright" style="display:block;max-width:300px;margin-top:0;margin-bottom:24px;margin-right:auto;margin-left:auto;text-align:center;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">

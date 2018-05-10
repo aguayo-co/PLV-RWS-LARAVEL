@@ -202,8 +202,8 @@
               <!-- Header -->
               <tr class="row" style="width:100%;">
                 <td class="cell cell_header" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;text-align:center;background-color:#000000;">
-                  <a href="{{ env('APP_URL') }}" class="header" style="display:inline-block;padding-top:20px;padding-bottom:10px;padding-right:0;padding-left:0;">
-                    <img src="{{ env('APP_URL') }}static/img/mailing/brand.jpg" alt="Prilov.com" class="img img_brand" style="width:200px;">
+                  <a href="{{ env('APP_FRONT_URL') }}" class="header" style="display:inline-block;padding-top:20px;padding-bottom:10px;padding-right:0;padding-left:0;">
+                    <img src="{{ env('APP_FRONT_URL') }}static/img/mailing/brand.jpg" alt="Prilov.com" class="img img_brand" style="width:200px;">
                   </a>
                 </td>
               </tr>
@@ -230,8 +230,8 @@
                     </tr>
                     <tr class="row" style="width:100%;">
                       <td class="cell center txt spacing_pre-footer" style="padding-top:40px;padding-bottom:40px;padding-right:20px;padding-left:20px;text-align:center;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">
-                        <a href="{{ env('APP_URL') }}" class="author" style="display:inline-block;">
-                          <img src="{{ env('APP_URL') }}static/img/mailing/brand_footer.jpg" alt="Prilov.com" class="img author__img" style="width:100px;">
+                        <a href="{{ env('APP_FRONT_URL') }}" class="author" style="display:inline-block;">
+                          <img src="{{ env('APP_FRONT_URL') }}static/img/mailing/brand_footer.jpg" alt="Prilov.com" class="img author__img" style="width:100px;">
                         </a>
                       </td>
                     </tr>
@@ -250,13 +250,13 @@
                       <tr>
                         <td>
                           <a href="https://www.instagram.com/prilovchile/?hl=es-la" class="footer__link" title="Síguenos en Instragram" style="display:inline-block;padding-top:0;padding-bottom:0;padding-right:16px;padding-left:16px;">
-                            <img src="{{ env('APP_URL') }}static/img/mailing/instagram.jpg" alt="Instragram" class="img">
+                            <img src="{{ env('APP_FRONT_URL') }}static/img/mailing/instagram.jpg" alt="Instragram" class="img">
                           </a>
                           <a href="https://twitter.com/prilovchile?lang=es" class="footer__link" title="Síguenos en Twitter" style="display:inline-block;padding-top:0;padding-bottom:0;padding-right:16px;padding-left:16px;">
-                            <img src="{{ env('APP_URL') }}static/img/mailing/twitter.jpg" alt="Twitter" class="img">
+                            <img src="{{ env('APP_FRONT_URL') }}static/img/mailing/twitter.jpg" alt="Twitter" class="img">
                           </a>
                           <a href="https://www.facebook.com/prilovchile" class="footer__link" title="Síguenos en Facebook" style="display:inline-block;padding-top:0;padding-bottom:0;padding-right:16px;padding-left:16px;">
-                            <img src="{{ env('APP_URL') }}static/img/mailing/facebook.jpg" alt="Facebook" class="img">
+                            <img src="{{ env('APP_FRONT_URL') }}static/img/mailing/facebook.jpg" alt="Facebook" class="img">
                           </a>
                         </td>
                       </tr>
