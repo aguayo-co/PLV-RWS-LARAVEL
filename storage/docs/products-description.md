@@ -6,6 +6,7 @@ Un producto puede tener los siguientes estados:
 - **10**: Aprobado
 - **19**: Disponible
 - **20**: No Disponible
+- **29**: En vacaciones
 - **30**: En pago
 - **31**: Vendido
 - **32**: Vendido y devuelto
