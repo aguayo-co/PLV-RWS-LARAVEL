@@ -35,9 +35,15 @@ Aparte de los criterios de filtrado globales, las calificaciones se pueden filtr
 
 ##### Datos
 
+Esta es la explicación de algunos de los campos que se usan en este modelo.
+
 - **seller_id**: Es el ID de el usuario que realizó la venta.
 - **buyer_id**: Es el ID de el usuario que realizó la compra.
 - **seller_rating**: Es la calificación dada por el usuario que realizó la venta. Es decir, la calificación
 dada al comprador.
 - **buyer_rating**: Es la calificación dada por el usuario que realizó la compra. Es decir, la calificación
 dada al vendedor.
+- **seller_comment**: Es el comentario dado por el usuario que realizó la venta. Es decir, el comentario
+dado al comprador.
+- **buyer_comment**: Es el comentario dado por el usuario que realizó la compra. Es decir, el comentario
+dado al vendedor.

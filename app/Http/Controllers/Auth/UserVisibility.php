@@ -25,6 +25,7 @@ trait UserVisibility
             'products:id,status',
             'shippingMethods:id',
             'ratings',
+            'ratingArchives',
         ]);
         $collection->makeHidden([
             'favorites',
@@ -34,6 +35,7 @@ trait UserVisibility
             'products',
             'shippingMethods',
             'ratings',
+            'ratingArchives',
         ]);
         $collection->each(function ($user) {
             $user->append([

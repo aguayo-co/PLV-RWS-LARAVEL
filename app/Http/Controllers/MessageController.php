@@ -19,7 +19,8 @@ class MessageController extends Controller
     public function __construct()
     {
         parent::__construct();
-        // Add owner_or_admin access control to `store` method.
+        // The owner_or_admin access control to `store` method
+        // checks against the parent thread which comes in the URL.
         $this->middleware('owner_or_admin')->only('store');
     }
 

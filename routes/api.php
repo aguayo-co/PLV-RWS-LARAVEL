@@ -62,6 +62,7 @@ Route::name('api.')->group(function () {
 
     Route::prefix('threads')->group(base_path('routes/api/threads.php'));
     Route::prefix('ratings')->group(base_path('routes/api/ratings.php'));
+    Route::prefix('rating_archives')->group(base_path('routes/api/rating_archives.php'));
 
     # Auth routes.
     # Only authenticated requests here.

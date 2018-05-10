@@ -14,7 +14,7 @@ class AddfavoriteAddressIdToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->integer('favorite_address_id')->unsigned()->nullable();
+            $table->integer('favorite_address_id')->after('about')->unsigned()->nullable();
             $table->foreign('favorite_address_id')->references('id')->on('addresses');
         });
     }

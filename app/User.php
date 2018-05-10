@@ -251,22 +251,33 @@ class User extends Authenticatable
         return $this->hasManyThrough('App\Rating', 'App\Sale');
     }
 
+    public function ratingArchives()
+    {
+        return $this->hasMany('App\RatingArchive', 'seller_id');
+    }
+
     protected function getRatingsNegativeCountAttribute()
     {
-        return $this->ratings->whereStrict('status', Rating::STATUS_PUBLISHED)
+        $new = $this->ratings->whereStrict('status', Rating::STATUS_PUBLISHED)
             ->whereStrict('buyer_rating', -1)->count();
+        $archive = $this->ratingArchives->whereStrict('buyer_rating', -1)->count();
+        return $new + $archive;
     }
 
     protected function getRatingsNeutralCountAttribute()
     {
-        return $this->ratings->whereStrict('status', Rating::STATUS_PUBLISHED)
+        $new = $this->ratings->whereStrict('status', Rating::STATUS_PUBLISHED)
             ->whereStrict('buyer_rating', 0)->count();
+        $archive = $this->ratingArchives->whereStrict('buyer_rating', 0)->count();
+        return $new + $archive;
     }
 
     protected function getRatingsPositiveCountAttribute()
     {
-        return $this->ratings->whereStrict('status', Rating::STATUS_PUBLISHED)
+        $new = $this->ratings->whereStrict('status', Rating::STATUS_PUBLISHED)
             ->whereStrict('buyer_rating', 1)->count();
+        $archive = $this->ratingArchives->whereStrict('buyer_rating', 1)->count();
+        return $new + $archive;
     }
     #                                 #
     # End Ratings methods.            #

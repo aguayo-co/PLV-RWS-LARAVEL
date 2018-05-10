@@ -366,7 +366,7 @@ SaleReturnExpanded:
 
 RatingRequest:
   properties:
-    sale_id?: string
+    sale_id?: integer
     seller_rating?: integer
     seller_comment?: string
     buyer_rating?: integer
@@ -379,6 +379,23 @@ Rating:
     updated_at?: datetime
 RatingExpanded:
   type: Rating
+  properties:
+    seller_id?: integer
+    buyer_id?: integer
+
+RatingArchiveRequest:
+  properties:
+    seller_id?: integer
+    buyer_id?: integer
+    buyer_rating?: integer
+    buyer_comment?: string
+RatingArchive:
+  type: [RatingArchiveRequest]
+  properties:
+    created_at?: datetime
+    updated_at?: datetime
+RatingArchiveExpanded:
+  type: RatingArchive
 
 Payment:
   type: BaseObject

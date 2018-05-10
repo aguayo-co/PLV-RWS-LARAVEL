@@ -87,21 +87,29 @@ class RatingController extends Controller
 
     protected function setVisibility(Collection $collection)
     {
+        $collection->load(['sale:id,user_id,order_id', 'sale.order:id,user_id'])->makeHidden(['sale']);
+
+        $collection->each(function ($rating) {
+            $rating->append([
+                'seller_id',
+                'buyer_id',
+            ]);
+        });
+
         $user = auth()->user();
-        if ($user->hasRole('admin')) {
+        if ($user && $user->hasRole('admin')) {
             return;
         }
 
         // For unpublished ratings, hide rating and comment that were
         // not set by the current user.
         $unpublished = $collection->where('status', Rating::STATUS_UNPUBLISHED);
-        $unpublished->load(['sale:id,user_id,order_id', 'sale.order:id,user_id'])->makeHidden(['sale']);
         $unpublished->each(function ($rating) use ($user) {
             // Rating not published, hide ratings not made by current user.
-            if ($rating->sale->user_id !== $user->id) {
+            if (!$user || $rating->sale->user_id !== $user->id) {
                 $rating->makeHidden(['seller_rating', 'seller_comment']);
             }
-            if ($rating->sale->order->user_id !== $user->id) {
+            if (!$user || $rating->sale->order->user_id !== $user->id) {
                 $rating->makeHidden(['buyer_rating', 'buyer_comment']);
             }
         });

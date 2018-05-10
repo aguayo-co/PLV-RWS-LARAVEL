@@ -287,6 +287,14 @@ resourceTypes:
     patch:
       is: [needOwner, needAdmin]
 
+/api/rating_archives:
+  description: !include rating-archives-description.md
+  type: getCollection
+  /{rating-archive-id}:
+    type: singleItem
+    patch:
+      is: [needOwner, needAdmin]
+
 /api/credits_transactions:
   description: !include credits-transactions-description.md
   type: collection
