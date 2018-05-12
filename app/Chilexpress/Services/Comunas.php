@@ -105,14 +105,14 @@ trait Comunas
                 }
 
                 // No match was found :(
-                Log::error('Sin equivalencia en Geonames para comuna de Chilexpress.', ['comuna' => $comuna]);
+                Log::error('Sin equivalencia en Geonames para comuna de Chilexpress.', ['comuna' => $comuna->GlsComuna]);
             }
         }
 
         $notSavedGeonames = $geonames->diffKeys($savedGeonames);
         if ($notSavedGeonames->count() > 0) {
             foreach ($notSavedGeonames as $geoname) {
-                Log::error('Sin equivalencia en Chilexpress para comuna de Geonames.', ['geoname' => $geoname]);
+                Log::error('Sin equivalencia en Chilexpress para comuna de Geonames.', ['geoname' => $geoname->name]);
             }
         }
     }
