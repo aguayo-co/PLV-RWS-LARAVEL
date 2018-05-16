@@ -249,6 +249,9 @@ class ProductController extends Controller
                 'following_count',
                 'following_count',
                 'followers_count',
+                'ratings_negative_count',
+                'ratings_positive_count',
+                'ratings_neutral_count',
                 'shipping_method_ids',
             ]);
         });
