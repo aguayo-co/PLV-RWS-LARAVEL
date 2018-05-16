@@ -28,4 +28,10 @@ class RatingArchiveController extends Controller
             'buyer_comment' => 'required_with:buyer_rating|string|max:10000',
         ];
     }
+    protected function setVisibility(Collection $collection)
+    {
+        $collection->load([
+            'buyer'
+        ]);
+    }
 }
