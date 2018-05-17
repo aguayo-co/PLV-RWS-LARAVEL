@@ -1,5 +1,5 @@
 {
-    "phpmd.rules": "/Users/federico/Development/config-files/php/laravel.phpmd.xml",
+    "phpmd.rules": "${workspaceFolder}/.phpmd/laravel.phpmd.xml",
     "cSpell.words": [
         "api",
         "by",
