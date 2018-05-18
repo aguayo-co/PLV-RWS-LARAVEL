@@ -17,6 +17,7 @@ class Product extends Model
     const STATUS_UNPUBLISHED = 0;
     const STATUS_REJECTED = 1;
     const STATUS_HIDDEN = 2;
+    const STATUS_CHANGED_FOR_APPROVAL = 3;
     const STATUS_APPROVED = 10;
     const STATUS_AVAILABLE = 19;
     const STATUS_UNAVAILABLE = 20;
@@ -50,6 +51,15 @@ class Product extends Model
         'delete_images',
         'color_ids',
         'campaign_ids',
+        'admin_notes',
+    ];
+    /**
+     * The attributes that should be hidden.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'admin_notes',
     ];
     protected $appends = ['images', 'image_instagram'];
 

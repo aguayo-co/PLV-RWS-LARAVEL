@@ -115,6 +115,7 @@ class ProductController extends Controller
             'image_instagram' => 'nullable|image',
             'delete_images' => 'array',
             'delete_images.*' => 'string',
+            'admin_notes' => 'string|max:10000',
         ];
     }
 
@@ -131,6 +132,11 @@ class ProductController extends Controller
         $status = array_get($data, 'status');
         if ($status) {
             $this->validateStatus($product, $status);
+        }
+
+        $admin_notes = array_get($data, 'admin_notes');
+        if ($admin_notes) {
+            $this->validateAdminNotes($product, $status);
         }
     }
 
@@ -152,6 +158,19 @@ class ProductController extends Controller
             abort(
                 Response::HTTP_FORBIDDEN,
                 'Only admin can change status.'
+            );
+        }
+    }
+    
+    protected function validateAdminNotes($product, $status)
+    {
+        $user = auth()->user();
+        if ($user->hasRole('admin')) {
+            return;
+        } else {
+            abort(
+                Response::HTTP_FORBIDDEN,
+                'Only admin can add notes'
             );
         }
     }
@@ -237,7 +256,20 @@ class ProductController extends Controller
             'user.groups',
             'user.shippingMethods',
         ]);
-        $collection->each(function ($product) {
+
+        $loggedUser = auth()->user();
+        switch (true) {
+            // Show admin notes only to admin
+            case $loggedUser && $loggedUser->hasRole('admin'):
+                $collection->makeVisible(['admin_notes']);
+        }
+        
+        $collection->each(function ($product) use ($collection) {
+            if ($collection->count() > 1) {
+                $product->user->makeHidden([
+                    'ratings', 'ratingArchives',
+                ]);
+            }
             $product->append([
                 'color_ids', 'campaign_ids'
             ]);
