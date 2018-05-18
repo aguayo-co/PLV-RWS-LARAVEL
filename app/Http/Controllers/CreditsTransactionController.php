@@ -87,7 +87,7 @@ class CreditsTransactionController extends Controller
     {
         $required = !$transaction ? 'required|' : '';
         $user = $this->getValidationUser($data, $transaction);
-        $availableCredits = data_get($user, 'credits', -9999999);
+        $availableCredits = -data_get($user, 'credits');
         $upperLimit = auth()->user()->hasRole('admin') ? 9999999 : 0;
         return [
             'user_id' => [
