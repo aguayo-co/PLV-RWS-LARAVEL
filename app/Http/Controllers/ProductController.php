@@ -147,7 +147,11 @@ class ProductController extends Controller
             return;
         }
 
-        if (!in_array($status, [Product::STATUS_AVAILABLE, Product::STATUS_UNAVAILABLE, Product::STATUS_CHANGED_FOR_APPROVAL])) {
+        if ($product->status < Product::STATUS_CHANGED_FOR_APPROVAL && $status == Product::STATUS_CHANGED_FOR_APPROVAL) {
+            return;
+        }
+
+        if (!in_array($status, [Product::STATUS_AVAILABLE, Product::STATUS_UNAVAILABLE])) {
             abort(
                 Response::HTTP_FORBIDDEN,
                 'Only an admin can set the given status.'
