@@ -1,0 +1,1 @@
+$transaction: {{json_encode($transaction, JSON_PRETTY_PRINT)}}

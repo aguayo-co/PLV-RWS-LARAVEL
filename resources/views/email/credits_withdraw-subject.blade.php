@@ -1,0 +1,1 @@
+Pediste tus créditos. Pronto serán transferidos a tu cuenta bancaria
