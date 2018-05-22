@@ -121,11 +121,13 @@
 
     .title {
       display: inline-block;
+      margin-top: 40px;
       font-size: 30px;
       font-weight: bold;
-      border-bottom: 1px solid #979797;
       font-family: 'Montserrat', arial;
       line-height: 1.4;
+      text-transform: uppercase;
+      border-bottom: 1px solid #979797;
     }
 
     .highlight {
@@ -232,19 +234,14 @@
                   <table class="table__small" style="max-width:460px;border-collapse:collapse;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
                     <tr class="row" style="width:100%;">
                       <td class="cell center" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;text-align:center;">
-                        <h1 class="title" style="display:inline-block;margin-top:50px;margin-bottom:40px;margin-right:0;margin-left:0;font-size:32px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;text-align:center;text-transform:uppercase;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#979797;">Hola
+                        <h1 class="title" style="display:inline-block;margin-top:40px;font-size:30px;font-weight:bold;font-family:'Montserrat', arial;line-height:1.4;text-transform:uppercase;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#979797;">Hola
                           <span class="highlight" style="color:#f65a66;">{{ $user->first_name }}</span>
                         </h1>
                       </td>
                     </tr>
                     <tr class="row" style="width:100%;">
-                      <td class="cell spacing_title txt" style="padding-top:40px;padding-bottom:10px;padding-right:20px;padding-left:20px;font-size:18px;font-family:'Montserrat', arial;line-height:1.4;">
-                        Acabas de agregar:
-                      </td>
+                      <td class="cell spacing txt center" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;text-align:center;font-size:18px;font-family:'Montserrat', arial;line-height:1.4;">Acabas de agregar: </td>
                     </tr>
-                    <!-- <tr class="row" style="width:100%;" >
-                      <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', arial;line-height:1.4;" >Acabas de agregar: </td>
-                    </tr> -->
                     <tr class="row" style="width:100%;">
                       <td class="cell spacing txt" align="center" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', arial;line-height:1.4;">
                         <table width="240" cellpadding="0" cellspacing="0" border="0">
@@ -323,4 +320,3 @@
 </body>
 
 </html>
-
