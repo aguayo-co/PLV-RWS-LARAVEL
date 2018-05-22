@@ -167,7 +167,7 @@ class CreditsTransactionController extends Controller
 
     public function postStore(Request $request, Model $transaction)
     {
-        $transaction = parent::postUpdate($request, $transaction);
+        $transaction = parent::postStore($request, $transaction);
 
         if (!$transaction->order && !$transaction->sale && $transaction->amount < 0) {
             $transaction->user->notify(new CreditsWithdraw(['transaction' => $transaction]));
