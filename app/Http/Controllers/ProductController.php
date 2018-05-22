@@ -245,6 +245,11 @@ class ProductController extends Controller
 
             case Product::STATUS_REJECTED:
                 $product->user->notify(new ProductRejected(['product' => $product]));
+                break;
+            
+            case Product::STATUS_HIDDEN:
+                $product->user->notify(new ProductHidden(['product' => $product]));
+                break;
         }
 
         return $product;
