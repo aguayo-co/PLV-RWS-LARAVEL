@@ -122,6 +122,7 @@
       border-bottom: 1px solid #979797;
       font-family: 'Montserrat', Arial, Helvetica, sans-serif;
       line-height: 1.4;
+      text-transform: uppercase;
     }
 
     .highlight {
@@ -214,7 +215,7 @@
                   <table class="table__small" style="max-width:460px;border-collapse:collapse;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
                     <tr class="row" style="width:100%;">
                       <td class="cell spacing_title center" style="padding-top:40px;padding-bottom:10px;padding-right:20px;padding-left:20px;text-align:center;">
-                        <p class="title" style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;display:inline-block;font-size:30px;font-weight:bold;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#979797;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Hola
+                        <p class="title" style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;display:inline-block;font-size:30px;font-weight:bold;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#979797;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;text-transform: uppercase;">Hola
                           <span class="highlight" style="color:#f65a66;">{{ $user->first_name }}</span>
                         </p>
                       </td>
