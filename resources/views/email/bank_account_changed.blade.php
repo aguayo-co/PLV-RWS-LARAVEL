@@ -117,7 +117,6 @@
 
     .title {
       display: inline-block;
-      margin-top: 40px;
       font-size: 30px;
       font-weight: bold;
       font-family: 'Montserrat', Arial, Helvetica, sans-serif;
@@ -216,7 +215,7 @@
                   <table class="table__small" style="max-width:460px;border-collapse:collapse;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
                     <tr class="row" style="width:100%;">
                       <td class="cell center" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;text-align:center;">
-                        <h1 class="title" style="display:inline-block;margin-top:40px;font-size:30px;font-weight:bold;font-family:'Montserrat', arial;line-height:1.4;text-transform:uppercase;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#979797;">Hola
+                        <h1 class="title" style="display:inline-block;font-size:30px;font-weight:bold;font-family:'Montserrat', arial;line-height:1.4;text-transform:uppercase;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#979797;">Hola
                           <span class="highlight" style="color:#f65a66;">{{ $user->first_name }}</span>
                         </h1>
                       </td>

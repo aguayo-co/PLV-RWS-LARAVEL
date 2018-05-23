@@ -120,7 +120,6 @@
 
     .title {
       display: inline-block;
-      margin-top: 40px;
       font-size: 30px;
       font-weight: bold;
       font-family: 'Montserrat', Arial, Helvetica, sans-serif;
@@ -219,7 +218,7 @@
                   <table class="table__small" style="max-width:460px;border-collapse:collapse;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
                     <tr class="row" style="width:100%;">
                       <td class="cell spacing_title center" style="padding-top:40px;padding-bottom:10px;padding-right:20px;padding-left:20px;text-align:center;">
-                        <p class="title" style="display:inline-block;margin-top: 40px;font-size:30px;font-weight:bold;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#979797;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;text-transform: uppercase;">Recuperar contraseña</p>
+                        <p class="title" style="display:inline-block;font-size:30px;font-weight:bold;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#979797;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;text-transform: uppercase;">Recuperar contraseña</p>
                       </td>
                     </tr>
                     <tr class="row" style="width:100%;">
