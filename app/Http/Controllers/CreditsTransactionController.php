@@ -11,6 +11,8 @@ use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use App\Notifications\CreditsWithdraw;
+use App\Notifications\CreditsApproved;
+use App\Notifications\CreditsRejected;
 
 class CreditsTransactionController extends Controller
 {
@@ -171,6 +173,22 @@ class CreditsTransactionController extends Controller
 
         if (!$transaction->order && !$transaction->sale && $transaction->amount < 0) {
             $transaction->user->notify(new CreditsWithdraw(['transaction' => $transaction]));
+        }
+
+        return $transaction;
+    }
+
+    public function postUpdate(Request $request, Model $transaction)
+    {
+        $statusChanged = array_get($transaction->getChanges(), 'transfer_status');
+        $transaction = parent::postUpdate($request, $transaction);
+
+        if ($statusChanged !== null) {
+            if ($transaction->transfer_status === CreditsTransaction::STATUS_COMPLETED) {
+                $transaction->user->notify(new CreditsApproved(['transaction' => $transaction]));
+            } else if ($transaction->transfer_status === CreditsTransaction::STATUS_PENDING) {
+                $transaction->user->notify(new CreditsRejected(['transaction' => $transaction]));
+            }
         }
 
         return $transaction;
