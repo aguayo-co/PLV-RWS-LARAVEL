@@ -122,6 +122,29 @@ class ProductTest extends TestCase
             ->assertSee('Only an admin can set the given status.');
     }
 
+    public function testRevisionDisallowed()
+    {
+        $product = $this->getProduct(Product::STATUS_APPROVED);
+
+        $url = route('api.product.update', $product);
+
+        $response = $this->actingAs($this->seller)
+            ->json('PATCH', $url, ['status' => Product::STATUS_CHANGED_FOR_APPROVAL]);
+        $response->assertStatus(403)
+            ->assertSee('Only admin can change status.');
+    }
+
+    public function testRevisionAllowed()
+    {
+        $product = $this->getProduct(Product::STATUS_REJECTED);
+
+        $url = route('api.product.update', $product);
+
+        $response = $this->actingAs($this->seller)
+            ->json('PATCH', $url, ['status' => Product::STATUS_CHANGED_FOR_APPROVAL]);
+        $response->assertStatus(200);
+    }
+
     public function testNewProductIsUnpublished()
     {
         $url = route('api.product.create');
@@ -146,6 +169,6 @@ class ProductTest extends TestCase
         $response = $this->actingAs($this->seller)
             ->withHeaders(['accept' => 'application/json'])->post($url, $productData);
         $response->assertStatus(403)
-            ->assertSee('Only admin can change status.');
+            ->assertSee('Only admin can set status for new products.');
     }
 }

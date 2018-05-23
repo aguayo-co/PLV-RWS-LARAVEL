@@ -134,9 +134,9 @@ class ProductController extends Controller
             $this->validateStatus($product, $status);
         }
 
-        $admin_notes = array_get($data, 'admin_notes');
-        if ($admin_notes) {
-            $this->validateAdminNotes($product, $status);
+        $adminNotes = array_get($data, 'admin_notes');
+        if ($adminNotes) {
+            $this->validateAdminNotes();
         }
     }
 
@@ -147,36 +147,49 @@ class ProductController extends Controller
             return;
         }
 
-        if ($product->status < Product::STATUS_CHANGED_FOR_APPROVAL && $status == Product::STATUS_CHANGED_FOR_APPROVAL) {
-            return;
+        if (!$product) {
+            abort(
+                Response::HTTP_FORBIDDEN,
+                'Only admin can set status for new products.'
+            );
         }
 
-        if (!in_array($status, [Product::STATUS_AVAILABLE, Product::STATUS_UNAVAILABLE])) {
+        // Statuses that non admin users can set.
+        if (!in_array($status, [Product::STATUS_AVAILABLE, Product::STATUS_UNAVAILABLE, Product::STATUS_CHANGED_FOR_APPROVAL])) {
             abort(
                 Response::HTTP_FORBIDDEN,
                 'Only an admin can set the given status.'
             );
         }
 
-        if (!$product || !$product->editable) {
+        // A product can be set to revision if it is currently rejected.
+        if ((int)$status === Product::STATUS_CHANGED_FOR_APPROVAL && $product->status !== Product::STATUS_REJECTED) {
+            abort(
+                Response::HTTP_FORBIDDEN,
+                'Only admin can change status.'
+            );
+        }
+
+        // New products can't have a status set manually by non admins.
+        if ((int)$status !== Product::STATUS_CHANGED_FOR_APPROVAL && !$product->editable) {
             abort(
                 Response::HTTP_FORBIDDEN,
                 'Only admin can change status.'
             );
         }
     }
-    
-    protected function validateAdminNotes($product, $status)
+
+    protected function validateAdminNotes()
     {
         $user = auth()->user();
         if ($user->hasRole('admin')) {
             return;
-        } else {
-            abort(
-                Response::HTTP_FORBIDDEN,
-                'Only admin can add notes'
-            );
         }
+
+        abort(
+            Response::HTTP_FORBIDDEN,
+            'Only admin can add notes.'
+        );
     }
 
     protected function alterFillData($data, Model $product = null)
@@ -246,7 +259,7 @@ class ProductController extends Controller
             case Product::STATUS_REJECTED:
                 $product->user->notify(new ProductRejected(['product' => $product]));
                 break;
-            
+
             case Product::STATUS_HIDDEN:
                 $product->user->notify(new ProductHidden(['product' => $product]));
                 break;
@@ -278,7 +291,7 @@ class ProductController extends Controller
             case $loggedUser && $loggedUser->hasRole('admin'):
                 $collection->makeVisible(['admin_notes']);
         }
-        
+
         $collection->each(function ($product) use ($collection) {
             if ($collection->count() > 1) {
                 $product->user->makeHidden([
