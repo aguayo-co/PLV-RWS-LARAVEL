@@ -169,6 +169,6 @@ class ProductTest extends TestCase
         $response = $this->actingAs($this->seller)
             ->withHeaders(['accept' => 'application/json'])->post($url, $productData);
         $response->assertStatus(403)
-            ->assertSee('Only admin can change status.');
+            ->assertSee('Only admin can set status for new products.');
     }
 }

@@ -147,6 +147,13 @@ class ProductController extends Controller
             return;
         }
 
+        if (!$product) {
+            abort(
+                Response::HTTP_FORBIDDEN,
+                'Only admin can set status for new products.'
+            );
+        }
+
         // Statuses that non admin users can set.
         if (!in_array($status, [Product::STATUS_AVAILABLE, Product::STATUS_UNAVAILABLE, Product::STATUS_CHANGED_FOR_APPROVAL])) {
             abort(
@@ -156,14 +163,15 @@ class ProductController extends Controller
         }
 
         // A product can be set to revision if it is currently rejected.
-        if ($product && (int)$status === Product::STATUS_CHANGED_FOR_APPROVAL && $product->status !== Product::STATUS_REJECTED) {
+        if ((int)$status === Product::STATUS_CHANGED_FOR_APPROVAL && $product->status !== Product::STATUS_REJECTED) {
             abort(
                 Response::HTTP_FORBIDDEN,
                 'Only admin can change status.'
             );
         }
 
-        if (!$product || ((int)$status !== Product::STATUS_CHANGED_FOR_APPROVAL && !$product->editable)) {
+        // New products can't have a status set manually by non admins.
+        if ((int)$status !== Product::STATUS_CHANGED_FOR_APPROVAL && !$product->editable) {
             abort(
                 Response::HTTP_FORBIDDEN,
                 'Only admin can change status.'
