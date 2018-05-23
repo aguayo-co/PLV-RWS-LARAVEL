@@ -1,1 +1,1 @@
-{{ $view_name }}
+Tu producto fue rechazado, no pudo ser publicado :(

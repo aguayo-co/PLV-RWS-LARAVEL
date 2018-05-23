@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use App\Notifications\CreditsWithdraw;
 
 class CreditsTransactionController extends Controller
 {
@@ -162,5 +163,16 @@ class CreditsTransactionController extends Controller
         }
 
         return $data;
+    }
+
+    public function postStore(Request $request, Model $transaction)
+    {
+        $transaction = parent::postStore($request, $transaction);
+
+        if (!$transaction->order && !$transaction->sale && $transaction->amount < 0) {
+            $transaction->user->notify(new CreditsWithdraw(['transaction' => $transaction]));
+        }
+
+        return $transaction;
     }
 }

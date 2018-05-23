@@ -1,1 +1,1 @@
-Bien! Modificaste tus datos bancarios
+Bien! Cambiaste o modificaste tus datos bancarios

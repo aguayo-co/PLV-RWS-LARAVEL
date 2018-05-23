@@ -147,6 +147,10 @@ class ProductController extends Controller
             return;
         }
 
+        if ($product->status < Product::STATUS_CHANGED_FOR_APPROVAL && $status == Product::STATUS_CHANGED_FOR_APPROVAL) {
+            return;
+        }
+
         if (!in_array($status, [Product::STATUS_AVAILABLE, Product::STATUS_UNAVAILABLE])) {
             abort(
                 Response::HTTP_FORBIDDEN,
@@ -215,7 +219,16 @@ class ProductController extends Controller
     public function postStore(Request $request, Model $product)
     {
         $product = parent::postStore($request, $product);
-        $product->user->notify(new NewProduct(['product' => $product]));
+
+        switch ($product->status) {
+            case Product::STATUS_UNPUBLISHED:
+                $product->user->notify(new NewProduct(['product' => $product]));
+                break;
+            case Product::STATUS_APPROVED:
+                $product->user->notify(new ProductApproved(['product' => $product]));
+                break;
+        }
+
         return $product;
     }
 
@@ -225,16 +238,18 @@ class ProductController extends Controller
         $product = parent::postUpdate($request, $product);
 
         switch ($statusChanged) {
-            case Product::STATUS_AVAILABLE:
-                $product->user->notify(new ProductApproved(['product' => $product]));
-                break;
 
-            case Product::STATUS_HIDDEN:
-                $product->user->notify(new ProductHidden(['product' => $product]));
+            case Product::STATUS_APPROVED:
+                $product->user->notify(new ProductApproved(['product' => $product]));
                 break;
 
             case Product::STATUS_REJECTED:
                 $product->user->notify(new ProductRejected(['product' => $product]));
+                break;
+            
+            case Product::STATUS_HIDDEN:
+                $product->user->notify(new ProductHidden(['product' => $product]));
+                break;
         }
 
         return $product;
