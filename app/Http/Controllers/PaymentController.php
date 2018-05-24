@@ -172,6 +172,8 @@ class PaymentController extends Controller
     {
         $data = $request->all();
         $total = array_get($data, 'total');
+
+        // If we get a 'total' argument, we need an order with no products.
         switch (true) {
             case $total === null:
                 $order = $this->currentUserOrder();

@@ -183,12 +183,14 @@ class CreditsTransactionController extends Controller
         $statusChanged = array_get($transaction->getChanges(), 'transfer_status');
         $transaction = parent::postUpdate($request, $transaction);
 
-        if ($statusChanged !== null) {
-            if ($transaction->transfer_status === CreditsTransaction::STATUS_COMPLETED) {
+        switch ($statusChanged) {
+            case CreditsTransaction::STATUS_COMPLETED:
                 $transaction->user->notify(new CreditsApproved(['transaction' => $transaction]));
-            } else if ($transaction->transfer_status === CreditsTransaction::STATUS_PENDING) {
+                break;
+
+            case CreditsTransaction::STATUS_PENDING:
                 $transaction->user->notify(new CreditsRejected(['transaction' => $transaction]));
-            }
+                break;
         }
 
         return $transaction;
