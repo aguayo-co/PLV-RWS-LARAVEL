@@ -45,7 +45,7 @@
     }
 
     body {
-      background-color: #ffffff;
+      background-color: #F6F6F6;
     }
 
     p {
@@ -58,7 +58,7 @@
 
     .table_main {
       margin: 0 auto;
-      background-color: #ffffff;
+      background-color: #F6F6F6;
     }
 
     .table {
@@ -193,21 +193,15 @@
   </style>
 </head>
 
-<body style="background-color:#ffffff;">
-  <table class="table_main" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:0;margin-bottom:0;margin-right:auto;margin-left:auto;background-color:#ffffff;">
+<body style="background-color:#F6F6F6;">
+  <table class="table_main" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:0;margin-bottom:0;margin-right:auto;margin-left:auto;background-color:#F6F6F6;">
     <tbody>
       <tr>
         <td align="center">
           <table class="table" width="600" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;background-color:#ffffff;">
             <tbody>
               <!-- Header -->
-              <tr class="row" style="width:100%;">
-                <td class="cell cell_header" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;text-align:center;background-color:#000000;">
-                  <a href="{{ env('APP_FRONT_URL') }}" class="header" style="display:inline-block;padding-top:20px;padding-bottom:10px;padding-right:0;padding-left:0;">
-                    <img src="{{ env('APP_FRONT_URL') }}static/img/mailing/brand.jpg" alt="Prilov.com" class="img img_brand" style="width:200px;">
-                  </a>
-                </td>
-              </tr>
+              @include('email.template_header')
               <!-- end Header -->
               <!-- Body -->
               <tr class="row" style="width:100%;">
@@ -249,35 +243,7 @@
               </tr>
               <!-- end Body -->
               <!-- Footer -->
-              <tr class="row" style="width:100%;">
-                <td class="cell cell_footer center" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;text-align:center;background-color:#F6F6F6;">
-                  <table width="600" cellpadding="0" cellspacing="0" border="0">
-                    <tbody>
-                      <tr>
-                        <td class="footer__title" style="padding-top:20px;padding-bottom:20px;padding-right:0;padding-left:0;font-size:16px;font-weight:bold;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Síguenos</td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <a href="https://www.instagram.com/prilovchile/?hl=es-la" class="footer__link" title="Síguenos en Instragram" style="display:inline-block;padding-top:0;padding-bottom:0;padding-right:16px;padding-left:16px;">
-                            <img src="{{ env('APP_FRONT_URL') }}static/img/mailing/instagram.jpg" alt="Instragram" class="img">
-                          </a>
-                          <a href="https://twitter.com/prilovchile?lang=es" class="footer__link" title="Síguenos en Twitter" style="display:inline-block;padding-top:0;padding-bottom:0;padding-right:16px;padding-left:16px;">
-                            <img src="{{ env('APP_FRONT_URL') }}static/img/mailing/twitter.jpg" alt="Twitter" class="img">
-                          </a>
-                          <a href="https://www.facebook.com/prilovchile" class="footer__link" title="Síguenos en Facebook" style="display:inline-block;padding-top:0;padding-bottom:0;padding-right:16px;padding-left:16px;">
-                            <img src="{{ env('APP_FRONT_URL') }}static/img/mailing/facebook.jpg" alt="Facebook" class="img">
-                          </a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td class="footer__txt" style="padding-top:20px;padding-bottom:20px;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">
-                          Copyright © 2017 prilov.com. Todos los derechos reservados.
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </td>
-              </tr>
+              @include('email.template_footer')
               <!-- end Footer -->
             </tbody>
           </table>

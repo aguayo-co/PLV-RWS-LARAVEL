@@ -216,12 +216,6 @@
       background-color: #F6F6F6;
     }
 
-    .footer__title {
-      display: inline-block;
-      width: 100%;
-      margin: 14px 0 30px;
-    }
-
     .footer__nav {
       display: inline-block;
       margin-bottom: 24px;
@@ -229,7 +223,7 @@
 
     .footer__link {
       display: inline-block;
-      margin: 0 16px;
+      padding: 0 16px;
     }
 
     .footer__copyright {
@@ -242,11 +236,10 @@
     }
 
     .footer__txt {
-      display: inline-block;
-      text-align: left;
+      padding: 20px;
       margin: 0;
       font-size: 14px;
-      font-family: 'Montserrat', Arial, Helvetica, sans-serif;
+      font-family: 'Montserrat', arial;
       line-height: 1.4;
     }
 
@@ -257,13 +250,7 @@
   <div class="main" style="display:block;width:100%;max-width:600px;margin-top:0;margin-bottom:0;margin-right:auto;margin-left:auto;background-color:#ffffff;">
     <table class="table" style="width:100%;min-width:100%;max-width:600px;margin-top:0;margin-bottom:0;margin-right:auto;margin-left:auto;border-collapse:collapse;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
       <!-- Header -->
-      <tr>
-        <td class="cell cell_header" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;text-align:center;background-color:#000000;">
-          <a href="{{ env('APP_FRONT_URL') }}" class="header" style="display:inline-block;padding-top:20px;padding-bottom:10px;padding-right:0;padding-left:0;">
-            <img src="{{ env('APP_FRONT_URL') }}static/img/mailing/brand.jpg" alt="Prilov.com" class="img img_brand" style="width:200px;">
-          </a>
-        </td>
-      </tr>
+      @include('email.template_header')
       <!-- end Header -->
       <tr class="row" style="width:100%;">
         <td class="cell center" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;text-align:center;">
@@ -326,25 +313,7 @@
         </td>
       </tr>
       <!-- Footer -->
-      <tr class="row" style="width:100%;">
-        <td class="cell cell_footer center" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;text-align:center;background-color:#F6F6F6;">
-          <h4 class="footer__title" style="display:inline-block;width:100%;margin-top:14px;margin-bottom:30px;margin-right:0;margin-left:0;">Síguenos</h4>
-          <nav class="footer__nav" style="display:inline-block;margin-bottom:24px;">
-            <a href="https://www.instagram.com/prilovchile/?hl=es-la" class="footer__link" title="Síguenos en Instragram" style="display:inline-block;margin-top:0;margin-bottom:0;margin-right:16px;margin-left:16px;">
-              <img src="{{ env('APP_FRONT_URL') }}static/img/mailing/instagram.jpg" alt="Instragram" class="img">
-            </a>
-            <a href="https://twitter.com/prilovchile?lang=es" class="footer__link" title="Síguenos en Twitter" style="display:inline-block;margin-top:0;margin-bottom:0;margin-right:16px;margin-left:16px;">
-              <img src="{{ env('APP_FRONT_URL') }}static/img/mailing/twitter.jpg" alt="Twitter" class="img">
-            </a>
-            <a href="https://www.facebook.com/prilovchile" class="footer__link" title="Síguenos en Facebook" style="display:inline-block;margin-top:0;margin-bottom:0;margin-right:16px;margin-left:16px;">
-              <img src="{{ env('APP_FRONT_URL') }}static/img/mailing/facebook.jpg" alt="Facebook" class="img">
-            </a>
-          </nav>
-          <div class="footer__copyright" style="display:block;max-width:300px;margin-top:0;margin-bottom:24px;margin-right:auto;margin-left:auto;text-align:center;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">
-            <p class="footer__txt" style="display:inline-block;text-align:left;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Copyright © 2017 prilov.com. Todos los derechos reservados.</p>
-          </div>
-        </td>
-      </tr>
+      @include('email.template_footer')
       <!-- end Footer -->
     </table>
   </div>
