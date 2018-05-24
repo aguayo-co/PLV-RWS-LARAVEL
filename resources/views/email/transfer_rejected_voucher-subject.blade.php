@@ -1,0 +1,1 @@
+Ups, tu pago aun no ha sido validado

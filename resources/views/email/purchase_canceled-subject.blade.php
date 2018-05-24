@@ -1,0 +1,1 @@
+Lo sentimos, tu compra ha sido cancelada
