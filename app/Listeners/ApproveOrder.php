@@ -64,10 +64,9 @@ class ApproveOrder
 
     protected function approveTransactionOrder($order)
     {
-        $total = data_get($order->extra, 'total');
         CreditsTransaction::create([
             'user_id' => $order->user_id,
-            'amount' => $total,
+            'amount' => $order->total,
             'order_id' => $order->id,
             'extra' => ['reason' => 'Credits purchase.']
         ]);
