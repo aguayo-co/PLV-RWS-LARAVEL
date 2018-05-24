@@ -80,11 +80,15 @@ class Order extends Model
      */
     public function getTotalAttribute()
     {
+        // Stored total for orders with no products.
+        $total = data_get($this->extra, 'total');
+        if ($total !== null) {
+            return $total;
+        }
+
         if ($this->products->count()) {
             return $this->products->sum('price');
         }
-        $total = data_get($this->extra, 'total', 0);
-        return $total;
     }
 
     /**
@@ -153,13 +157,15 @@ class Order extends Model
             });
         }
 
-        if ($minimumCommission = $coupon->minimum_commission) {
+        $minimumCommission = $coupon->minimum_commission;
+        if ($minimumCommission) {
             $products = $products->filter(function ($product) use ($minimumCommission) {
                 return $minimumCommission <= $product->commission;
             });
         }
 
-        if ($minimumPrice = $coupon->minimum_price) {
+        $minimumPrice = $coupon->minimum_price;
+        if ($minimumPrice) {
             $products = $products->filter(function ($product) use ($minimumPrice) {
                 return $minimumPrice <= $product->price;
             });
