@@ -14,7 +14,7 @@ class MercadoPago implements PaymentGateway
 
     protected function getAccessToken()
     {
-        return env('MP_CLIENT_ID');
+        return env('MP_ACCESS_TOKEN');
     }
 
     protected function getClientId()
@@ -94,7 +94,7 @@ class MercadoPago implements PaymentGateway
 
     public function validateCallbackData($data)
     {
-        if (!array_get($data, 'id') || !array_get($data, 'topic') || !ctype_digit(array_get($data, 'id'))) {
+        if (!array_get($data, 'type') || !array_get($data, 'data') || !ctype_digit(array_get($data, 'data.id'))) {
             abort(Response::HTTP_BAD_REQUEST);
         }
     }
@@ -103,10 +103,22 @@ class MercadoPago implements PaymentGateway
     {
         $this->callbackData = $data;
         $mercadoPago = new MP($this->getClientId(), $this->getClientSecret());
-        $paymentInfo = $mercadoPago->get_payment_info(array_get($data, 'id'));
+
+        // If it is a test, do nothing.
+        if (array_get($data, 'type') === 'test') {
+            abort(Response::HTTP_OK);
+        }
+
+        // Anything but payment, ignore.
+        if (array_get($data, 'type') !== 'payment') {
+            abort(Response::HTTP_OK);
+        }
+
+        $paymentInfo = $mercadoPago->get_payment_info(array_get($data, 'data.id'));
         if ($paymentInfo['status'] != 200) {
             abort(Response::HTTP_BAD_GATEWAY);
         }
+
         $this->paymentInfo = $paymentInfo['response']['collection'];
     }
 
