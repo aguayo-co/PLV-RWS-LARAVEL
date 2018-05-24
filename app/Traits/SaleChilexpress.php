@@ -2,6 +2,9 @@
 
 namespace App\Traits;
 
+use App\Sale;
+use Illuminate\Support\Facades\Log;
+
 trait SaleChilexpress
 {
     /**
