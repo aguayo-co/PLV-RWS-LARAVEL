@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:300,500,600,700|Roboto+Condensed:400,700|Roboto:100,400'">
-  <title>Cambiar contraseña</title>
+  <title>Créditos transferidos</title>
 
   <style>
     @font-face {
@@ -119,10 +119,10 @@
       display: inline-block;
       font-size: 30px;
       font-weight: bold;
+      border-bottom: 1px solid #979797;
       font-family: 'Montserrat', Arial, Helvetica, sans-serif;
       line-height: 1.4;
       text-transform: uppercase;
-      border-bottom: 1px solid #979797;
     }
 
     .highlight {
@@ -215,16 +215,16 @@
                   <table class="table__small" style="max-width:460px;border-collapse:collapse;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
                     <tr class="row" style="width:100%;">
                       <td class="cell spacing_title center" style="padding-top:40px;padding-bottom:10px;padding-right:20px;padding-left:20px;text-align:center;">
-                        <p class="title" style="display:inline-block;font-size:30px;font-weight:bold;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#979797;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;text-transform:uppercase;">Hola
+                        <p class="title" style="display:inline-block;font-size:30px;font-weight:bold;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#979797;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;text-transform: uppercase;">Hola
                           <span class="highlight" style="color:#f65a66;">{{ $user->first_name }}</span>
                         </p>
                       </td>
                     </tr>
                     <tr class="row" style="width:100%;">
-                      <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Vemos que cambiaste tu correo desde tu cuenta en Prilov.com</td>
+                      <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Yees! Tus créditos ya fueron transferidos a tu cuenta bancaria.</td>
                     </tr>
                     <tr class="row" style="width:100%;">
-                      <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">¡Ya quedó actualizado!</td>
+                      <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Gracias por confiar en Prilov ;)</td>
                     </tr>
                     <tr class="row" style="width:100%;">
                       <td class="cell spacing txt highlight" align="center" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;color:#f65a66;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Kisses!</td>

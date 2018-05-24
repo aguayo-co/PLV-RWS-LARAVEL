@@ -1,0 +1,1 @@
+Good news! Tus créditos ya fueron transferidos a tu cuenta bancaria

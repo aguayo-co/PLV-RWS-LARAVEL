@@ -6,11 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:300,500,600,700|Roboto+Condensed:400,700|Roboto:100,400'">
-  <title>Cambiar contraseña</title>
+  <title>Producto eliminado</title>
 
   <style>
     @font-face {
-      font-family: 'Montserrat';
+      font-family: 'Montserrat', arial;
       font-style: normal;
       font-weight: 300;
       src: local('Montserrat Light'), local('Montserrat-Light'), url(https://fonts.gstatic.com/s/montserrat/v12/JTURjIg1_i6t8kCHKm45_cJD3gnD_vx3rCs.woff) format('woff');
@@ -19,7 +19,7 @@
 
 
     @font-face {
-      font-family: 'Montserrat';
+      font-family: 'Montserrat', arial;
       font-style: normal;
       font-weight: 500;
       src: local('Montserrat Medium'), local('Montserrat-Medium'), url(https://fonts.gstatic.com/s/montserrat/v12/JTURjIg1_i6t8kCHKm45_ZpC3gnD_vx3rCs.woff) format('woff');
@@ -28,7 +28,7 @@
 
 
     @font-face {
-      font-family: 'Montserrat';
+      font-family: 'Montserrat', arial;
       font-style: normal;
       font-weight: 600;
       src: local('Montserrat SemiBold'), local('Montserrat-SemiBold'), url(https://fonts.gstatic.com/s/montserrat/v12/JTURjIg1_i6t8kCHKm45_bZF3gnD_vx3rCs.woff) format('woff');
@@ -37,7 +37,7 @@
 
 
     @font-face {
-      font-family: 'Montserrat';
+      font-family: 'Montserrat', arial;
       font-style: normal;
       font-weight: 700;
       src: local('Montserrat Bold'), local('Montserrat-Bold'), url(https://fonts.gstatic.com/s/montserrat/v12/JTURjIg1_i6t8kCHKm45_dJE3gnD_vx3rCs.woff) format('woff');
@@ -89,7 +89,7 @@
 
     .cell__txt {
       font-size: 20px;
-      font-family: 'Montserrat', Arial, Helvetica, sans-serif;
+      font-family: 'Montserrat', arial;
       line-height: 1.4;
     }
 
@@ -111,6 +111,10 @@
       padding: 20px 0 10px;
     }
 
+    .img {
+      width: 100%;
+    }
+
     .img_brand {
       width: 200px;
     }
@@ -119,7 +123,7 @@
       display: inline-block;
       font-size: 30px;
       font-weight: bold;
-      font-family: 'Montserrat', Arial, Helvetica, sans-serif;
+      font-family: 'Montserrat', arial;
       line-height: 1.4;
       text-transform: uppercase;
       border-bottom: 1px solid #979797;
@@ -135,7 +139,7 @@
 
     .txt {
       font-size: 18px;
-      font-family: 'Montserrat', Arial, Helvetica, sans-serif;
+      font-family: 'Montserrat', arial;
       line-height: 1.4;
     }
 
@@ -154,6 +158,20 @@
       width: 100px;
     }
 
+    .card {
+      line-height: 1;
+      font-size: 0px;
+    }
+
+    .card__caption {
+      font-weight: bold;
+      padding: 20px 0;
+      font-size: 16px;
+      font-family: 'Montserrat', arial;
+      line-height: 1.4;
+      border-bottom: 1px solid #000000;
+    }
+
     .cell_footer {
       background-color: #F6F6F6;
     }
@@ -162,7 +180,7 @@
       padding: 20px 0;
       font-size: 16px;
       font-weight: bold;
-      font-family: 'Montserrat', Arial, Helvetica, sans-serif;
+      font-family: 'Montserrat', arial;
       line-height: 1.4;
     }
 
@@ -186,7 +204,7 @@
       padding: 20px;
       margin: 0;
       font-size: 14px;
-      font-family: 'Montserrat', Arial, Helvetica, sans-serif;
+      font-family: 'Montserrat', arial;
       line-height: 1.4;
     }
 
@@ -214,23 +232,46 @@
                 <td class="cell" align="center" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;">
                   <table class="table__small" style="max-width:460px;border-collapse:collapse;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
                     <tr class="row" style="width:100%;">
-                      <td class="cell spacing_title center" style="padding-top:40px;padding-bottom:10px;padding-right:20px;padding-left:20px;text-align:center;">
-                        <p class="title" style="display:inline-block;font-size:30px;font-weight:bold;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#979797;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;text-transform:uppercase;">Hola
+                      <td class="cell center" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;text-align:center;">
+                        <h1 class="title" style="display:inline-block;font-size:30px;font-weight:bold;font-family:'Montserrat', arial;line-height:1.4;text-transform:uppercase;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#979797;">Hola
                           <span class="highlight" style="color:#f65a66;">{{ $user->first_name }}</span>
-                        </p>
+                        </h1>
                       </td>
                     </tr>
                     <tr class="row" style="width:100%;">
-                      <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Vemos que cambiaste tu correo desde tu cuenta en Prilov.com</td>
+                      <td class="cell spacing txt center" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;text-align:center;font-size:18px;font-family:'Montserrat', arial;line-height:1.4;">Tu producto:</td>
                     </tr>
                     <tr class="row" style="width:100%;">
-                      <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">¡Ya quedó actualizado!</td>
+                      <td class="cell spacing txt" align="center" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', arial;line-height:1.4;">
+                        <a href="{{ env('APP_FRONT_URL') }}editar-producto/{{ $product->id }}" class="link" style="color: #000000;">
+                          <table width="240" cellpadding="0" cellspacing="0" border="0">
+                            <tbody>
+                              <tr>
+                                <td class="card" style="line-height:1;font-size:0px;">
+                                  <img src="{{ $product->images[0] }}" alt="{{ $product->title }}" class="img" style="width:100%;">
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="card__caption" style="font-weight:bold;padding-top:20px;padding-bottom:20px;padding-right:0;padding-left:0;font-size:16px;font-family:'Montserrat', arial;line-height:1.4;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#000000;">
+                                  {{ $product->title }}
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </a>
+                      </td>
                     </tr>
                     <tr class="row" style="width:100%;">
-                      <td class="cell spacing txt highlight" align="center" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;color:#f65a66;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Kisses!</td>
+                      <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', arial;line-height:1.4;">Te queremos confirmar que tu producto NOMBRE DEL PRODUCTO, fue eliminado de tu perfil y ya no se encuentra disponible.</td>
                     </tr>
                     <tr class="row" style="width:100%;">
-                      <td class="cell center txt spacing_pre-footer" style="padding-top:40px;padding-bottom:40px;padding-right:20px;padding-left:20px;text-align:center;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">
+                      <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', arial;line-height:1.4;">Gracias por publicar en Prilov.</td>
+                    </tr>
+                    <tr class="row" style="width:100%;">
+                      <td class="cell spacing txt highlight" align="center" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;color:#f65a66;font-size:18px;font-family:'Montserrat', arial;line-height:1.4;">Kisses!</td>
+                    </tr>
+                    <tr class="row" style="width:100%;">
+                      <td class="cell center txt spacing_pre-footer" style="padding-top:40px;padding-bottom:40px;padding-right:20px;padding-left:20px;text-align:center;font-size:18px;font-family:'Montserrat', arial;line-height:1.4;">
                         <a href="{{ env('APP_FRONT_URL') }}" class="author" style="display:inline-block;">
                           <img src="{{ env('APP_FRONT_URL') }}static/img/mailing/brand_footer.jpg" alt="Prilov.com" class="img author__img" style="width:100px;">
                         </a>
@@ -246,23 +287,23 @@
                   <table width="600" cellpadding="0" cellspacing="0" border="0">
                     <tbody>
                       <tr>
-                        <td class="footer__title" style="padding-top:20px;padding-bottom:20px;padding-right:0;padding-left:0;font-size:16px;font-weight:bold;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Síguenos</td>
+                        <td class="footer__title" style="padding-top:20px;padding-bottom:20px;padding-right:0;padding-left:0;font-size:16px;font-weight:bold;font-family:'Montserrat', arial;line-height:1.4;">Síguenos</td>
                       </tr>
                       <tr>
                         <td>
                           <a href="https://www.instagram.com/prilovchile/?hl=es-la" class="footer__link" title="Síguenos en Instragram" style="display:inline-block;padding-top:0;padding-bottom:0;padding-right:16px;padding-left:16px;">
-                            <img src="{{ env('APP_FRONT_URL') }}static/img/mailing/instagram.jpg" alt="Instragram" class="img">
+                            <img src="{{ env('APP_FRONT_URL') }}static/img/mailing/instagram.jpg" alt="Instragram" class="img" style="width:100%;">
                           </a>
                           <a href="https://twitter.com/prilovchile?lang=es" class="footer__link" title="Síguenos en Twitter" style="display:inline-block;padding-top:0;padding-bottom:0;padding-right:16px;padding-left:16px;">
-                            <img src="{{ env('APP_FRONT_URL') }}static/img/mailing/twitter.jpg" alt="Twitter" class="img">
+                            <img src="{{ env('APP_FRONT_URL') }}static/img/mailing/twitter.jpg" alt="Twitter" class="img" style="width:100%;">
                           </a>
                           <a href="https://www.facebook.com/prilovchile" class="footer__link" title="Síguenos en Facebook" style="display:inline-block;padding-top:0;padding-bottom:0;padding-right:16px;padding-left:16px;">
-                            <img src="{{ env('APP_FRONT_URL') }}static/img/mailing/facebook.jpg" alt="Facebook" class="img">
+                            <img src="{{ env('APP_FRONT_URL') }}static/img/mailing/facebook.jpg" alt="Facebook" class="img" style="width:100%;">
                           </a>
                         </td>
                       </tr>
                       <tr>
-                        <td class="footer__txt" style="padding-top:20px;padding-bottom:20px;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">
+                        <td class="footer__txt" style="padding-top:20px;padding-bottom:20px;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:14px;font-family:'Montserrat', arial;line-height:1.4;">
                           Copyright © 2017 prilov.com. Todos los derechos reservados.
                         </td>
                       </tr>

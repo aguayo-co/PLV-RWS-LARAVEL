@@ -1,0 +1,1 @@
+Ups, algo salió mal. Tus créditos no pudieron ser transferidos
