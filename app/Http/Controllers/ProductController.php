@@ -251,7 +251,6 @@ class ProductController extends Controller
         $product = parent::postUpdate($request, $product);
 
         switch ($statusChanged) {
-
             case Product::STATUS_APPROVED:
                 $product->user->notify(new ProductApproved(['product' => $product]));
                 break;
