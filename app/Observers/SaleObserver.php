@@ -1,34 +1,38 @@
 <?php
 
-namespace App\Listeners;
+namespace App\Observers;
 
 use App\CreditsTransaction;
-use App\Events\SaleSaved;
 use App\Payment;
 use App\Sale;
 
-class ProcessSaleCredits
+class SaleObserver
 {
     /**
-     * Create the event listener.
+     * Listen to the Sale saving event.
      *
+     * @param  \App\Sale  $sale
      * @return void
      */
-    public function __construct()
+    public function saving(Sale $sale)
     {
-        //
+        // When moving into STATUS_PAYMENT, set cost and address_from to be persisted.
+        if ($sale->status === Sale::STATUS_PAYMENT && array_has($sale->getDirty(), 'status')) {
+            $shipmentDetails = $sale->shipment_details;
+            $shipmentDetails['cost'] = $sale->shipping_cost;
+            $shipmentDetails['address_from'] = $sale->ship_from;
+            $sale->shipment_details = $shipmentDetails;
+        }
     }
 
     /**
-     * Handle the event.
+     * Listen to the Sale saved event.
      *
-     * @param  SaleSaved  $event
+     * @param  \App\Sale  $sale
      * @return void
      */
-    public function handle(SaleSaved $event)
+    public function saved(Sale $sale)
     {
-        $sale = $event->sale;
-
         $changedStatus = array_get($sale->getChanges(), 'status');
 
         switch ($changedStatus) {

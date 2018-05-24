@@ -2,8 +2,6 @@
 
 namespace App;
 
-use App\Address;
-use App\Events\SaleSaved;
 use App\Traits\HasSingleFile;
 use App\Traits\HasStatuses;
 use App\Traits\HasStatusHistory;
@@ -33,10 +31,6 @@ class Sale extends Model
 
     protected $fillable = ['shipment_details', 'status'];
     protected $appends = ['shipping_label', 'shipping_cost'];
-
-    protected $dispatchesEvents = [
-        'saved' => SaleSaved::class,
-    ];
 
     /**
      * Get the user that sells this.
@@ -108,38 +102,87 @@ class Sale extends Model
      */
     public function getShippingCostAttribute()
     {
-
-        $shippingMethodSlug = data_get($this->shippingMethod, 'slug');
-
-        if (!$shippingMethodSlug) {
-            return 0;
-        }
-        if (strpos($shippingMethodSlug, 'chilexpress') === false) {
-            return 0;
+        // If key exists already, return its value even if null.
+        if (array_has($this->shipment_details, 'cost')) {
+            return array_get($this->shipment_details, 'cost');
         }
 
-        $shipFrom = $this->user->addresses
-            ->where('id', $this->user->favorite_address_id)->first();
+        if (!$this->isChilexpress()) {
+            return 0;
+        }
+
+        $shipFrom = $this->ship_from;
         if (!$shipFrom) {
             return 0;
         }
 
-        $shippingAddress = data_get($this->order->shipping_information, 'address');
-        if (!$shippingAddress) {
+        $shipTo = $this->ship_to;
+        if (!$shipTo) {
             return 0;
         }
-        if (!data_get($shippingAddress, 'geonameid')) {
-            return 0;
-        }
-        $shipTo = new Address(array_only($shippingAddress, ['geonameid']));
 
+        return $this->getChilexpressCost($shipFrom, $shipTo);
+    }
+
+    /**
+     * Return cost of shipping with Chilexpress.
+     */
+    protected function getChilexpressCost($shipFrom, $shipTo)
+    {
         $chilexpress = app()->get('chilexpress');
         try {
-            return $chilexpress->tarifar($shipFrom, $shipTo, 1.4, 10, 10, 10);
+            return (int)$chilexpress->tarifar($shipFrom, $shipTo, 1.4, 10, 10, 10);
         } catch (\SoapFault $e) {
             Log::warning('SOAP Chilexpress service failed.', ['error' => $e]);
             return;
         }
+    }
+
+    /**
+     * Return a valid Address for Chilexpress usage.
+     */
+    public function getShipToAttribute()
+    {
+        $shippingAddress = data_get($this->order->shipping_information, 'address');
+        if (!$shippingAddress) {
+            return false;
+        }
+        if (!data_get($shippingAddress, 'geonameid')) {
+            return false;
+        }
+
+        return new Address($shippingAddress);
+    }
+
+    /**
+     * Return a valid Address for Chilexpress usage.
+     */
+    public function getShipFromAttribute()
+    {
+        // If key exists already, return its value even if null.
+        if (array_has($this->shipment_details, 'address_from')) {
+            $addressFrom = array_get($this->shipment_details, 'address_from');
+            return $addressFrom ? new Address($addressFrom) : null;
+        }
+
+        return $this->user->addresses
+            ->where('id', $this->user->favorite_address_id)->first();
+    }
+
+    /**
+     * Return true if this order should calculate a shipping cost.
+     */
+    protected function isChilexpress()
+    {
+        $shippingMethodSlug = data_get($this->shippingMethod, 'slug');
+        if (!$shippingMethodSlug) {
+            return false;
+        }
+        if (strpos($shippingMethodSlug, 'chilexpress') === false) {
+            return false;
+        }
+
+        return true;
     }
 
     public function getReturnedCommissionAttribute()
@@ -179,7 +222,7 @@ class Sale extends Model
 
     public function getShipmentDetailsAttribute($value)
     {
-        return json_decode($value, true);
+        return json_decode($value, true) ?: [];
     }
     #                                 #
     # End Shipment Details methods  . #
@@ -190,11 +233,12 @@ class Sale extends Model
     #                                 #
     protected function getShippingLabelAttribute()
     {
-        if ($url = $this->getFileUrl('shipping_label')) {
+        $url = $this->getFileUrl('shipping_label');
+        if ($url) {
             return $url;
         };
 
-        if ($this->status < $this::STATUS_PAYED) {
+        if ($this->status < Sale::STATUS_PAYED) {
             return;
         }
 
@@ -218,8 +262,9 @@ class Sale extends Model
         // Do not store image data in DB.
         unset($labelData->xmlSalidaEpl);
         unset($labelData->imagenEtiqueta);
-        $shipmentDetails = $this->shipment_details ?: [];
-        $this->shipment_details = ['label_data' => $labelData] + $shipmentDetails;
+        $shipmentDetails = $this->shipment_details;
+        $shipmentDetails['label_data'] = $labelData;
+        $this->shipment_details = $shipmentDetails;
         $this->save();
 
         return $this->getFileUrl('shipping_label');
@@ -227,28 +272,26 @@ class Sale extends Model
 
     protected function generateShippingLabel()
     {
-        $shippingMethodSlug = data_get($this->shippingMethod, 'slug');
-        if (!$shippingMethodSlug) {
-            return;
-        }
-        if (strpos($shippingMethodSlug, 'chilexpress') === false) {
+        if (!$this->isChilexpress()) {
             return;
         }
 
-        $order = $this->order;
-        $shippingAddress = data_get($order->shipping_information, 'address');
-        if (!$shippingAddress) {
+        $shipTo = $this->ship_to;
+        if (!$shipTo) {
             Log::info('ShippingLabel: No shipping address.');
             return;
         }
 
-        $chilexpress = app()->get('chilexpress');
-        $shipTo = new Address($shippingAddress);
-        $shipFrom = $this->user->addresses
-            ->where('id', $this->user->favorite_address_id)->first();
+        $shipFrom = $this->ship_from;
+        if (!$shipFrom) {
+            Log::info('ShippingLabel: No sender address.');
+            return;
+        }
 
+        $order = $this->order;
         $ref = "{$order->id}-{$this->id}";
 
+        $chilexpress = app()->get('chilexpress');
         return $chilexpress->order($ref, $this->user, $order->user, $shipFrom, $shipTo, 0.5, 10, 10, 10);
     }
     #                                 #
