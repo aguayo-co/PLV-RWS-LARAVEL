@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Address;
 use App\Geoname;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -141,5 +142,12 @@ class AddressController extends Controller
         }
 
         return $admin1->keyBy('name');
+    }
+
+    protected function setVisibility(Collection $collection)
+    {
+        $collection->load([
+            'chilexpressGeodata',
+        ]);
     }
 }

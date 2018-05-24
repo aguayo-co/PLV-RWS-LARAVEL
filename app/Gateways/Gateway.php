@@ -47,8 +47,8 @@ class Gateway
     protected function getPaymentFromReference($reference)
     {
         $array = explode('-', $reference);
-        $payment_id = trim(end($array));
-        $payment = Payment::where('id', $payment_id)->first();
+        $paymentId = trim(end($array));
+        $payment = Payment::where('id', $paymentId)->first();
         if ($payment && $reference === $this->getReference($payment)) {
             return $payment;
         }

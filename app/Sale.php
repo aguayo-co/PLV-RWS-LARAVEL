@@ -5,6 +5,7 @@ namespace App;
 use App\Traits\HasSingleFile;
 use App\Traits\HasStatuses;
 use App\Traits\HasStatusHistory;
+use App\Traits\SaleChilexpress;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 
@@ -13,6 +14,7 @@ class Sale extends Model
     use HasStatuses;
     use HasStatusHistory;
     use HasSingleFile;
+    use SaleChilexpress;
 
     // Numbers are used to know when an action can be taken.
     // For instance, an order can not be marked as shipped if it
@@ -111,31 +113,14 @@ class Sale extends Model
             return 0;
         }
 
-        $shipFrom = $this->ship_from;
-        if (!$shipFrom) {
+        if (!$this->allow_chilexpress) {
             return 0;
         }
 
+        $shipFrom = $this->ship_from;
         $shipTo = $this->ship_to;
-        if (!$shipTo) {
-            return 0;
-        }
 
         return $this->getChilexpressCost($shipFrom, $shipTo);
-    }
-
-    /**
-     * Return cost of shipping with Chilexpress.
-     */
-    protected function getChilexpressCost($shipFrom, $shipTo)
-    {
-        $chilexpress = app()->get('chilexpress');
-        try {
-            return (int)$chilexpress->tarifar($shipFrom, $shipTo, 1.4, 10, 10, 10);
-        } catch (\SoapFault $e) {
-            Log::warning('SOAP Chilexpress service failed.', ['error' => $e]);
-            return;
-        }
     }
 
     /**
@@ -167,22 +152,6 @@ class Sale extends Model
 
         return $this->user->addresses
             ->where('id', $this->user->favorite_address_id)->first();
-    }
-
-    /**
-     * Return true if this order should calculate a shipping cost.
-     */
-    protected function isChilexpress()
-    {
-        $shippingMethodSlug = data_get($this->shippingMethod, 'slug');
-        if (!$shippingMethodSlug) {
-            return false;
-        }
-        if (strpos($shippingMethodSlug, 'chilexpress') === false) {
-            return false;
-        }
-
-        return true;
     }
 
     public function getReturnedCommissionAttribute()
@@ -225,11 +194,11 @@ class Sale extends Model
         return json_decode($value, true) ?: [];
     }
     #                                 #
-    # End Shipment Details methods  . #
+    # End Shipment Details methods.   #
     #                                 #
 
     #                                 #
-    # End Label image methods       . #
+    # Start Label image methods.      #
     #                                 #
     protected function getShippingLabelAttribute()
     {
@@ -243,7 +212,7 @@ class Sale extends Model
         }
 
         try {
-            $labelData = $this->generateShippingLabel();
+            $labelData = $this->generateChilexpressLabel();
         } catch (\SoapFault $e) {
             Log::warning('SOAP Chilexpress service failed.', ['error' => $e]);
             return 'Error';
@@ -269,32 +238,7 @@ class Sale extends Model
 
         return $this->getFileUrl('shipping_label');
     }
-
-    protected function generateShippingLabel()
-    {
-        if (!$this->isChilexpress()) {
-            return;
-        }
-
-        $shipTo = $this->ship_to;
-        if (!$shipTo) {
-            Log::info('ShippingLabel: No shipping address.');
-            return;
-        }
-
-        $shipFrom = $this->ship_from;
-        if (!$shipFrom) {
-            Log::info('ShippingLabel: No sender address.');
-            return;
-        }
-
-        $order = $this->order;
-        $ref = "{$order->id}-{$this->id}";
-
-        $chilexpress = app()->get('chilexpress');
-        return $chilexpress->order($ref, $this->user, $order->user, $shipFrom, $shipTo, 0.5, 10, 10, 10);
-    }
     #                                 #
-    # End Label image methods       . #
+    # End Label image methods.        #
     #                                 #
 }
