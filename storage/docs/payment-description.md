@@ -45,6 +45,14 @@ Aparte de `gatewayUrl`, la información sobre las variables se encuentra en la
 [documentación](http://developers.payulatam.com/es/web_checkout/variables.html)
 de PayU.
 
+##### MercadoPago
+
+- **Nombre**: mercado_pago (`?gateway=mercado_pago`)
+- **Parámetros adicionales**: Ninguno
+    - back_urls[success]
+    - back_urls[pending]
+    - back_urls[failure]
+- **request_data**: La URL a la que se debe enviar el usuario para realizar el pago.
 
 ##### Transferencia Bancaria
 
