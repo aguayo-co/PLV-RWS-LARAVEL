@@ -297,19 +297,23 @@ class OrderController extends Controller
      */
     public function postUpdate(Request $request, Model $order)
     {
-        if ($addProductIds = $request->add_product_ids) {
+        $addProductIds = $request->add_product_ids;
+        if ($addProductIds) {
             $this->addProducts($order, $addProductIds);
         }
 
-        if ($removeProductIds = $request->remove_product_ids) {
+        $removeProductIds = $request->remove_product_ids;
+        if ($removeProductIds) {
             $this->removeProducts($order, $removeProductIds);
         }
 
-        if ($sales = $request->sales) {
+        $sales = $request->sales;
+        if ($sales) {
             $this->processSalesData($order, $sales);
         }
 
-        if ($transferReceipt = $request->transfer_receipt) {
+        $transferReceipt = $request->transfer_receipt;
+        if ($transferReceipt) {
             $order->payments[0]->status = Payment::STATUS_PROCESSING;
             $order->payments[0]->transfer_receipt = $transferReceipt;
             $order->payments[0]->save();
