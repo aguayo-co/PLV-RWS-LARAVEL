@@ -95,7 +95,7 @@ class MercadoPago implements PaymentGateway
     public function validateCallbackData($data)
     {
         if (!array_get($data, 'type') || !array_get($data, 'data') || !ctype_digit(array_get($data, 'data.id'))) {
-            abort(Response::HTTP_BAD_REQUEST);
+            abort(Response::HTTP_BAD_REQUEST, __('Invalid callback: ERROR'));
         }
     }
 
@@ -106,17 +106,17 @@ class MercadoPago implements PaymentGateway
 
         // If it is a test, do nothing.
         if (array_get($data, 'type') === 'test') {
-            abort(Response::HTTP_OK);
+            abort(Response::HTTP_OK, __('Test callback: OK'));
         }
 
         // Anything but payment, ignore.
         if (array_get($data, 'type') !== 'payment') {
-            abort(Response::HTTP_OK);
+            abort(Response::HTTP_OK, __('Non payment callback: IGNORING'));
         }
 
         $paymentInfo = $mercadoPago->get_payment_info(array_get($data, 'data.id'));
         if ($paymentInfo['status'] != 200) {
-            abort(Response::HTTP_BAD_GATEWAY);
+            abort(Response::HTTP_BAD_GATEWAY, __('Invalid MercadoPago info: ERROR'));
         }
 
         $this->paymentInfo = $paymentInfo['response']['collection'];
