@@ -187,11 +187,11 @@ class UserController extends Controller
 
         $this->processVacationMode($request, $user);
 
-        if (array_get($user->getChanges(), 'email')) {
+        if (array_has($user->getChanges(), 'email')) {
             $user->notify(new EmailChanged);
         }
 
-        if (array_get($user->getChanges(), 'bank_account')) {
+        if (array_has($user->getChanges(), 'bank_account')) {
             $user->notify(new BankAccountChanged);
         }
 
