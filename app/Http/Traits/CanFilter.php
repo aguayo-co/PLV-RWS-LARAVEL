@@ -137,8 +137,10 @@ trait CanFilter
             return $query;
         }
 
+        $table = $query->getQuery()->from . '.';
+
         foreach ($this->getWhereIn($filters, $allowedWhereIn) as $column => $in) {
-            $query = $query->wherein($column, $in);
+            $query = $query->wherein($table . $column, $in);
         }
         foreach ($this->getWhereHas($filters, $allowedWhereHas) as $relation => $in) {
             $relation = explode(',', $relation);
@@ -150,18 +152,18 @@ trait CanFilter
         foreach ($this->getWhereBetween($filters, $allowedWhereBetween) as $column => $between) {
             switch (count($between)) {
                 case 2:
-                    $query = $query->whereBetween($column, $between);
+                    $query = $query->whereBetween($table . $column, $between);
                     break;
                 case 1:
-                    $query = $query->where($column, $between[0]);
+                    $query = $query->where($table . $column, $between[0]);
                     break;
             }
         }
         foreach ($this->getWhereDates($filters, $allowedWhereDates) as $column => $between) {
-            $query = $query->whereBetween($column, $between);
+            $query = $query->whereBetween($table . $column, $between);
         }
         foreach ($this->getWhereLike($filters, $allowedWhereLike) as $column => $like) {
-            $query = $query->where($column, 'like', $like);
+            $query = $query->where($table . $column, 'like', $like);
         }
         return $query;
     }

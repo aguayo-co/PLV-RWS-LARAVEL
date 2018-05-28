@@ -55,8 +55,11 @@ trait CanOrderBy
         $aliases = $controllerClass::$orderByAliases;
 
         $orderBy = explode(',', $request->query('orderby'));
+
+        $table = $query->getQuery()->from . '.';
+
         foreach ($this->getOrderBy($orderBy, $allowed, $default, $aliases) as $column => $direction) {
-            $query = $query->orderBy($column, $direction);
+            $query = $query->orderBy($table . $column, $direction);
         }
         return $query;
     }

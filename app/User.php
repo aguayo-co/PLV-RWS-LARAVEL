@@ -331,13 +331,11 @@ class User extends Authenticatable
         $subQuery = DB::table('group_user')
             ->select('user_id')
             ->selectRaw('MIN(group_id) as group_id')
-            ->groupBy('user_id')
-            ->toSql();
+            ->selectRaw('MIN(group_id) IS NOT NULL as has_group')
+            ->groupBy('user_id');
         return $query
-            ->leftJoin(DB::raw('(' . $subQuery . ') group_user'), 'group_user.user_id', '=', $this->getTable() . '.id')
-            ->addSelect('users.*')
-            ->selectRaw('group_id IS NOT NULL as has_group')
-            ->orderBy('has_group', 'desc')
+            ->leftJoinSub($subQuery, 'group_user', 'group_user.user_id', '=', 'users.id')
+            ->orderBy('group_user.has_group', 'desc')
             ->orderBy('group_user.group_id', $direction)->orderBy('group_user.group_id');
     }
 
@@ -346,14 +344,26 @@ class User extends Authenticatable
      */
     public function scopeWithPurchasedProductsCount($query)
     {
-        return $query->leftJoin('orders', 'orders.user_id', '=', 'users.id')
-            ->leftJoin('sales', 'sales.order_id', '=', 'orders.id')
-            ->leftJoin('product_sale', 'product_sale.sale_id', '=', 'sales.id')
-            ->leftJoin('products', 'product_sale.product_id', '=', 'products.id')
-            ->addSelect('users.*')
-            ->selectRaw('COUNT(IF(products.status > ? AND sales.status BETWEEN ? AND ?, 1, NULL)) as purchased_products_count')
-            ->addBinding([Product::STATUS_PAYMENT, Sale::STATUS_COMPLETED, Sale::STATUS_COMPLETED_PARTIAL], 'select')
-            ->groupBy(['users.id']);
+        if (!$query->getQuery()->columns) {
+            $query->addSelect('users.*');
+        }
+
+        $subQuery = DB::table('products')
+            ->selectRaw('orders.user_id as user_id, COUNT(*) as purchased_products_count')
+            ->rightJoin('product_sale', 'products.id', '=', 'product_sale.product_id')
+            ->rightJoin('sales', 'product_sale.sale_id', '=', 'sales.id')
+            ->rightJoin('orders', 'sales.order_id', '=', 'orders.id')
+            ->where('products.status', '>', Product::STATUS_PAYMENT)
+            ->whereBetween('sales.status', [Sale::STATUS_PAYED, Sale::STATUS_COMPLETED_PARTIAL])
+            ->groupBy(['orders.user_id']);
+        return $query->leftJoinSub(
+            $subQuery,
+            'ppc_sub',
+            'ppc_sub.user_id',
+            '=',
+            'users.id'
+        )
+        ->addSelect('purchased_products_count');
     }
 
     /**
@@ -362,13 +372,16 @@ class User extends Authenticatable
      */
     public function scopeWithCredits($query)
     {
+        if (!$query->getQuery()->columns) {
+            $query->addSelect('users.*');
+        }
+
         return $query->leftJoin('credits_transactions', 'credits_transactions.user_id', '=', 'users.id')
             ->leftJoin('orders as tr_orders', 'tr_orders.id', '=', 'credits_transactions.order_id')
             ->where(function ($query) {
                 $query->whereNull('credits_transactions.order_id')
                     ->orWhere('tr_orders.status', '!=', Order::STATUS_SHOPPING_CART);
             })
-            ->addSelect('users.*')
             ->selectRaw('CAST(SUM(credits_transactions.amount) AS SIGNED) credits')
             ->groupBy(['users.id']);
     }
