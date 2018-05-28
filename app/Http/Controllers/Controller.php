@@ -140,13 +140,12 @@ class Controller extends BaseController
      */
     public function index(Request $request)
     {
-        $items = $request->items ?: 15;
         $alter = $this->alterIndexQuery();
         $query = call_user_func($this->modelClass . '::when', $alter, $alter);
         $query = $this->applyParamsToQuery($request, $query);
         $pagination = $query
-            ->paginate($items)
-            ->appends($request->query() + ['items' => $items]);
+            ->paginate($request->items)
+            ->appends($request->query());
 
         $collection = $pagination->getCollection();
         $this->setVisibility($collection);
