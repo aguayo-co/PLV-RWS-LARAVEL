@@ -135,42 +135,6 @@ class PaymentTest extends TestCase
             ->assertJsonFragment(['Order needs shipping phone.']);
     }
 
-    public function testPaymentSetsShippingPhone()
-    {
-        $sale = $this->getSale();
-        $sale->shipping_method_id = $sale->user->shipping_method_ids[0];
-        $sale->save();
-
-        $this->user->phone = '555 555 5555';
-        $this->user->save();
-
-        $order = $sale->order;
-        $order->shipping_information = ['address' => 'An address'];
-        $order->save();
-        $url = route('api.orders.payment.create', $sale->order);
-        $response = $this->actingAs($this->user)->json('GET', $url . '?gateway=transfer');
-        $response->assertStatus(201);
-    }
-
-    public function testPaymentSetsShippingAddress()
-    {
-        $sale = $this->getSale();
-        $sale->shipping_method_id = $sale->user->shipping_method_ids[0];
-        $sale->save();
-
-        $address = factory(Address::class)->create(['user_id' => $this->user->id]);
-
-        $this->user->favorite_address_id = $address->id;
-        $this->user->save();
-
-        $order = $sale->order;
-        $order->shipping_information = ['phone' => '555 555 5555'];
-        $order->save();
-        $url = route('api.orders.payment.create', $sale->order);
-        $response = $this->actingAs($this->user)->json('GET', $url . '?gateway=transfer');
-        $response->assertStatus(201);
-    }
-
     public function testCouponStatusIsValidated()
     {
         $sale = $this->getSale();
