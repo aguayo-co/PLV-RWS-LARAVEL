@@ -48,6 +48,10 @@ class SaleReturnController extends Controller
             SaleReturn::STATUS_CANCELED,
         ];
         $minStatus = $return ? $return->status : min($validStatuses);
+        // Status can only go back from DELIVERED to SHIPPED.
+        // For any other status it can only go up.
+        $minStatus = $minStatus === SaleReturn::STATUS_DELIVERED ? SaleReturn::STATUS_SHIPPED : $minStatus;
+
         $saleId = $return ? $return->sale->id : array_get($data, 'sale_id');
         $required = !$return ? 'required|' : '';
         return [
