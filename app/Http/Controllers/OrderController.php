@@ -335,7 +335,7 @@ class OrderController extends Controller
             $transactions = $transactions->skip(1);
         }
 
-        foreach ($transactions as $transaction) {
+        foreach ($transactions->get() as $transaction) {
             $transaction->delete();
         }
 
