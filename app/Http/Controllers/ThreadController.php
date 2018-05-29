@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class ThreadController extends Controller
 {
@@ -46,6 +47,37 @@ class ThreadController extends Controller
         abort(Response::HTTP_FORBIDDEN, 'This is a private thread.');
     }
 
+    protected function validate(array $data, Model $thread = null)
+    {
+        if (!$thread) {
+            $this->validateUniquePrivateThread($data);
+        }
+
+        parent::validate($data, $thread);
+    }
+
+    protected function validateUniquePrivateThread($data)
+    {
+        $recipients = data_get($data, 'recipients');
+
+        if (count($recipients) > 1) {
+            return;
+        }
+
+        if (!data_get($data, 'private')) {
+            return;
+        }
+
+        $threads = Thread::whereNotNull('private')
+            ->between([auth()->id(), array_first($recipients)])
+            ->count();
+
+        if ($threads > 0) {
+            throw ValidationException::withMessages([
+                'recipients' => [__('A thread with the given recipient already exists.')],
+            ]);
+        }
+    }
 
     protected function validationRules(array $data, ?Model $thread)
     {
@@ -53,10 +85,10 @@ class ThreadController extends Controller
         return [
             'subject' => $required . 'string',
             'private' => $required . 'boolean',
-            'product_id' => 'integer|exists:products,id',
+            'product_id' => 'integer|empty_with:private|exists:products,id',
             'body' => $required . 'string',
             'recipients' => $required . 'array',
-            'recipients.*' => 'integer|exists:users,id',
+            'recipients.*' => 'integer|exists:users,id|not_in:' . auth()->id(),
         ];
     }
 
@@ -69,6 +101,13 @@ class ThreadController extends Controller
     {
         return function ($query) {
             $query = $query->latest('updated_at');
+
+            // If asked for a conversation with other User.
+            $recipientId = array_get(request()->query('filter'), 'private_with');
+            if ($recipientId && auth()->id()) {
+                $between = [auth()->id(), $recipientId];
+                return $query->whereNull('product_id')->where('private', true)->between($between);
+            }
 
             // If asked for a product's threads, only show public ones.
             $productId = array_has(request()->query('filter'), 'product_id');
@@ -94,7 +133,8 @@ class ThreadController extends Controller
     public function show(Request $request, Model $thread)
     {
         $thread = parent::show($request, $thread);
-        if ($userId = auth()->id()) {
+        $userId = auth()->id();
+        if ($userId) {
             $thread->markAsRead($userId);
         }
 
