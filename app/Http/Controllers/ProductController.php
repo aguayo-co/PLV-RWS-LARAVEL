@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Notifications\NewProduct;
 use App\Notifications\ProductApproved;
+use App\Notifications\ProductDeleted;
+use App\Notifications\ProductDeletedAdmin;
 use App\Notifications\ProductHidden;
 use App\Notifications\ProductRejected;
 use App\Product;
@@ -314,5 +316,25 @@ class ProductController extends Controller
                 'shipping_method_ids',
             ]);
         });
+    }
+
+    public function ownerDelete(Request $request, Model $product)
+    {
+        $product->ownerDelete = true;
+        return parent::ownerDelete($request, $product);
+    }
+
+    public function delete(Request $request, Model $product)
+    {
+        return parent::ownerDelete($request, $product);
+        switch ($product->ownerDelete) {
+            case true:
+                $product->user->notify(new ProductDeleted(['product' => $product]));
+                break;
+
+            default:
+                $product->user->notify(new ProductDeletedAdmin(['product' => $product]));
+                break;
+        }
     }
 }
