@@ -324,20 +324,27 @@ class OrderController extends Controller
      */
     protected function setOrderCredits($usedCredits, $order)
     {
-        if ((string) $usedCredits === "0") {
-            $transaction = CreditsTransaction::where(
-                ['order_id' => $order->id, 'user_id' => $order->user->id, 'extra->origin' => 'order']
-            )->first();
-            if ($transaction) {
-                $transaction->delete();
-            }
-            return;
+        $hasCredits = false;
+
+        $transactions = CreditsTransaction::where(
+            ['order_id' => $order->id, 'user_id' => $order->user->id, 'extra->origin' => 'order']
+        );
+
+        if ((int)$usedCredits !== 0) {
+            $hasCredits = true;
+            $transactions = $transactions->skip(1);
         }
 
-        CreditsTransaction::updateOrCreate(
-            ['order_id' => $order->id, 'user_id' => $order->user->id, 'extra->origin' => 'order'],
-            ['amount' => -$usedCredits, 'extra' => ['origin' => 'order']]
-        );
+        foreach ($transactions as $transaction) {
+            $transaction->delete();
+        }
+
+        if ($hasCredits) {
+            CreditsTransaction::updateOrCreate(
+                ['order_id' => $order->id, 'user_id' => $order->user->id, 'extra->origin' => 'order'],
+                ['amount' => -$usedCredits, 'extra' => ['origin' => 'order']]
+            );
+        }
     }
 
     protected function setVisibility(Collection $collection)
