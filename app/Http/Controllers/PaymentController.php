@@ -68,6 +68,10 @@ class PaymentController extends Controller
      */
     protected function validateOrderCanCheckout($order)
     {
+        if ($order->due < 0) {
+            abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Invalid total value.');
+        }
+
         switch ($order->status) {
             case Order::STATUS_TRANSACTION:
                 $this->validateTransactionOrder($order);

@@ -90,7 +90,8 @@ class CreditsTransactionController extends Controller
     {
         $required = !$transaction ? 'required|' : '';
         $user = $this->getValidationUser($data, $transaction);
-        $availableCredits = -data_get($user, 'credits', 0);
+        // Make sure we have a negative number or 0.
+        $lowerLimit = min(-data_get($user, 'credits', 0), 0);
         $upperLimit = auth()->user()->hasRole('admin') ? 9999999 : 0;
         return [
             'user_id' => [
@@ -103,7 +104,7 @@ class CreditsTransactionController extends Controller
             'amount' => [
                 trim($required, '|'),
                 'integer',
-                "between:$availableCredits,$upperLimit",
+                "between:$lowerLimit,$upperLimit",
             ],
             'sale_id' => [
                 'nullable',

@@ -134,11 +134,13 @@ class OrderController extends Controller
     {
         foreach ($sales as $saleId => $data) {
             $sale = $order->sales->firstWhere('id', $saleId);
-            if ($shippingMethodId = array_get($data, 'shipping_method_id')) {
+            $shippingMethodId = array_get($data, 'shipping_method_id');
+            if ($shippingMethodId) {
                 $sale->shipping_method_id = $shippingMethodId;
                 $sale->save();
             }
-            if ($status = array_get($data, 'status')) {
+            $status = array_get($data, 'status');
+            if ($status) {
                 $sale->status = $status;
                 $sale->save();
             }
@@ -186,7 +188,7 @@ class OrderController extends Controller
 
             'used_credits' => [
                 'integer',
-                'between:0,' . $availableCredits,
+                'between:0,' . max($availableCredits, 0),
                 $this->getOrderInShoppingCartRule($order),
             ],
 
@@ -236,13 +238,15 @@ class OrderController extends Controller
         $shippingInformation = data_get($order, 'shipping_information', []);
 
         // Calculate address from address_id.
-        if ($addressId = array_get($data, 'address_id')) {
+        $addressId = array_get($data, 'address_id');
+        if ($addressId) {
             $shippingInformation['address'] = Address::where('id', $addressId)->first()->toArray();
             $data['shipping_information'] = $shippingInformation;
         }
 
         // Set phone to shipping information.
-        if ($phone = array_get($data, 'phone')) {
+        $phone = array_get($data, 'phone');
+        if ($phone) {
             $shippingInformation['phone'] = $phone;
             $data['shipping_information'] = $shippingInformation;
         }
