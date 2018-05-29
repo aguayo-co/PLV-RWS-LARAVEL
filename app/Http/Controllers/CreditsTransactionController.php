@@ -172,7 +172,7 @@ class CreditsTransactionController extends Controller
     {
         $transaction = parent::postStore($request, $transaction);
 
-        if (!$transaction->order && !$transaction->sale && $transaction->amount < 0) {
+        if ($transaction->transfer_status === CreditsTransaction::STATUS_PENDING) {
             $transaction->user->notify(new CreditsWithdraw(['transaction' => $transaction]));
         }
 
