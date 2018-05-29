@@ -264,10 +264,15 @@ class Controller extends BaseController
     public function delete(Request $request, Model $model)
     {
         try {
-            $model->delete();
+            $deleted = $model->delete();
         } catch (QueryException $exception) {
             abort(Response::HTTP_CONFLICT, 'Model has related data associated.');
         }
+
+        if (!$deleted) {
+            abort(Response::HTTP_INTERNAL_SERVER_ERROR, 'Model was not deleted.');
+        }
+
         return ['message' => 'Object deleted'];
     }
 
