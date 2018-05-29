@@ -328,14 +328,14 @@ class OrderController extends Controller
 
         $transactions = CreditsTransaction::where(
             ['order_id' => $order->id, 'user_id' => $order->user->id, 'extra->origin' => 'order']
-        );
+        )->get();
 
         if ((int)$usedCredits !== 0) {
             $hasCredits = true;
-            $transactions = $transactions->skip(1);
+            $transactions->shift();
         }
 
-        foreach ($transactions->get() as $transaction) {
+        foreach ($transactions as $transaction) {
             $transaction->delete();
         }
 
