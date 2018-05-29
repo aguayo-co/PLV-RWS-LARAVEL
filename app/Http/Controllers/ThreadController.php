@@ -84,7 +84,7 @@ class ThreadController extends Controller
         $required = !$thread ? 'required|' : '';
         return [
             'subject' => $required . 'string',
-            'private' => $required . 'boolean',
+            'private' => $required . 'boolean|empty_with:product_id',
             'product_id' => 'integer|empty_with:private|exists:products,id',
             'body' => $required . 'string',
             'recipients' => $required . 'array',

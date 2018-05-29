@@ -6,7 +6,6 @@ use App\Address;
 use App\Coupon;
 use App\CreditsTransaction;
 use App\Http\Controllers\Order\CouponRules;
-use App\Http\Controllers\Order\EnsureShippingInformation;
 use App\Http\Controllers\Order\OrderControllerRules;
 use App\Http\Traits\CurrentUserOrder;
 use App\Order;
@@ -30,7 +29,6 @@ class OrderController extends Controller
     use CouponRules;
     use CurrentUserOrder;
     use OrderControllerRules;
-    use EnsureShippingInformation;
 
     protected $modelClass = Order::class;
 
@@ -273,16 +271,6 @@ class OrderController extends Controller
     }
 
     /**
-     * Show method to set Shipping Information when it has none.
-     */
-    public function show(Request $request, Model $order)
-    {
-        $order = parent::show($request, $order);
-        $this->ensureShippingInformation($order);
-        return $order;
-    }
-
-    /**
      * An alias for the update() method for the current logged in user.
      */
     public function updateShoppingCart(Request $request)
@@ -323,9 +311,7 @@ class OrderController extends Controller
             $this->setOrderCredits($request->used_credits, $order);
         }
 
-        $order = parent::postUpdate($request, $order);
-        $this->ensureShippingInformation($order);
-        return $order;
+        return parent::postUpdate($request, $order);
     }
 
     /**
