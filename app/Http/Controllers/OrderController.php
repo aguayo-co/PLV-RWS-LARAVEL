@@ -360,6 +360,7 @@ class OrderController extends Controller
             'sales.products.condition',
             'sales.products.size',
             'sales.products.user',
+            'sales.shippingMethod',
             'sales.user.shippingMethods',
             'user',
         ]);
