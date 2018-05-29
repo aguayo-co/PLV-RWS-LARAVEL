@@ -67,7 +67,7 @@ class SaleController extends Controller
                 Rule::in($validStatuses),
                 $this->getStatusRule($sale),
                 // Do not go back in status. Except for Delivered, that can be changed to shipped.
-                'min:' . $sale->status === Sale::STATUS_DELIVERED ? Sale::STATUS_SHIPPED : $sale->status,
+                'min:' . ($sale->status === Sale::STATUS_DELIVERED ? Sale::STATUS_SHIPPED : $sale->status),
             ],
         ];
     }
