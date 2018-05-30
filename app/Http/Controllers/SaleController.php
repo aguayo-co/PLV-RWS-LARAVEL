@@ -120,13 +120,12 @@ class SaleController extends Controller
             'products.user',
             'returns',
             'shippingMethod',
-            'is_chilexpress',
             'user',
         ]);
         $collection->each(function ($sale) {
             $sale->user->makeVisible(['email']);
             $sale->order->user->makeVisible(['email']);
-            $sale->append(['returned_products_ids', 'total', 'commission', 'shipping_cost']);
+            $sale->append(['returned_products_ids', 'total', 'commission', 'shipping_cost', 'is_chilexpress']);
         });
     }
 }
