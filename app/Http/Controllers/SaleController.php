@@ -120,6 +120,7 @@ class SaleController extends Controller
             'products.user',
             'returns',
             'shippingMethod',
+            'is_chilexpress',
             'user',
         ]);
         $collection->each(function ($sale) {
