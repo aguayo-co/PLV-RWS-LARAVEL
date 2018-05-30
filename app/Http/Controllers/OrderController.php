@@ -359,6 +359,7 @@ class OrderController extends Controller
             'sales.products.user',
             'sales.shippingMethod',
             'sales.user.shippingMethods',
+            'sales.returns',
             'user',
         ]);
         $collection->each(function ($order) {
