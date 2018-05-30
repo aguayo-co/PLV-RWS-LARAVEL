@@ -113,7 +113,7 @@ class Sale extends Model
             return 0;
         }
 
-        if (!$this->allow_chilexpress) {
+        if ($this->allow_chilexpress === false) {
             return 0;
         }
 

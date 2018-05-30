@@ -85,7 +85,7 @@ trait SaleChilexpress
             return;
         }
 
-        if (!$this->allow_chilexpress) {
+        if ($this->allow_chilexpress === false) {
             return;
         }
 
