@@ -106,6 +106,7 @@ class SaleReturnController extends Controller
 
     protected function getSaleIdRule($return, $saleId)
     {
+        // Is this the Sale for the existing return.
         if ($return) {
             return Rule::in([$saleId]);
         }
@@ -125,7 +126,7 @@ class SaleReturnController extends Controller
         }
 
         // If it is not an admin, add one more restriction:
-        //  - Sales that are from one of the buyer orders.
+        //  - Sales that are from one of the user orders.
         $salesIds = $salesIdsQuery
             ->whereHas('order', function ($query) use ($user) {
                 $query->where('user_id', $user->id);

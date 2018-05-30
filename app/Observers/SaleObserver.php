@@ -3,11 +3,14 @@
 namespace App\Observers;
 
 use App\CreditsTransaction;
+use App\Notifications\ProductSentChilexpress;
 use App\Payment;
 use App\Sale;
 
 class SaleObserver
 {
+    protected $sale;
+
     /**
      * Listen to the Sale saving event.
      *
@@ -16,6 +19,8 @@ class SaleObserver
      */
     public function saving(Sale $sale)
     {
+        $this->sale = $sale;
+
         // When moving into STATUS_PAYMENT, set cost and address_from to be persisted.
         if ($sale->status === Sale::STATUS_PAYMENT && array_has($sale->getDirty(), 'status')) {
             $shipmentDetails = $sale->shipment_details;
@@ -40,27 +45,59 @@ class SaleObserver
      */
     public function saved(Sale $sale)
     {
+        $this->sale = $sale;
+
         $changedStatus = array_get($sale->getChanges(), 'status');
 
         switch ($changedStatus) {
+            case Sale::STATUS_SHIPPED:
+                $this->sendShippedNotifications();
+                break;
+
+            case Sale::STATUS_DELIVERED:
+                $this->sendDeliveredNotifications();
+                break;
+
             case Sale::STATUS_CANCELED:
                 if ($sale->order->payment && $sale->order->payment->status === Payment::STATUS_SUCCESS) {
-                    $this->giveCreditsBackToBuyer($sale);
+                    $this->giveCreditsBackToBuyer();
                 }
                 break;
 
             case Sale::STATUS_COMPLETED:
-                $this->giveCreditsToSeller($sale);
+                $this->giveCreditsToSeller();
                 break;
 
             case Sale::STATUS_COMPLETED_PARTIAL:
-                $this->givePartialCreditsToSeller($sale);
+                $this->givePartialCreditsToSeller();
                 break;
         }
     }
 
-    protected function giveCreditsBackToBuyer(Sale $sale)
+    protected function sendShippedNotifications()
     {
+        $sale = $this->sale;
+
+        if ($sale->is_chilexpress) {
+            $sale->order->user->notify(new ProductSentChilexpress(['sale' => $sale]));
+            return;
+        }
+        $sale->order->user->notify(new ProductSent(['sale' => $sale]));
+    }
+
+    protected function sendDeliveredNotifications()
+    {
+        $sale = $this->sale;
+
+        if ($sale->is_chilexpress) {
+            return;
+        }
+    }
+
+    protected function giveCreditsBackToBuyer()
+    {
+        $sale = $this->sale;
+
         CreditsTransaction::create([
             'user_id' => $sale->order->user_id,
             'amount' => $sale->total,
@@ -69,8 +106,10 @@ class SaleObserver
         ]);
     }
 
-    protected function giveCreditsToSeller(Sale $sale)
+    protected function giveCreditsToSeller()
     {
+        $sale = $this->sale;
+
         CreditsTransaction::create([
             'user_id' => $sale->user_id,
             'amount' => $sale->total - $sale->commission,
@@ -79,8 +118,9 @@ class SaleObserver
         ]);
     }
 
-    protected function givePartialCreditsToSeller(Sale $sale)
+    protected function givePartialCreditsToSeller()
     {
+        $sale = $this->sale;
         $returnedProductsIds = $sale->returnedProductsIds->implode(', ');
         $reason = 'Order was completed with products ":products" returned.';
         $amount = $sale->total - $sale->commission - $sale->returned_total;

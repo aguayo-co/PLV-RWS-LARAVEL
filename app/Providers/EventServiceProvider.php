@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Observers\SaleObserver;
+use App\Observers\SaleReturnObserver;
 use App\Sale;
+use App\SaleReturn;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
 
@@ -17,11 +19,7 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         'App\Events\PaymentSuccessful' => [
             'App\Listeners\ApproveOrder',
-        ],
-        'App\Events\SaleReturnSaved' => [
-            'App\Listeners\ProcessSaleReturnCredits',
-            'App\Listeners\ProcessSaleStatusFromReturn',
-        ],
+        ]
     ];
 
     /**
@@ -32,6 +30,7 @@ class EventServiceProvider extends ServiceProvider
     public function boot()
     {
         parent::boot();
+        SaleReturn::observe(SaleReturnObserver::class);
         Sale::observe(SaleObserver::class);
     }
 }

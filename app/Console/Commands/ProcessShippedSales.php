@@ -42,8 +42,8 @@ class ProcessShippedSales extends Command
         $shippedBefore = now()->subDays(config('prilov.sales.days_shipping_to_delivered'));
 
         $status = Sale::STATUS_SHIPPED;
-        $ShippedJsonPath = "`status_history`->'$.\"{$status}\".\"date\".\"date\"'";
-        $shippedDate = DB::raw("CAST(JSON_UNQUOTE({$ShippedJsonPath}) as DATETIME)");
+        $shippedJsonPath = "`status_history`->'$.\"{$status}\".\"date\".\"date\"'";
+        $shippedDate = DB::raw("CAST(JSON_UNQUOTE({$shippedJsonPath}) as DATETIME)");
 
         $sales = Sale::where('status', Sale::STATUS_SHIPPED)->where($shippedDate, '<', $shippedBefore)->get();
 
