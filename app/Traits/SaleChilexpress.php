@@ -24,7 +24,7 @@ trait SaleChilexpress
     /**
      * Return true if this order should calculate a shipping cost.
      */
-    public function isChilexpress()
+    public function getIsChilexpressAttribute()
     {
         $shippingMethodSlug = data_get($this->shippingMethod, 'slug');
         if (!$shippingMethodSlug) {
@@ -81,7 +81,7 @@ trait SaleChilexpress
 
     protected function generateChilexpressLabel()
     {
-        if (!$this->isChilexpress()) {
+        if (!$this->is_chilexpress) {
             return;
         }
 

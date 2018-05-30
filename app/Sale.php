@@ -109,7 +109,7 @@ class Sale extends Model
             return array_get($this->shipment_details, 'cost');
         }
 
-        if (!$this->isChilexpress()) {
+        if (!$this->is_chilexpress) {
             return 0;
         }
 
