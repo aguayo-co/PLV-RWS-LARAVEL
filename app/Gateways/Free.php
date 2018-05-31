@@ -44,5 +44,6 @@ class Free implements PaymentGateway
 
     public function setPayment(Payment $payment)
     {
+        $this->payment = $payment;
     }
 }
