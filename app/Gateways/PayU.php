@@ -11,6 +11,7 @@ class PayU implements PaymentGateway
     use AutoNotificationsTrait;
 
     protected $callbackData;
+    protected $payment;
 
     protected function getMerchantId()
     {
@@ -32,8 +33,9 @@ class PayU implements PaymentGateway
         return 'CLP';
     }
 
-    protected function getRequestSignature(Payment $payment, $reference)
+    protected function getRequestSignature($reference)
     {
+        $payment = $this->payment;
         $apiKey = $this->getApiKey();
         $merchantId = $this->getMerchantId();
         $currency = $this->getCurrency();
@@ -64,9 +66,9 @@ class PayU implements PaymentGateway
         return 'https://checkout.payulatam.com/ppp-web-gateway-payu/';
     }
 
-    public function getPaymentRequest(Payment $payment, $data)
+    public function getPaymentRequest($data)
     {
-        $buyer = $payment->order->user;
+        $buyer = $this->payment->order->user;
         return [
             'public_data' => [
                 'test' => $this->testMode(),
@@ -74,9 +76,9 @@ class PayU implements PaymentGateway
                 'accountId' => $this->getAccountId(),
                 'merchantId' => $this->getMerchantId(),
                 'referenceCode' => $data['reference'],
-                'amount' => $payment->total,
+                'amount' => $this->payment->total,
                 'currency' => 'CLP',
-                'signature' => $this->getRequestSignature($payment, $data['reference']),
+                'signature' => $this->getRequestSignature($data['reference']),
                 'description' => "Transacción Prilov",
 
                 'confirmationUrl' => route('callback.gateway', ['gateway' => 'pay-u']),
@@ -123,5 +125,10 @@ class PayU implements PaymentGateway
     public function getData()
     {
         return $this->callbackData;
+    }
+
+    public function setPayment(Payment $payment)
+    {
+        $this->payment = $payment;
     }
 }

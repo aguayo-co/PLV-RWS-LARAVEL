@@ -7,26 +7,20 @@ use App\Notifications\TransferRejectedVoucher;
 use App\Notifications\TransferVoucherAcceptedAgreement;
 use App\Notifications\TransferVoucherAcceptedChilexpress;
 use App\Notifications\TransferVoucherAcceptedMixto;
-use App\Order;
 use App\Payment;
 use Illuminate\Http\Response;
 
 class Transfer implements PaymentGateway
 {
     protected $callbackData;
-    protected $order;
+    protected $payment;
 
-    public function __construct(Order $order)
+    public function getPaymentRequest($data)
     {
-        $this->order = $order;
-    }
-
-    public function getPaymentRequest(Payment $payment, $data)
-    {
-        $payment->order->user->notify(new TransferPendingVoucher(['order' => $payment->order]));
+        $this->payment->order->user->notify(new TransferPendingVoucher(['order' => $this->payment->order]));
         return [
             'public_data' => [
-                'amount' => $payment->total,
+                'amount' => $this->payment->total,
                 'reference' => $data['reference'],
             ]
         ];
@@ -34,8 +28,8 @@ class Transfer implements PaymentGateway
 
     public function sendApprovedNotification()
     {
-        $groupedSales = $this->order->sales->groupBy('is_chilexpress');
-        $order = $this->order;
+        $groupedSales = $this->payment->order->sales->groupBy('is_chilexpress');
+        $order = $this->payment->order;
 
         // All Sales use Chilexpress.
         if (!$groupedSales->has(0)) {
@@ -54,7 +48,7 @@ class Transfer implements PaymentGateway
 
     public function sendRejectedNotification()
     {
-        $order = $this->order;
+        $order = $this->payment->order;
         $order->notify(new TransferRejectedVoucher(['order' => $order]));
     }
 
@@ -96,5 +90,10 @@ class Transfer implements PaymentGateway
     public function getData()
     {
         return $this->callbackData;
+    }
+
+    public function setPayment(Payment $payment)
+    {
+        $this->payment = $payment;
     }
 }

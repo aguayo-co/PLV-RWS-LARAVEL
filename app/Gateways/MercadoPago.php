@@ -13,6 +13,7 @@ class MercadoPago implements PaymentGateway
 
     protected $callbackData;
     protected $paymentInfo;
+    protected $payment;
 
     protected function getAccessToken()
     {
@@ -34,17 +35,9 @@ class MercadoPago implements PaymentGateway
         return 'CLP';
     }
 
-    protected function getSignature($payment, $reference)
+    public function getPaymentRequest($data)
     {
-        $apiKey = $this->getApiKey();
-        $merchantId = $this->getMerchantId();
-        $currency = $this->getCurrency();
-        return md5("{$apiKey}~{$merchantId}~{$reference}~{$payment->total}~{$currency}");
-    }
-
-    public function getPaymentRequest(Payment $payment, $data)
-    {
-        $buyer = $payment->order->user;
+        $buyer = $this->payment->order->user;
         $mercadoPago = new MP($this->getClientId(), $this->getClientSecret());
 
         $preferenceData = [
@@ -52,7 +45,7 @@ class MercadoPago implements PaymentGateway
                 [
                     'currency_id' => $this->GetCurrency(),
                     'quantity' => 1,
-                    'unit_price' => $payment->total,
+                    'unit_price' => $this->payment->total,
                 ],
             ],
             'payer' => [
@@ -137,5 +130,10 @@ class MercadoPago implements PaymentGateway
     public function getData()
     {
         return $this->paymentInfo;
+    }
+
+    public function setPayment(Payment $payment)
+    {
+        $this->payment = $payment;
     }
 }

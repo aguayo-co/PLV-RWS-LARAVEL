@@ -2,7 +2,6 @@
 
 namespace App\Gateways;
 
-use App\Order;
 use App\Payment;
 use Illuminate\Http\Response;
 
@@ -12,14 +11,13 @@ class Gateway
     protected $order;
     protected const BASE_REF = "-_PRILOV_LV";
 
-    public function __construct($gateway, Order $order)
+    public function __construct($gateway)
     {
         $gatewayClass = __NAMESPACE__ . '\\' . studly_case($gateway);
         if (!class_exists($gatewayClass)) {
             abort(Response::HTTP_INTERNAL_SERVER_ERROR, 'Payment gateway not available.');
         }
-        $this->gateway = new $gatewayClass($order);
-        $this->order = $order;
+        $this->gateway = new $gatewayClass;
     }
 
     /**
@@ -36,7 +34,8 @@ class Gateway
     public function paymentRequest(Payment $payment, $data)
     {
         $data['reference'] = $this->getReference($payment);
-        return ($this->gateway)->getPaymentRequest($payment, $data);
+        ($this->gateway)->setPayment($payment);
+        return ($this->gateway)->getPaymentRequest($data);
     }
 
     /**
@@ -74,6 +73,7 @@ class Gateway
 
         $payment = $this->getPaymentFromReference($gateway->getReference());
         $payment->status = $gateway->getStatus();
+        $gateway->setPayment($payment);
 
         switch ($payment->status) {
             case Payment::STATUS_SUCCESS:

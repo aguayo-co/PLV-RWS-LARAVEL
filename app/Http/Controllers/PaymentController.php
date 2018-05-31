@@ -201,7 +201,7 @@ class PaymentController extends Controller
         $this->validateOrderCanCheckout($order);
 
         // Get the gateway to use.
-        $gateway = new Gateway($request->query('gateway'), $order);
+        $gateway = new Gateway($request->query('gateway'));
         // Create a Payment model with the selected gateway.
         $payment = $this->getPayment($gateway, $order);
         // Save the Gateway's request data in the Payment model.

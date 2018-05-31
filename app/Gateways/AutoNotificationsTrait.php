@@ -9,8 +9,8 @@ trait AutoNotificationsTrait
 {
     public function sendApprovedNotification()
     {
-        $groupedSales = $this->order->sales->groupBy('is_chilexpress');
-        $order = $this->order;
+        $groupedSales = $this->payment->order->sales->groupBy('is_chilexpress');
+        $order = $this->payment->order;
 
         // All Sales use Chilexpress.
         if (!$groupedSales->has(0)) {

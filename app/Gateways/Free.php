@@ -7,16 +7,9 @@ use App\Payment;
 
 class Free implements PaymentGateway
 {
-    protected $order;
-
-    public function __construct(Order $order)
+    public function getPaymentRequest($data)
     {
-        $this->order = $order;
-    }
-
-    public function getPaymentRequest(Payment $payment, $data)
-    {
-        $payment->status = Payment::STATUS_SUCCESS;
+        $this->payment->status = Payment::STATUS_SUCCESS;
         return [];
     }
 
@@ -46,6 +39,10 @@ class Free implements PaymentGateway
     }
 
     public function getData()
+    {
+    }
+
+    public function setPayment(Payment $payment)
     {
     }
 }

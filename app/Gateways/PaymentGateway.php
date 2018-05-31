@@ -6,7 +6,7 @@ use App\Payment;
 
 interface PaymentGateway
 {
-    public function getPaymentRequest(Payment $payment, $data);
+    public function getPaymentRequest($data);
     public function setCallback($data);
     public function getReference();
     public function validateCallbackData($data);
@@ -14,4 +14,5 @@ interface PaymentGateway
     public function getData();
     public function sendApprovedNotification();
     public function sendRejectedNotification();
+    public function setPayment(Payment $payment);
 }
