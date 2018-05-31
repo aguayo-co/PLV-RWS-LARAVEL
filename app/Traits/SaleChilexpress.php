@@ -52,27 +52,27 @@ trait SaleChilexpress
             return;
         }
 
-        $shipTo = $this->ship_to;
-        // If we still don't know the shipping address, give no answer.
-        if (!$shipTo) {
-            return;
-        }
-
         $shipFrom = $this->ship_from;
         // If we don't know where it is being sent from, block chilexpress.
         if (!$shipFrom) {
             return false;
         }
 
-        $coverageTo = data_get($shipTo->chilexpressGeodata, 'coverage_type');
-        // Deny if this comuna only admits or has no coverage.
-        if (!$coverageTo || $coverageTo === 1) {
-            return false;
-        }
-
         $coverageFrom = data_get($shipFrom->chilexpressGeodata, 'coverage_type');
         // Deny if this comuna only delivers or has no coverage.
         if (!$coverageFrom || $coverageFrom === 2) {
+            return false;
+        }
+
+        $shipTo = $this->ship_to;
+        // If we still don't know the shipping address, give no answer.
+        if (!$shipTo) {
+            return;
+        }
+
+        $coverageTo = data_get($shipTo->chilexpressGeodata, 'coverage_type');
+        // Deny if this comuna only admits or has no coverage.
+        if (!$coverageTo || $coverageTo === 1) {
             return false;
         }
 
