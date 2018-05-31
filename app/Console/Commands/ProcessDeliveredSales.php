@@ -47,6 +47,8 @@ class ProcessDeliveredSales extends Command
                 $deliveredJsonPath = "`status_history`->'$.\"{$deliveredStatus}\".\"date\".\"date\"'";
                 $deliveredDate = DB::raw("CAST(JSON_UNQUOTE({$deliveredJsonPath}) as DATETIME)");
 
+                // Order might have not been marked as Delivered, in which case we use
+                // Received as a backup.
                 $receivedStatus = Sale::STATUS_RECEIVED;
                 $receivedJsonPath = "`status_history`->'$.\"{$receivedStatus}\".\"date\".\"date\"'";
                 $receivedDate = DB::raw("CAST(JSON_UNQUOTE({$receivedJsonPath}) as DATETIME)");

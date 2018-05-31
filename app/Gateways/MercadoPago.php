@@ -9,6 +9,8 @@ use MP;
 
 class MercadoPago implements PaymentGateway
 {
+    use AutoNotificationsTrait;
+
     protected $callbackData;
     protected $paymentInfo;
 

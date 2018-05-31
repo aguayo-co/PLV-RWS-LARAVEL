@@ -33,7 +33,7 @@ class Transfer implements PaymentGateway
         ];
     }
 
-    protected function sendApprovedNotification()
+    public function sendApprovedNotification()
     {
         $groupedSales = $this->order->sales->groupBy('is_chilexpress');
         $order = $this->order;
@@ -53,7 +53,7 @@ class Transfer implements PaymentGateway
         $order->notify(new TransferVoucherAcceptedMixto(['order' => $order]));
     }
 
-    protected function sendRejectedNotification()
+    public function sendRejectedNotification()
     {
         $order = $this->order;
         $order->notify(new TransferRejectedVoucher(['order' => $order]));
@@ -63,10 +63,8 @@ class Transfer implements PaymentGateway
     {
         switch ($status) {
             case 'approved':
-                $this->sendApprovedNotification();
                 return Payment::STATUS_SUCCESS;
             default:
-                $this->sendRejectedNotification();
                 return Payment::STATUS_ERROR;
         }
     }

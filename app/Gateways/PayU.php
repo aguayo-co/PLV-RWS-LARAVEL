@@ -8,6 +8,8 @@ use App\Payment;
 
 class PayU implements PaymentGateway
 {
+    use AutoNotificationsTrait;
+
     protected $callbackData;
 
     protected function getMerchantId()

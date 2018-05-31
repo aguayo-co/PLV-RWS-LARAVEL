@@ -2,10 +2,11 @@
 
 namespace App\Console\Commands;
 
-use App\Sale;
+use App\Notifications\PurchaseCanceled;
 use App\Order;
 use App\Payment;
 use App\Product;
+use App\Sale;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -56,6 +57,7 @@ class ProcessOldPayments extends Command
                 $this->cancelSales($payment);
                 $this->publishProducts($payment);
             });
+            $this->sendNotifications($payment);
         }
     }
 
@@ -63,6 +65,13 @@ class ProcessOldPayments extends Command
     {
         $payment->order->status = Order::STATUS_CANCELED;
         $payment->order->save();
+    }
+
+    protected function sendNotifications($payment)
+    {
+        if ($payment->gateway === 'transfer') {
+            $payment->order->notify(new PurchaseCanceled(['order' => $payment->order]));
+        }
     }
 
     protected function cancelSales($payment)

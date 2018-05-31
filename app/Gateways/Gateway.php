@@ -71,6 +71,16 @@ class Gateway
         $payment = $this->getPaymentFromReference($gateway->getReference());
         $payment->status = $gateway->getStatus();
 
+        switch ($payment->status) {
+            case Payment::STATUS_SUCCESS:
+                $gateway->sendApprovedNotification();
+                break;
+
+            case Payment::STATUS_ERROR:
+                $gateway->sendRejectedNotification();
+                break;
+        }
+
         $attempts = $payment->attempts;
         $attempts[] = $gateway->getData();
 

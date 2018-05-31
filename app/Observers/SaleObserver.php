@@ -3,6 +3,10 @@
 namespace App\Observers;
 
 use App\CreditsTransaction;
+use App\Notifications\ProductDelivered;
+use App\Notifications\ProductDeliveredSent;
+use App\Notifications\ProductReceivedChilexpress;
+use App\Notifications\ProductSent;
 use App\Notifications\ProductSentChilexpress;
 use App\Payment;
 use App\Sale;
@@ -58,6 +62,10 @@ class SaleObserver
                 $this->sendDeliveredNotifications();
                 break;
 
+            case Sale::STATUS_RECEIVED:
+                $this->sendReceivedNotifications();
+                break;
+
             case Sale::STATUS_CANCELED:
                 if ($sale->order->payment && $sale->order->payment->status === Payment::STATUS_SUCCESS) {
                     $this->giveCreditsBackToBuyer();
@@ -86,6 +94,22 @@ class SaleObserver
     }
 
     protected function sendDeliveredNotifications()
+    {
+        $sale = $this->sale;
+
+        if ($sale->is_chilexpress) {
+            $sale->order->user->notify(new ProductReceivedChilexpress(['sale' => $sale]));
+            return;
+        }
+        // If we have tracking codes, then it was sent and not personally delivered.
+        if (data_has($sale, ['shipment_details', 'tracking_codes'])) {
+            $sale->order->user->notify(new ProductDeliveredSent(['sale' => $sale]));
+            return;
+        }
+        $sale->order->user->notify(new ProductDelivered(['sale' => $sale]));
+    }
+
+    protected function sendReceivedNotifications()
     {
         $sale = $this->sale;
 
