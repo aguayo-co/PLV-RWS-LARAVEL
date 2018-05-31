@@ -28,7 +28,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('sale-returns:old-to-canceled')->hourlyAt(20);
         $schedule->command('payments:pending-to-canceled')->hourlyAt(30);
         $schedule->command('sales:shipped-to-delivered')->hourlyAt(40);
-        $schedule->command('ratings:publish')->twiceDaily(6, 18);
+        $schedule->command('ratings:publish')->hourlyAt(50);
     }
 
     /**
