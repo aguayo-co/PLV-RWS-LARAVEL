@@ -29,7 +29,7 @@ class ApproveOrder
      */
     public function handle(PaymentSuccessful $event)
     {
-        $order = $event->payment->order;
+        $order = $event->order;
 
         if ($order->status === Order::STATUS_PAYED) {
             return;

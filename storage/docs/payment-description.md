@@ -23,6 +23,13 @@ como no disponibles, y no se puede generar un nuevo pago para la misma.
 
 Las pasarelas disponibles y la información adicional necesaria para cada una se indican a continuación:
 
+##### Sin pago necesario
+
+Cuando el valor a pagar sea 0 (por ejemplo, porque se paga con créditos), se debe usar este método de pago.
+Este método no genera un pago en la base de datos, e inmediatamente marca la orden como pagada.
+
+- **Nombre**: transfer (`?gateway=free`)
+
 ##### PayU
 
 - **Nombre**: pay_u (`?gateway=pay_u`)

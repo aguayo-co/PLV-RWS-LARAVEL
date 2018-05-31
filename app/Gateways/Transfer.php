@@ -23,7 +23,6 @@ class Transfer implements PaymentGateway
 
     public function getPaymentRequest(Payment $payment, $data)
     {
-        $payment->status = Payment::STATUS_PENDING;
         $payment->order->user->notify(new TransferPendingVoucher(['order' => $payment->order]));
         return [
             'public_data' => [

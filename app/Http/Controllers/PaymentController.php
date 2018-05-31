@@ -59,7 +59,8 @@ class PaymentController extends Controller
     protected function validationRules(array $data, ?Model $order)
     {
         return [
-            'total' => 'integer'
+            // This is for orders with no products.
+            'total' => 'integer|min:1'
         ];
     }
 
@@ -162,7 +163,6 @@ class PaymentController extends Controller
         $payment->gateway = $gateway->getName();
         $payment->status = Payment::STATUS_PENDING;
         $payment->order_id = $order->id;
-        $payment->save();
 
         return $payment;
     }
@@ -221,6 +221,11 @@ class PaymentController extends Controller
             }
         });
 
+        // Dispatch event if we have a payment that is already successful.
+        if ($payment->status === Payment::STATUS_SUCCESS) {
+            event(new PaymentSuccessful($order));
+        }
+
         return $payment;
     }
 
@@ -234,7 +239,7 @@ class PaymentController extends Controller
             $payment = $gateway->processCallback($request->all());
 
             if ($payment->status === Payment::STATUS_SUCCESS) {
-                event(new PaymentSuccessful($payment));
+                event(new PaymentSuccessful($payment->order));
             }
         });
 

@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Payment;
+use App\Order;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -11,16 +11,16 @@ class PaymentSuccessful
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $payment;
+    public $order;
 
     /**
      * Create a new event instance.
      *
-     * @param  \App\Payment $order
+     * @param  \App\Order $order
      * @return void
      */
-    public function __construct(Payment $payment)
+    public function __construct(Order $order)
     {
-        $this->payment = $payment;
+        $this->order = $order;
     }
 }

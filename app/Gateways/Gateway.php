@@ -10,7 +10,7 @@ class Gateway
 {
     protected $gateway;
     protected $order;
-    protected const BASE_REF = "_PRILOV_LV-";
+    protected const BASE_REF = "-_PRILOV_LV";
 
     public function __construct($gateway, Order $order)
     {
@@ -44,14 +44,18 @@ class Gateway
      */
     protected function getReference($payment)
     {
-        return  $payment->uniqid . self::BASE_REF . $payment->id;
+        return  $payment->uniqid . self::BASE_REF;
     }
 
     protected function getPaymentFromReference($reference)
     {
         $array = explode('-', $reference);
-        $paymentId = trim(end($array));
-        $payment = Payment::where('id', $paymentId)->first();
+        $uniqid = trim(array_shift($array));
+        if (!$uniqid) {
+            abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Payment reference not found.');
+        }
+
+        $payment = Payment::where('uniqid', $uniqid)->first();
         if ($payment && $reference === $this->getReference($payment)) {
             return $payment;
         }
