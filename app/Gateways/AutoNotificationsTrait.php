@@ -14,13 +14,13 @@ trait AutoNotificationsTrait
 
         // All Sales use Chilexpress.
         if (!$groupedSales->has(0)) {
-            $order->notify(new AutoConfirmedChilexpress(['order' => $order]));
+            $order->user->notify(new AutoConfirmedChilexpress(['order' => $order]));
             return;
         }
 
         // No Sale uses Chilexpress.
         if (!$groupedSales->has(1)) {
-            $order->notify(new AutoConfirmedAgreement(['order' => $order]));
+            $order->user->notify(new AutoConfirmedAgreement(['order' => $order]));
             return;
         }
 

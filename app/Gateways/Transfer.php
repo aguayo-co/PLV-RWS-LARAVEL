@@ -33,13 +33,13 @@ class Transfer implements PaymentGateway
 
         // All Sales use Chilexpress.
         if (!$groupedSales->has(0)) {
-            $order->notify(new TransferVoucherAcceptedChilexpress(['order' => $order]));
+            $order->user->notify(new TransferVoucherAcceptedChilexpress(['order' => $order]));
             return;
         }
 
         // No Sale uses Chilexpress.
         if (!$groupedSales->has(1)) {
-            $order->notify(new TransferVoucherAcceptedAgreement(['order' => $order]));
+            $order->user->notify(new TransferVoucherAcceptedAgreement(['order' => $order]));
             return;
         }
 
@@ -49,7 +49,7 @@ class Transfer implements PaymentGateway
     public function sendRejectedNotification()
     {
         $order = $this->payment->order;
-        $order->notify(new TransferRejectedVoucher(['order' => $order]));
+        $order->user->notify(new TransferRejectedVoucher(['order' => $order]));
     }
 
     protected function getPaymentStatus($status)
