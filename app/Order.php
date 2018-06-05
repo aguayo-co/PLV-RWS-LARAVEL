@@ -139,7 +139,7 @@ class Order extends Model
     {
         $discount = $this->coupon_discount;
         if (!$discount) {
-            return [];
+            return collect();
         }
 
         $discountedProducts = $this->getDiscountedProducts();
