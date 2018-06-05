@@ -135,6 +135,29 @@ class Order extends Model
         return min($discountValue, $productsTotal);
     }
 
+    public function getDiscountPerProductAttribute()
+    {
+        $discount = $this->coupon_discount;
+        if (!$discount) {
+            return [];
+        }
+
+        $discountedProducts = $this->getDiscountedProducts();
+
+        $productsTotal = $discountedProducts->sum('price');
+
+        $discountPerProductId = collect();
+        $productsTotal = $discountedProducts->sum('price');
+        // The last product will be used to adjust to decimals.
+        $lastProduct = $discountedProducts->pop();
+        foreach ($discountedProducts as $product) {
+            $discountPerProductId->put($product->id, round($product->price * $discount / $productsTotal));
+        }
+        $discountPerProductId->put($lastProduct->id, $discount - $discountPerProductId->sum());
+
+        return $discountPerProductId;
+    }
+
     /**
      * Return the products from the order that meet the coupon criteria.
      */

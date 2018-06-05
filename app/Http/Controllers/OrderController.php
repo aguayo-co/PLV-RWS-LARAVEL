@@ -368,7 +368,7 @@ class OrderController extends Controller
                 $sale->user->makeVisible(['email']);
                 $sale->append(['shipping_cost', 'allow_chilexpress', 'is_chilexpress']);
             });
-            $order->append(['total', 'due', 'coupon_discount', 'used_credits', 'shipping_cost']);
+            $order->append(['total', 'due', 'coupon_discount', 'used_credits', 'shipping_cost', 'discount_per_product']);
         });
     }
 }
