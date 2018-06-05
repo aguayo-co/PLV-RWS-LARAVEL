@@ -102,7 +102,7 @@ class SaleObserver
             return;
         }
         // If we have tracking codes, then it was sent and not personally delivered.
-        if (data_has($sale, ['shipment_details', 'tracking_codes'])) {
+        if (array_has($sale->shipment_details, ['tracking_codes'])) {
             $sale->order->user->notify(new ProductDeliveredSent(['sale' => $sale]));
             return;
         }
