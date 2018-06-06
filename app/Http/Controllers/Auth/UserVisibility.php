@@ -22,7 +22,7 @@ trait UserVisibility
             'followers:id',
             'following:id',
             'groups:id',
-            'products:id,status',
+            'products:id,user_id,status',
             'shippingMethods:id',
             'ratings',
             'ratingArchives',
