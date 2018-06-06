@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Notifications\ReceivedRating;
 use App\Traits\HasStatuses;
 use Illuminate\Database\Eloquent\Model;
 
@@ -16,6 +17,23 @@ class Rating extends Model
     public $incrementing = false;
 
     public $fillable = ['seller_rating', 'seller_comment', 'buyer_rating', 'buyer_comment'];
+
+
+    public static function boot()
+    {
+        parent::boot();
+        self::saved(function ($rating) {
+            if (!array_has($rating->getChanges(), 'status')) {
+                return;
+            }
+
+            // Send notification when status changed and
+            // when the seller got rated.
+            if ($rating->buyer_rating && $rating->status == Rating::STATUS_PUBLISHED) {
+                $rating->seller->notify(new ReceivedRating(['rating' => $rating]));
+            }
+        });
+    }
 
     public function sale()
     {
