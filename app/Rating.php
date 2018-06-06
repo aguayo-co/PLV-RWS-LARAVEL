@@ -30,7 +30,7 @@ class Rating extends Model
             // Send notification when status changed and
             // when the seller got rated.
             if ($rating->buyer_rating && $rating->status == Rating::STATUS_PUBLISHED) {
-                $rating->seller->notify(new ReceivedRating(['rating' => $rating]));
+                $rating->sale->user->notify(new ReceivedRating(['rating' => $rating]));
             }
         });
     }
