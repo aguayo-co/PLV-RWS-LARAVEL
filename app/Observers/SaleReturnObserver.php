@@ -3,6 +3,8 @@
 namespace App\Observers;
 
 use App\CreditsTransaction;
+use App\Notifications\ProductReturn;
+use App\Notifications\ProductReturned;
 use App\Sale;
 use App\SaleReturn;
 
@@ -27,6 +29,10 @@ class SaleReturnObserver
                 $this->giveCreditsToSeller();
                 break;
 
+            case SaleReturn::STATUS_RECEIVED:
+                $this->sendReceivedNotifications();
+                break;
+
             case SaleReturn::STATUS_COMPLETED:
                 $this->giveCreditsBackToBuyer();
                 break;
@@ -34,7 +40,7 @@ class SaleReturnObserver
     }
 
     /**
-     * Listen to the SaleReturn saved event.
+     * Listen to the SaleReturn created event.
      *
      * @param  \App\SaleReturn  $saleReturn
      * @return void
@@ -53,6 +59,8 @@ class SaleReturnObserver
 
         $sale->status = Sale::STATUS_COMPLETED_PARTIAL;
         $sale->save();
+
+        $this->sendCreatedNotifications();
     }
 
     protected function giveCreditsBackToBuyer()
@@ -77,5 +85,17 @@ class SaleReturnObserver
             'sale_id' => $sale->id,
             'extra' => ['reason' => 'Return was canceled.']
         ]);
+    }
+
+    protected function sendReceivedNotifications()
+    {
+        $sale = $this->saleReturn->sales->first();
+        $sale->order->user->notify(new ProductReturned(['sale_return' => $this->saleReturn]));
+    }
+
+    protected function sendCreatedNotifications()
+    {
+        $sale = $this->saleReturn->sales->first();
+        $sale->order->user->notify(new ProductReturn(['sale_return' => $this->saleReturn]));
     }
 }
