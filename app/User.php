@@ -49,6 +49,7 @@ class User extends Authenticatable
     protected $hidden = [
         'bank_account',
         'email',
+        'phone',
         'password',
     ];
 

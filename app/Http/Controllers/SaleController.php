@@ -123,8 +123,14 @@ class SaleController extends Controller
             'user',
         ]);
         $collection->each(function ($sale) {
-            $sale->user->makeVisible(['email']);
-            $sale->order->user->makeVisible(['email']);
+            $sale->user->makeVisible(['email', 'phone']);
+            if (Sale::STATUS_PAYED <= $sale->status && $sale->status < Sale::STATUS_CANCELED) {
+                $sale->order->user->makeVisible(['email', 'phone']);
+            }
+            if ($sale->status <= Sale::STATUS_PAYED || $sale->status === Sale::STATUS_CANCELED) {
+                $sale->order->makeHidden(['shipping_information']);
+            }
+
             $sale->append([
                 'returned_products_ids',
                 'total',

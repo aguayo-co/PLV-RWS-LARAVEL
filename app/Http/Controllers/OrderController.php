@@ -363,9 +363,11 @@ class OrderController extends Controller
             'user',
         ]);
         $collection->each(function ($order) {
-            $order->user->makeVisible(['email']);
+            $order->user->makeVisible(['email', 'phone']);
             $order->sales->each(function ($sale) {
-                $sale->user->makeVisible(['email']);
+                if (Sale::STATUS_PAYED <= $sale->status && $sale->status < Sale::STATUS_CANCELED) {
+                    $sale->user->makeVisible(['email', 'phone']);
+                }
                 $sale->append([
                     'shipping_cost',
                     'allow_chilexpress',

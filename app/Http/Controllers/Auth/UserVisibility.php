@@ -13,7 +13,7 @@ trait UserVisibility
             // Show private info for admins and for same user.
             case $collection->count() === 1 && $collection->first()->is($loggedUser):
             case $loggedUser && $loggedUser->hasRole('admin'):
-                $collection->makeVisible(['email', 'bank_account']);
+                $collection->makeVisible(['email', 'bank_account', 'phone']);
                 $collection->load(['roles']);
         }
 
