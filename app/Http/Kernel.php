@@ -46,7 +46,7 @@ class Kernel extends HttpKernel
         ],
 
         'callback' => [
-            'throttle:30,1',
+            'throttle:60,1',
         ],
     ];
 
