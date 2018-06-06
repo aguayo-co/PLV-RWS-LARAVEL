@@ -81,12 +81,33 @@ class Sale extends Model
         return $this->products->sum('price');
     }
 
+    public function getDiscountPerProductAttribute()
+    {
+        return $this->order->discount_per_product->only($this->products_ids);
+    }
+
+    /**
+     * The discount for this sale.
+     */
+    public function getCouponDiscountAttribute()
+    {
+        return $this->discount_per_product->sum('discount');
+    }
+
     /**
      * The total value of the returned products.
      */
     public function getReturnedTotalAttribute()
     {
-        return $this->products->whereIn('id', $this->returnedProductsIds)->sum('price');
+        return $this->products->whereIn('id', $this->returned_products_ids)->sum('price');
+    }
+
+    /**
+     * The discount value of the returned products.
+     */
+    public function getReturnedDiscountAttribute()
+    {
+        return $this->discount_per_product->only($this->returned_products_ids)->sum('discount');
     }
 
     /**
@@ -156,7 +177,7 @@ class Sale extends Model
 
     public function getReturnedCommissionAttribute()
     {
-        return $this->products->whereIn('id', $this->returnedProductsIds)->sum(function ($product) {
+        return $this->products->whereIn('id', $this->returned_products_ids)->sum(function ($product) {
             return round($product->price * $product->commission / 100);
         });
     }

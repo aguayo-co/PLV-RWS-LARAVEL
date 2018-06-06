@@ -151,9 +151,15 @@ class Order extends Model
         // The last product will be used to adjust to decimals.
         $lastProduct = $discountedProducts->pop();
         foreach ($discountedProducts as $product) {
-            $discountPerProductId->put($product->id, round($product->price * $discount / $productsTotal));
+            $discountPerProductId->put($product->id, [
+                'id' => $product->id,
+                'discount' => round($product->price * $discount / $productsTotal),
+            ]);
         }
-        $discountPerProductId->put($lastProduct->id, $discount - $discountPerProductId->sum());
+        $discountPerProductId->put($lastProduct->id, [
+            'id' => $lastProduct->id,
+            'discount' => $discount - $discountPerProductId->sum('discount'),
+        ]);
 
         return $discountPerProductId;
     }
