@@ -141,9 +141,9 @@ class SaleObserver
 
             CreditsTransaction::create([
                 'user_id' => $sale->order->user_id,
-                'amount' => $sale->total - $sale->coupon_discount,
+            'amount' => $sale->total - $sale->coupon_discount + $sale->shipping_cost,
                 'sale_id' => $sale->id,
-                'extra' => ['reason' => 'Order was canceled.']
+            'extra' => ['reason' => 'Sale was canceled.']
             ]);
         }
     }
