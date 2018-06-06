@@ -3,11 +3,15 @@
 namespace App\Observers;
 
 use App\CreditsTransaction;
+use App\Notifications\Accepted;
+use App\Notifications\ConfirmedAgreement;
+use App\Notifications\ConfirmedChilexpress;
 use App\Notifications\ProductDelivered;
 use App\Notifications\ProductDeliveredSent;
 use App\Notifications\ProductReceivedChilexpress;
 use App\Notifications\ProductSent;
 use App\Notifications\ProductSentChilexpress;
+use App\Notifications\ReceivedAgreement;
 use App\Payment;
 use App\Sale;
 
@@ -37,7 +41,7 @@ class SaleObserver
         if ($sale->status === Sale::STATUS_SHOPPING_CART
             && $sale->is_chilexpress
             && $sale->allow_chilexpress === false) {
-                $sale->shipping_method_id = null;
+            $sale->shipping_method_id = null;
         }
     }
 
@@ -54,6 +58,10 @@ class SaleObserver
         $changedStatus = array_get($sale->getChanges(), 'status');
 
         switch ($changedStatus) {
+            case Sale::STATUS_PAYED:
+                $this->sendPayedNotifications();
+                break;
+
             case Sale::STATUS_SHIPPED:
                 $this->sendShippedNotifications();
                 break;
@@ -67,19 +75,29 @@ class SaleObserver
                 break;
 
             case Sale::STATUS_CANCELED:
-                if ($sale->order->payment && $sale->order->payment->status === Payment::STATUS_SUCCESS) {
-                    $this->giveCreditsBackToBuyer();
-                }
+                $this->giveCreditsBackToBuyer();
                 break;
 
             case Sale::STATUS_COMPLETED:
                 $this->giveCreditsToSeller();
+                $this->sendCompletedNotifications();
                 break;
 
             case Sale::STATUS_COMPLETED_PARTIAL:
                 $this->givePartialCreditsToSeller();
                 break;
         }
+    }
+
+    protected function sendPayedNotifications()
+    {
+        $sale = $this->sale;
+
+        if ($sale->is_chilexpress) {
+            $sale->user->notify(new ConfirmedChilexpress(['sale' => $sale]));
+            return;
+        }
+        $sale->user->notify(new ConfirmedAgreement(['sale' => $sale]));
     }
 
     protected function sendShippedNotifications()
@@ -101,33 +119,38 @@ class SaleObserver
             $sale->order->user->notify(new ProductReceivedChilexpress(['sale' => $sale]));
             return;
         }
+
         // If we have tracking codes, then it was sent and not personally delivered.
         if (array_has($sale->shipment_details, ['tracking_codes'])) {
             $sale->order->user->notify(new ProductDeliveredSent(['sale' => $sale]));
             return;
         }
+
         $sale->order->user->notify(new ProductDelivered(['sale' => $sale]));
     }
 
-    protected function sendReceivedNotifications()
+    protected function sendCompletedNotifications()
     {
-        $sale = $this->sale;
-
-        if ($sale->is_chilexpress) {
-            return;
-        }
+        $sale->user->notify(new Accepted(['sale' => $sale]));
     }
 
     protected function giveCreditsBackToBuyer()
     {
         $sale = $this->sale;
+        if ($sale->order->payment && $sale->order->payment->status === Payment::STATUS_SUCCESS) {
 
-        CreditsTransaction::create([
-            'user_id' => $sale->order->user_id,
-            'amount' => $sale->total - $sale->coupon_discount,
-            'sale_id' => $sale->id,
-            'extra' => ['reason' => 'Order was canceled.']
-        ]);
+            CreditsTransaction::create([
+                'user_id' => $sale->order->user_id,
+                'amount' => $sale->total - $sale->coupon_discount,
+                'sale_id' => $sale->id,
+                'extra' => ['reason' => 'Order was canceled.']
+            ]);
+        }
+    }
+
+    protected function sendReceivedNotifications()
+    {
+        $sale->user->notify(new ReceivedAgreement(['sale' => $sale]));
     }
 
     protected function giveCreditsToSeller()

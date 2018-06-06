@@ -5,6 +5,9 @@ namespace App\Observers;
 use App\CreditsTransaction;
 use App\Notifications\ProductReturn;
 use App\Notifications\ProductReturned;
+use App\Notifications\ReturnCreated;
+use App\Notifications\ReturnSent;
+use App\Notifications\ReturnSentAgreement;
 use App\Sale;
 use App\SaleReturn;
 
@@ -27,6 +30,14 @@ class SaleReturnObserver
         switch ($changedStatus) {
             case SaleReturn::STATUS_CANCELED:
                 $this->giveCreditsToSeller();
+                break;
+
+            case SaleReturn::STATUS_SHIPPED:
+                $this->sendShippedNotifications();
+                break;
+
+            case SaleReturn::STATUS_DELIVERED:
+                $this->sendDeliveredNotifications();
                 break;
 
             case SaleReturn::STATUS_RECEIVED:
@@ -87,15 +98,28 @@ class SaleReturnObserver
         ]);
     }
 
-    protected function sendReceivedNotifications()
-    {
-        $sale = $this->saleReturn->sales->first();
-        $sale->order->user->notify(new ProductReturned(['sale_return' => $this->saleReturn]));
-    }
-
     protected function sendCreatedNotifications()
     {
         $sale = $this->saleReturn->sales->first();
         $sale->order->user->notify(new ProductReturn(['sale_return' => $this->saleReturn]));
+        $sale->user->notify(new ReturnCreated(['sale_return' => $this->saleReturn]));
+    }
+
+    protected function sendShippedNotifications()
+    {
+        $sale = $this->saleReturn->sales->first();
+        $sale->user->notify(new ReturnSent(['sale_return' => $this->saleReturn]));
+    }
+
+    protected function sendDeliveredNotifications()
+    {
+        $sale = $this->saleReturn->sales->first();
+        $sale->user->notify(new ReturnSentAgreement(['sale_return' => $this->saleReturn]));
+    }
+
+    protected function sendReceivedNotifications()
+    {
+        $sale = $this->saleReturn->sales->first();
+        $sale->order->user->notify(new ProductReturned(['sale_return' => $this->saleReturn]));
     }
 }
