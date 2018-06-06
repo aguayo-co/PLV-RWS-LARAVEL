@@ -61,7 +61,7 @@ class SaleReturnObserver
 
         CreditsTransaction::create([
             'user_id' => $sale->order->user_id,
-            'amount' => $sale->returned_total,
+            'amount' => $sale->returned_total - $sale->returned_discount,
             'sale_id' => $sale->id,
             'extra' => ['reason' => 'Return was completed.']
         ]);

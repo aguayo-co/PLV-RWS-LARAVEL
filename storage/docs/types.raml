@@ -321,6 +321,8 @@ OrderExpanded:
     credits_transactions?: CreditsTransaction[]
     sales: Sale[]
     coupon?: Coupon
+    shipping_cost: integer
+    discount_per_product: object
 SaleOrder:
   type: Order
   properties:
@@ -350,6 +352,8 @@ SaleExpanded:
     shipping_method: ShippingMethod
     returned_products_ids: integer[]
     returns: SaleReturn[]
+    coupon_discount: integer
+    discount_per_product: object
 
 SaleReturnRequest:
   properties:

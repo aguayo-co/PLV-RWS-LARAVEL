@@ -124,7 +124,7 @@ class SaleObserver
 
         CreditsTransaction::create([
             'user_id' => $sale->order->user_id,
-            'amount' => $sale->total,
+            'amount' => $sale->total - $sale->coupon_discount,
             'sale_id' => $sale->id,
             'extra' => ['reason' => 'Order was canceled.']
         ]);
@@ -145,7 +145,7 @@ class SaleObserver
     protected function givePartialCreditsToSeller()
     {
         $sale = $this->sale;
-        $returnedProductsIds = $sale->returnedProductsIds->implode(', ');
+        $returnedProductsIds = $sale->returned_products_ids->implode(', ');
         $reason = 'Order was completed with products ":products" returned.';
         $amount = $sale->total - $sale->commission - $sale->returned_total;
 

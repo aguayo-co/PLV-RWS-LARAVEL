@@ -125,7 +125,15 @@ class SaleController extends Controller
         $collection->each(function ($sale) {
             $sale->user->makeVisible(['email']);
             $sale->order->user->makeVisible(['email']);
-            $sale->append(['returned_products_ids', 'total', 'commission', 'shipping_cost', 'is_chilexpress']);
+            $sale->append([
+                'returned_products_ids',
+                'total',
+                'commission',
+                'shipping_cost',
+                'is_chilexpress',
+                'coupon_discount',
+                'discount_per_product',
+            ]);
         });
     }
 }
