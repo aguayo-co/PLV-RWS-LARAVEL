@@ -9,9 +9,12 @@ use App\Notifications\ConfirmedChilexpress;
 use App\Notifications\ProductDelivered;
 use App\Notifications\ProductDeliveredSent;
 use App\Notifications\ProductReceivedChilexpress;
+use App\Notifications\ProductReturnedCancelAgreement;
+use App\Notifications\ProductReturnedCancelChilexpress;
 use App\Notifications\ProductSent;
 use App\Notifications\ProductSentChilexpress;
 use App\Notifications\ReceivedAgreement;
+use App\Notifications\ReturnedCanceled;
 use App\Payment;
 use App\Sale;
 
@@ -86,6 +89,10 @@ class SaleObserver
             case Sale::STATUS_COMPLETED_PARTIAL:
                 $this->givePartialCreditsToSeller();
                 break;
+
+            case Sale::STATUS_CANCELED:
+                $this->sendCanceledNotifications();
+                break;
         }
     }
 
@@ -137,20 +144,40 @@ class SaleObserver
     protected function giveCreditsBackToBuyer()
     {
         $sale = $this->sale;
-        if ($sale->order->payment && $sale->order->payment->status === Payment::STATUS_SUCCESS) {
 
-            CreditsTransaction::create([
-                'user_id' => $sale->order->user_id,
-            'amount' => $sale->total - $sale->coupon_discount + $sale->shipping_cost,
-                'sale_id' => $sale->id,
-            'extra' => ['reason' => 'Sale was canceled.']
-            ]);
+        if (!$sale->order->payment || !$sale->order->payment->status === Payment::STATUS_SUCCESS) {
+            return;
         }
+
+        CreditsTransaction::create([
+            'user_id' => $sale->order->user_id,
+            'amount' => $sale->total - $sale->coupon_discount + $sale->shipping_cost,
+            'sale_id' => $sale->id,
+            'extra' => ['reason' => 'Sale was canceled.']
+        ]);
     }
 
     protected function sendReceivedNotifications()
     {
         $sale->user->notify(new ReceivedAgreement(['sale' => $sale]));
+    }
+
+    protected function sendCanceledNotifications()
+    {
+        $sale = $this->sale;
+
+        if (!$sale->order->payment || !$sale->order->payment->status === Payment::STATUS_SUCCESS) {
+            return;
+        }
+
+        $sale->user->notify(new ReturnedCanceled(['sale' => $sale]));
+
+        if ($sale->is_chilexpress) {
+            $sale->order->user->notify(new ProductReturnedCancelChilexpress(['sale' => $sale]));
+            return;
+        }
+
+        $sale->order->user->notify(new ProductReturnedCancelAgreement(['sale' => $sale]));
     }
 
     protected function giveCreditsToSeller()
