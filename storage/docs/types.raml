@@ -384,6 +384,8 @@ Rating:
 RatingExpanded:
   type: Rating
   properties:
+    seller?: User
+    buyer?: User
     seller_id?: integer
     buyer_id?: integer
 
@@ -400,6 +402,9 @@ RatingArchive:
     updated_at?: datetime
 RatingArchiveExpanded:
   type: RatingArchive
+  properties:
+    seller?: User
+    buyer?: User
 
 Payment:
   type: BaseObject

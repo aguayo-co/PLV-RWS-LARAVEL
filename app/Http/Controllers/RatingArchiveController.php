@@ -31,7 +31,8 @@ class RatingArchiveController extends Controller
     protected function setVisibility(Collection $collection)
     {
         $collection->load([
-            'buyer'
+            'buyer',
+            'seller'
         ]);
     }
 }

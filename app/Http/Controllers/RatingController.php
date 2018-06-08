@@ -87,12 +87,19 @@ class RatingController extends Controller
 
     protected function setVisibility(Collection $collection)
     {
-        $collection->load(['sale:id,user_id,order_id', 'sale.order:id,user_id'])->makeHidden(['sale']);
+        $collection->load([
+            'sale:id,user_id,order_id',
+            'sale.user',
+            'sale.order:id,user_id',
+            'sale.order.user',
+        ])->makeHidden(['sale']);
 
         $collection->each(function ($rating) {
             $rating->append([
                 'seller_id',
                 'buyer_id',
+                'seller',
+                'buyer',
             ]);
         });
 

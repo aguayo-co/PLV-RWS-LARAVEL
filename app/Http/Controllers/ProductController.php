@@ -29,11 +29,10 @@ class ProductController extends Controller
         'category_id',
         'condition_id',
         'size_id',
-        'status',
         'user_id',
     ];
     public static $allowedWhereHas = ['color_ids' => 'colors', 'campaign_ids' => 'campaigns'];
-    public static $allowedWhereBetween = ['price'];
+    public static $allowedWhereBetween = ['price', 'status'];
     public static $allowedWhereLike = ['slug'];
 
     public static $searchIn = ['title', 'description'];

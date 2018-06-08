@@ -3,6 +3,7 @@ Un producto puede tener los siguientes estados:
 - **0**: No publicado
 - **1**: Rechazado
 - **2**: Escondido
+- **3**: Requiere revisión
 - **10**: Aprobado
 - **19**: Disponible
 - **20**: No Disponible
@@ -31,13 +32,13 @@ Aparte de los criterios de filtrado globales, los productos se pueden filtrar po
 |filtro|tipo|
 |------|----|
 |price|Entre|
+|status|Entre|
 |brand_id|ContenidoEn|
 |campaign_ids|ContenidoEn|
 |category_id|ContenidoEn|
 |color_ids|ContenidoEn|
 |condition_id|ContenidoEn|
 |size_id|ContenidoEn|
-|status|ContenidoEn|
 |user_id|ContenidoEn|
 
 ##### Agregar imágenes

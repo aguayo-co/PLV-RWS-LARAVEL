@@ -40,6 +40,16 @@ class Rating extends Model
         return $this->belongsTo('App\Sale');
     }
 
+    public function getSellerAttribute()
+    {
+        return $this->sale->user;
+    }
+
+    public function getBuyerAttribute()
+    {
+        return $this->sale->order->user;
+    }
+
     public function getSellerIdAttribute()
     {
         return $this->sale->user_id;
