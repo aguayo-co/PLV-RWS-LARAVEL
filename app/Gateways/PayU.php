@@ -45,11 +45,11 @@ class PayU implements PaymentGateway
     protected function getCallbackSignature($data)
     {
         $apiKey = $this->getApiKey();
-        $merchantId = array_get($data, 'merchant_id');
+        $merchantId = array_get($data, 'merchant_id', array_get($data, 'merchantId'));
         $currency = array_get($data, 'currency');
-        $referenceSale = array_get($data, 'reference_sale');
-        $total = preg_replace('/(\.[0-9])0$/', '$1', array_get($data, 'value'));
-        $statePol = array_get($data, 'state_pol');
+        $referenceSale = array_get($data, 'reference_sale', array_get($data, 'referenceCode'));
+        $total = preg_replace('/(\.[0-9])0$/', '$1', array_get($data, 'value', array_get($data, 'TX_VALUE')));
+        $statePol = array_get($data, 'state_pol', array_get($data, 'polTransactionState'));
         return md5("{$apiKey}~{$merchantId}~{$referenceSale}~{$total}~{$currency}~{$statePol}");
     }
 
@@ -102,7 +102,7 @@ class PayU implements PaymentGateway
 
     public function validateCallbackData($data)
     {
-        if ($this->getCallbackSignature($data) != array_get($data, 'sign')) {
+        if ($this->getCallbackSignature($data) != array_get($data, 'sign', array_get($data, 'signature'))) {
             abort(Response::HTTP_BAD_REQUEST);
         }
     }
@@ -114,12 +114,13 @@ class PayU implements PaymentGateway
 
     public function getStatus()
     {
-        return $this->getPaymentStatus($this->callbackData['state_pol']);
+        $statePol = array_get($this->callbackData, 'state_pol', array_get($this->callbackData, 'polTransactionState'));
+        return $this->getPaymentStatus($statePol);
     }
 
     public function getReference()
     {
-        return $this->callbackData['reference_sale'];
+        return array_get($this->callbackData, 'reference_sale', array_get($this->callbackData, 'referenceCode'));
     }
 
     public function getData()

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\ChilexpressGeodata;
-use App\Events\PaymentSuccessful;
 use App\Gateways\Gateway;
 use App\Http\Controllers\Order\CouponRules;
 use App\Http\Traits\CurrentUserOrder;
@@ -236,11 +235,7 @@ class PaymentController extends Controller
     {
         DB::transaction(function () use ($request, $gateway) {
             $gateway = new Gateway($gateway);
-            $payment = $gateway->processCallback($request->all());
-
-            if ($payment->status === Payment::STATUS_SUCCESS) {
-                event(new PaymentSuccessful($payment->order));
-            }
+            $gateway->processCallback($request->all());
         });
 
         return 'Prilov!';

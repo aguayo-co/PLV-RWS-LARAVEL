@@ -2,6 +2,7 @@
 
 namespace App\Gateways;
 
+use App\Events\PaymentSuccessful;
 use App\Payment;
 use Illuminate\Http\Response;
 
@@ -75,8 +76,17 @@ class Gateway
         $payment->status = $gateway->getStatus();
         $gateway->setPayment($payment);
 
-        switch ($payment->status) {
+        $attempts = $payment->attempts;
+        $attempts[] = $gateway->getData();
+
+        $payment->attempts = $attempts;
+        $payment->save();
+
+        $statusChanged = array_get($payment->getChanges(), 'status');
+
+        switch ($statusChanged) {
             case Payment::STATUS_SUCCESS:
+                event(new PaymentSuccessful($payment->order));
                 $gateway->sendApprovedNotification();
                 break;
 
@@ -84,12 +94,6 @@ class Gateway
                 $gateway->sendRejectedNotification();
                 break;
         }
-
-        $attempts = $payment->attempts;
-        $attempts[] = $gateway->getData();
-
-        $payment->attempts = $attempts;
-        $payment->save();
 
         return $payment;
     }
