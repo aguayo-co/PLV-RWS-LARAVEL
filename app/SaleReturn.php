@@ -3,16 +3,18 @@
 namespace App;
 
 use App\Events\SaleReturnSaved;
-use Illuminate\Database\Eloquent\Model;
-use App\Traits\SaveLater;
+use App\Traits\DateSerializeFormat;
 use App\Traits\HasStatuses;
 use App\Traits\HasStatusHistory;
+use App\Traits\SaveLater;
+use Illuminate\Database\Eloquent\Model;
 
 class SaleReturn extends Model
 {
     use SaveLater;
     use HasStatuses;
     use HasStatusHistory;
+    use DateSerializeFormat;
 
     const STATUS_PENDING = 0;
     const STATUS_SHIPPED = 40;

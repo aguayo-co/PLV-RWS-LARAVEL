@@ -2,14 +2,16 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Traits\DateSerializeFormat;
 use App\Traits\HasStatuses;
 use App\Traits\SaveLater;
+use Illuminate\Database\Eloquent\Model;
 
 class Coupon extends Model
 {
     use HasStatuses;
     use SaveLater;
+    use DateSerializeFormat;
 
     const STATUS_DISABLED = 0;
     const STATUS_ENABLED = 1;

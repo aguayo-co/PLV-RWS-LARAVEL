@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Traits\DateSerializeFormat;
 use App\Traits\HasSingleFile;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -9,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 class Banner extends Model
 {
     use HasSingleFile;
+    use DateSerializeFormat;
 
     /**
      * The attributes that are mass assignable.

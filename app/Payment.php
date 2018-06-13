@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Traits\DateSerializeFormat;
 use App\Traits\HasSingleFile;
 use App\Traits\HasStatuses;
 use Illuminate\Database\Eloquent\Model;
@@ -10,6 +11,7 @@ class Payment extends Model
 {
     use HasStatuses;
     use HasSingleFile;
+    use DateSerializeFormat;
 
     const STATUS_PENDING = 0;
     const STATUS_PROCESSING = 1;

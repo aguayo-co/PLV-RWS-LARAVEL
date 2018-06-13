@@ -2,13 +2,13 @@
 
 namespace App;
 
-use App\Traits\HasStatuses;
-use App\Traits\SaveLater;
+use App\Traits\DateSerializeFormat;
 use Cmgmyr\Messenger\Models\Thread as BaseThread;
-use Illuminate\Support\Facades\Storage;
 
 class Thread extends BaseThread
 {
+    use DateSerializeFormat;
+
     protected $fillable = ['subject', 'product_id', 'private'];
 
     /**

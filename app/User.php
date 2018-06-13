@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Traits\DateSerializeFormat;
 use App\Traits\HasSingleFile;
 use Cmgmyr\Messenger\Traits\Messagable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -19,6 +20,7 @@ class User extends Authenticatable
     use HasRoles;
     use HasApiTokens;
     use HasSingleFile;
+    use DateSerializeFormat;
 
     /**
      * The attributes that are mass assignable.

@@ -2,12 +2,14 @@
 
 namespace App;
 
+use App\Traits\DateSerializeFormat;
 use App\Traits\HasStatuses;
 use Illuminate\Database\Eloquent\Model;
 
 class CreditsTransaction extends Model
 {
     use HasStatuses;
+    use DateSerializeFormat;
 
     protected $fillable = ['user_id', 'amount', 'sale_id', 'order_id', 'extra', 'transfer_status'];
 

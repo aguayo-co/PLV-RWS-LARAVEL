@@ -3,12 +3,14 @@
 namespace App;
 
 use App\Notifications\ReceivedRating;
+use App\Traits\DateSerializeFormat;
 use App\Traits\HasStatuses;
 use Illuminate\Database\Eloquent\Model;
 
 class Rating extends Model
 {
     use HasStatuses;
+    use DateSerializeFormat;
 
     const STATUS_UNPUBLISHED = 0;
     const STATUS_PUBLISHED = 1;

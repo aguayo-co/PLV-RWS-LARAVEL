@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\MessagesFilter;
 use App\Thread;
 use App\User;
-use Carbon\Carbon;
-use Cmgmyr\Messenger\Models\Message;
-use Cmgmyr\Messenger\Models\Participant;
-use Illuminate\Database\Eloquent\Collection;
+use App\Message;
+use App\Participant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class MessageController extends Controller
 {
+    use MessagesFilter;
     protected $modelClass = Message::class;
 
     public function __construct()
@@ -28,7 +28,11 @@ class MessageController extends Controller
     {
         $required = !$message ? 'required|' : '';
         return [
-            'body' => $required . 'string',
+            'body' => [
+                trim($required, '|'),
+                'string',
+                $this->bodyFilterRule()
+            ],
             'recipients' => 'array',
             'recipients.*' => 'integer|exists:users,id',
         ];

@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Traits\DateSerializeFormat;
 use App\Traits\HasSingleFile;
 use App\Traits\HasStatuses;
 use App\Traits\HasStatusHistory;
@@ -15,6 +16,7 @@ class Sale extends Model
     use HasStatusHistory;
     use HasSingleFile;
     use SaleChilexpress;
+    use DateSerializeFormat;
 
     // Numbers are used to know when an action can be taken.
     // For instance, an order can not be marked as shipped if it

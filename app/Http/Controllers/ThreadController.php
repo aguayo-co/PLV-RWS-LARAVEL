@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\MessagesFilter;
 use App\Thread;
 use App\User;
-use Carbon\Carbon;
-use Cmgmyr\Messenger\Models\Message;
-use Cmgmyr\Messenger\Models\Participant;
+use App\Message;
+use App\Participant;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -16,6 +16,8 @@ use Illuminate\Validation\ValidationException;
 
 class ThreadController extends Controller
 {
+    use MessagesFilter;
+
     protected $modelClass = Thread::class;
     public static $allowedWhereIn = ['product_id'];
 
@@ -60,6 +62,10 @@ class ThreadController extends Controller
     {
         $recipients = data_get($data, 'recipients');
 
+        if (!$recipients) {
+            return;
+        }
+
         if (count($recipients) > 1) {
             return;
         }
@@ -86,7 +92,11 @@ class ThreadController extends Controller
             'subject' => $required . 'string',
             'private' => $required . 'boolean|empty_with:product_id',
             'product_id' => 'integer|empty_with:private|exists:products,id',
-            'body' => $required . 'string',
+            'body' => [
+                trim($required, '|'),
+                'string',
+                $this->bodyFilterRule()
+            ],
             'recipients' => $required . 'array',
             'recipients.*' => 'integer|exists:users,id|not_in:' . auth()->id(),
         ];

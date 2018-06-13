@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Traits\DateSerializeFormat;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -10,6 +11,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class RatingArchive extends Model
 {
+    use DateSerializeFormat;
+
     public function seller()
     {
         return $this->belongsTo('App\User', 'seller_id');

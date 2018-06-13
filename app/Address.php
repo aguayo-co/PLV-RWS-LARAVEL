@@ -2,10 +2,13 @@
 
 namespace App;
 
+use App\Traits\DateSerializeFormat;
 use Illuminate\Database\Eloquent\Model;
 
 class Address extends Model
 {
+    use DateSerializeFormat;
+
     /**
      * The attributes that are mass assignable.
      *

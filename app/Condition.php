@@ -2,10 +2,13 @@
 
 namespace App;
 
+use App\Traits\DateSerializeFormat;
 use Illuminate\Database\Eloquent\Model;
 
 class Condition extends Model
 {
+    use DateSerializeFormat;
+
     /**
      * The attributes that are mass assignable.
      *

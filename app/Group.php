@@ -2,10 +2,13 @@
 
 namespace App;
 
+use App\Traits\DateSerializeFormat;
 use Illuminate\Database\Eloquent\Model;
 
 class Group extends Model
 {
+    use DateSerializeFormat;
+
     /**
      * The attributes that are mass assignable.
      *

@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Traits\DateSerializeFormat;
 use App\Traits\HasStatuses;
 use App\Traits\HasStatusHistory;
 use Illuminate\Database\Eloquent\Collection;
@@ -11,6 +12,7 @@ class Order extends Model
 {
     use HasStatuses;
     use HasStatusHistory;
+    use DateSerializeFormat;
 
     const STATUS_SHOPPING_CART = 10;
     const STATUS_TRANSACTION = 11;

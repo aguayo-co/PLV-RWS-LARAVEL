@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Traits\DateSerializeFormat;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -9,6 +10,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Geoname extends Model
 {
+    use DateSerializeFormat;
+
     protected $primaryKey = 'geonameid';
     public $incrementing = false;
 

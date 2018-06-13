@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Traits\DateSerializeFormat;
 use App\Traits\HasSingleFile;
 use App\Traits\HasStatuses;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +14,7 @@ class Product extends Model
 {
     use HasStatuses;
     use HasSingleFile;
+    use DateSerializeFormat;
 
     const STATUS_UNPUBLISHED = 0;
     const STATUS_REJECTED = 1;
@@ -118,7 +120,8 @@ class Product extends Model
     protected function getImagesAttribute()
     {
         $imagePath = $this->image_path;
-        if ($images = Cache::get($imagePath)) {
+        $images = Cache::get($imagePath);
+        if ($images) {
             return $images;
         }
 
