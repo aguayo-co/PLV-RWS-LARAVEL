@@ -80,6 +80,6 @@ class MessageController extends Controller
             $thread->addParticipant($request->recipients);
         }
 
-        return parent::postStore($request, $thread);
+        return parent::postStore($request, $message);
     }
 }
