@@ -41,9 +41,10 @@ class SaleObserver
         }
 
         // Check and remove Chilexpress as shipping method if not allowed.
+        // Remove only if explicitly disallowed.
         if ($sale->status === Sale::STATUS_SHOPPING_CART
             && $sale->is_chilexpress
-            && !$sale->allow_chilexpress) {
+            && $sale->allow_chilexpress === false) {
             $sale->shipping_method_id = null;
         }
     }

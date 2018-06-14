@@ -315,6 +315,15 @@ class OrderController extends Controller
             $this->setOrderCredits($request->used_credits, $order);
         }
 
+        // Only use address if Chilexpress is selected for at least one Sale.
+        // This is performed after updating the sales, in case shipping method were changed.
+        $shippingInformation = data_get($order, 'shipping_information', []);
+        if (array_has($shippingInformation, 'address') && !$order->sales->where('is_chilexpress', true)->count()) {
+            array_forget($shippingInformation, 'address');
+            $order->shipping_information = $shippingInformation;
+            $order->save();
+        }
+
         return parent::postUpdate($request, $order);
     }
 

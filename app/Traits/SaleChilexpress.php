@@ -7,18 +7,35 @@ use Illuminate\Support\Facades\Log;
 
 trait SaleChilexpress
 {
+
+    /**
+     * Return cost of shipping with Chilexpress.
+     */
+    protected function getChilexpressTarifa($shipFrom, $shipTo)
+    {
+        $chilexpress = app()->get('chilexpress');
+        try {
+            return $chilexpress->tarifar($shipFrom, $shipTo, 1.4, 10, 10, 10);
+        } catch (\SoapFault $e) {
+            Log::warning('SOAP Chilexpress service failed.', ['error' => $e]);
+            return;
+        }
+    }
+
     /**
      * Return cost of shipping with Chilexpress.
      */
     protected function getChilexpressCost($shipFrom, $shipTo)
     {
-        $chilexpress = app()->get('chilexpress');
-        try {
-            return (int)$chilexpress->tarifar($shipFrom, $shipTo, 1.4, 10, 10, 10);
-        } catch (\SoapFault $e) {
-            Log::warning('SOAP Chilexpress service failed.', ['error' => $e]);
-            return;
-        }
+        return array_get($this->getChilexpressTarifa($shipFrom, $shipTo), 'valor');
+    }
+
+    /**
+     * Return service used for Chilexpress.
+     */
+    protected function getChilexpressService($shipFrom, $shipTo)
+    {
+        return array_get($this->getChilexpressTarifa($shipFrom, $shipTo), 'codServicio', env('CHILEXPRESS_CODSERVICIO'));
     }
 
     /**
@@ -58,9 +75,7 @@ trait SaleChilexpress
             return false;
         }
 
-        $coverageFrom = data_get($shipFrom->chilexpressGeodata, 'coverage_type');
-        // Deny if this comuna only delivers or has no coverage.
-        if (!$coverageFrom || $coverageFrom === 2) {
+        if (!$shipFrom->can_admit_chilexpress) {
             return false;
         }
 
@@ -70,9 +85,7 @@ trait SaleChilexpress
             return;
         }
 
-        $coverageTo = data_get($shipTo->chilexpressGeodata, 'coverage_type');
-        // Deny if this comuna only admits or has no coverage.
-        if (!$coverageTo || $coverageTo === 1) {
+        if (!$shipTo->can_deliver_chilexpress) {
             return false;
         }
 
@@ -85,7 +98,7 @@ trait SaleChilexpress
             return;
         }
 
-        if ($this->allow_chilexpress === false) {
+        if (!$this->allow_chilexpress) {
             return;
         }
 
@@ -96,6 +109,7 @@ trait SaleChilexpress
         $ref = "{$order->id}-{$this->id}";
 
         $chilexpress = app()->get('chilexpress');
-        return $chilexpress->order($ref, $this->user, $order->user, $shipFrom, $shipTo, 0.5, 10, 10, 10);
+        $codigoServicio = getChilexpressService($shipFrom, $shipTo);
+        return $chilexpress->order($ref, $codigoServicio, $this->user, $order->user, $shipFrom, $shipTo, 0.5, 10, 10, 10);
     }
 }

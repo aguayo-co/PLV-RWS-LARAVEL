@@ -24,7 +24,7 @@ trait AutoNotificationsTrait
             return;
         }
 
-        // $order->notify(new AutoConfirmedMixto(['order' => $order]));
+        $order->user->notify(new AutoConfirmedMixto(['order' => $order]));
     }
 
     public function sendRejectedNotification()

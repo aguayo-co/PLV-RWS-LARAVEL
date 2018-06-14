@@ -21,7 +21,7 @@ trait DigitalTO
      *
      * @return mixed null or image blob
      */
-    public function order($ref, $seller, $buyer, $origen, $destino, $weight, $height, $width, $length)
+    public function order($ref, $codigoServicio, $seller, $buyer, $origen, $destino, $weight, $height, $width, $length)
     {
         if (!$origen->chilexpressGeodata) {
             Log::error('DigitalTO: Origen address has no ChilexpressGeodata.', ['address' => $origen]);
@@ -38,7 +38,7 @@ trait DigitalTO
         $method = 'reqGenerarIntegracionAsistida';
         $data = [
             'codigoProducto' => '3',
-            'codigoServicio' => env('CHILEXPRESS_CODSERVICIO'),
+            'codigoServicio' => $codigoServicio,
             'comunaOrigen' => $origen->chilexpressGeodata->name,
             'numeroTCC' => env('CHILEXPRESS_TCC'),
             'referenciaEnvio' => 'PRILOV - ' . $ref,

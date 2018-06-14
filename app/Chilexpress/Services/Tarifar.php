@@ -50,8 +50,8 @@ trait Tarifar
 
         $cacheKey = implode('.', $data);
 
-        if ($cost = Cache::get($cacheKey)) {
-            return $cost;
+        if ($tarifa = Cache::get($cacheKey)) {
+            return $tarifa;
         }
 
         $clientOptions = array(
@@ -86,14 +86,33 @@ trait Tarifar
             return;
         }
 
-        $servicio = collect($result->respValorizarCourier->Servicios)
-            ->firstWhere('CodServicio', env('CHILEXPRESS_CODSERVICIO'));
-        if (!$servicio) {
-            $servicio = collect($result->respValorizarCourier->Servicios)->first();
+        $servicios = $result->respValorizarCourier->Servicios;
+        // It might return just one service.
+        if (!is_array($servicios)) {
+            $servicios = [$servicios];
         }
-        $valor = $servicio->ValorServicio;
+        $servicios = collect($servicios);
 
-        Cache::put($cacheKey, $valor, 1440);
-        return $valor;
+        // Get our preferred service.
+        $servicio = $servicios
+            ->firstWhere('CodServicio', env('CHILEXPRESS_CODSERVICIO'));
+
+
+        // Get any other service if our preferred is not available.
+        if (!$servicio) {
+            $servicio = $servicios->first();
+        }
+
+        $valor = data_get($servicio, 'ValorServicio');
+        $codServicio = data_get($servicio, 'CodServicio');
+
+        if ($valor === null) {
+            Log::error('Tarifar: Sin valor en respuesta.', ['servicio' => $servicio]);
+            return;
+        }
+
+        $tarifa = ['valor'  => (int)$valor, 'codServicio' => $codServicio];
+        Cache::put($cacheKey, $tarifa, 1440);
+        return $tarifa;
     }
 }

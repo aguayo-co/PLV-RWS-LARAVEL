@@ -21,7 +21,7 @@ class Address extends Model
         'geoname'
     ];
     protected $appends = [
-        'commune', 'region', 'province'
+        'commune', 'region', 'province', 'can_admit_chilexpress', 'can_deliver_chilexpress'
     ];
 
     public static function boot()
@@ -76,6 +76,26 @@ class Address extends Model
     protected function getCommuneAttribute()
     {
         return data_get($this->geoname, 'name');
+    }
+
+    protected function getCanDeliverChilexpressAttribute()
+    {
+        $coverage = data_get($this->chilexpressGeodata, 'coverage_type');
+        // Deny if this comuna only admits or has no coverage.
+        if (!$coverage || $coverage === 1) {
+            return false;
+        }
+        return true;
+    }
+
+    protected function getCanAdmitChilexpressAttribute()
+    {
+        $coverage = data_get($this->chilexpressGeodata, 'coverage_type');
+        // Deny if this comuna only delivers or has no coverage.
+        if (!$coverage || $coverage === 2) {
+            return false;
+        }
+        return true;
     }
 
     /**

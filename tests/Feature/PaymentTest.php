@@ -108,18 +108,6 @@ class PaymentTest extends TestCase
             ->assertJsonFragment(['Some sales do not have a ShippingMethod.']);
     }
 
-    public function testPaymentNeedsShippingAddress()
-    {
-        $sale = $this->getSale();
-        $sale->shipping_method_id = $sale->user->shipping_method_ids[0];
-        $sale->save();
-
-        $url = route('api.orders.payment.create', $sale->order);
-        $response = $this->actingAs($this->user)->json('GET', $url);
-        $response->assertStatus(422)
-            ->assertJsonFragment(['Order needs shipping address.']);
-    }
-
     public function testPaymentNeedsShippingPhone()
     {
         $sale = $this->getSale();

@@ -118,10 +118,6 @@ class PaymentController extends Controller
             abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Some sales do not have a ShippingMethod.');
         }
 
-        if (!data_get($order, 'shipping_information.address')) {
-            abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Order needs shipping address.');
-        }
-
         if (!data_get($order, 'shipping_information.phone')) {
             abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Order needs shipping phone.');
         }
@@ -130,25 +126,18 @@ class PaymentController extends Controller
     }
 
     /**
-     * Validate that delivery with Chilexpress is available if any of the sales
+     * Validate that delivery with Chilexpress is allowed if any of the sales
      * has been selected to be delivered with them.
      */
     protected function validateChileExpressIsAvailable(Model $order)
     {
-        $geonameid = data_get($order, 'shipping_information.address.geonameid');
         $order->sales->each(function ($sale) {
-            if ($sale->shipping_method && strpos($sale->shipping_method->name, 'chilexpress') !== false) {
-                // No geonameid means we can not match the address.
-                // Should not happen, but never know.
-                if (!$geonameid) {
-                    abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Address not compatible with Chilexpress.');
-                }
+            if ($sale->is_chilexpress && !$sale->shipTo) {
+                abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Order needs shipping address.');
+            }
 
-                if (!ChilexpressGeodata::where('coverage_type', '>', 1)->find($geonameid)) {
-                    abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Address not covered by Chilexpress.');
-                }
-                // Address is in Chilexpress delivery area, no need to check other sales.
-                return false;
+            if ($sale->is_chilexpress && !$sale->allow_chilexpress) {
+                abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Address not covered by Chilexpress.');
             }
         });
     }
