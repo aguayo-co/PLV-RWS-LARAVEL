@@ -88,7 +88,7 @@ Route::name('api.')->group(function () {
         Route::post('products', 'ProductController@store')->name('product.create');
         Route::patch('products/{product}', 'ProductController@update')
             ->name('product.update')->where('product', ID_REGEX);
-        Route::delete('products/{product}', 'ProductController@delete')
+        Route::delete('products/{product}', 'ProductController@ownerDelete')
             ->name('product.delete')->where('product', ID_REGEX);
 
         # Routes for shopping cart.
