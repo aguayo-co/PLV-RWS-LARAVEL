@@ -381,17 +381,15 @@ class OrderController extends Controller
                     'shipping_cost',
                     'allow_chilexpress',
                     'is_chilexpress',
-                    'discount_per_product',
                     'coupon_discount',
                 ]);
             });
             $order->append([
                 'total',
+                'used_credits',
                 'due',
                 'coupon_discount',
-                'used_credits',
                 'shipping_cost',
-                'discount_per_product',
             ]);
         });
     }

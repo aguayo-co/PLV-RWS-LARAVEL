@@ -132,13 +132,10 @@ class SaleController extends Controller
             }
 
             $sale->append([
-                'returned_products_ids',
-                'total',
-                'commission',
                 'shipping_cost',
+                'allow_chilexpress',
                 'is_chilexpress',
                 'coupon_discount',
-                'discount_per_product',
             ]);
         });
     }

@@ -322,8 +322,7 @@ OrderExpanded:
     sales: Sale[]
     coupon?: Coupon
     shipping_cost: integer
-    discount_per_product: object
-SaleOrder:
+OrderSale:
   type: Order
   properties:
     credits_transactions?: CreditsTransaction[]
@@ -343,17 +342,18 @@ Sale:
     shipment_details?: object
     status: integer
     status_history: object
+    shipping_cost: integer
 SaleExpanded:
   type: Sale
   properties:
+    allow_chilexpress: boolean
+    is_chilexpress: boolean
     credits_transactions: CreditsTransaction[]
-    order: SaleOrder
+    order: OrderSale
     products: Product[]
     shipping_method: ShippingMethod
-    returned_products_ids: integer[]
     returns: SaleReturn[]
     coupon_discount: integer
-    discount_per_product: object
 
 SaleReturnRequest:
   properties:
