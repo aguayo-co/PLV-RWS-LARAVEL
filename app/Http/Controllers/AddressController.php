@@ -53,7 +53,8 @@ class AddressController extends Controller
         }
 
         array_forget($data, 'geonameid');
-        if ($commune = data_get($data, 'commune')) {
+        $commune = data_get($data, 'commune');
+        if ($commune) {
             $geoname = Geoname::where('country_code', 'CL')->where('feature_code', 'ADM3')
                 ->where('name', $commune)->first();
             $data['geonameid'] = data_get($geoname, 'geonameid');
@@ -78,7 +79,7 @@ class AddressController extends Controller
 
     /**
      * This route get two models, $user and $address.
-     * Only $user is passed as a parameter to the parent::ownerDelete,
+     * Only $address is passed as a parameter to the parent,
      * we need to retrieve the $address from the request and pass it
      * to the parent.
      */
@@ -89,7 +90,7 @@ class AddressController extends Controller
 
     /**
      * This route get two models, $user and $address.
-     * Only $user is passed as a parameter to the parent::ownerDelete,
+     * Only $address is passed as a parameter to the parent,
      * we need to retrieve the $address from the request and pass it
      * to the parent.
      */
@@ -100,7 +101,7 @@ class AddressController extends Controller
 
     /**
      * This route get two models, $user and $address.
-     * Only $user is passed as a parameter to the parent::ownerDelete,
+     * Only $address is passed as a parameter to the parent,
      * we need to retrieve the $address from the request and pass it
      * to the parent.
      */
@@ -111,7 +112,7 @@ class AddressController extends Controller
 
     /**
      * This route get two models, $user and $address.
-     * Only $user is passed as a parameter to the parent::ownerDelete,
+     * Only $address is passed as a parameter to the parent,
      * we need to retrieve the $address from the request and pass it
      * to the parent.
      */

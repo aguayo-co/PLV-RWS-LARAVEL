@@ -322,7 +322,7 @@ class ProductController extends Controller
 
     public function delete(Request $request, Model $product)
     {
-        return parent::ownerDelete($request, $product);
+        $deleted = parent::delete($request, $product);
         switch ($product->ownerDelete) {
             case true:
                 $product->user->notify(new ProductDeleted(['product' => $product]));
@@ -332,5 +332,6 @@ class ProductController extends Controller
                 $product->user->notify(new ProductDeletedAdmin(['product' => $product]));
                 break;
         }
+        return $deleted;
     }
 }
