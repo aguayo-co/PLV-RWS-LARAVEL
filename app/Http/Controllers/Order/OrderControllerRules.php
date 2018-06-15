@@ -124,8 +124,8 @@ trait OrderControllerRules
                 return $fail(__('La orden no ha sido pagada.'));
             }
             // Do not go back in status.
-            if ($value <= $sale->status) {
-                return $fail(__('validation.min.numeric', ['min' => $sale->status + 1]));
+            if ($value < $sale->status) {
+                return $fail(__('validation.min.numeric', ['min' => $sale->status]));
             }
         };
     }
