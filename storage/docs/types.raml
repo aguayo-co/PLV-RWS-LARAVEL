@@ -318,14 +318,12 @@ Order:
 OrderExpanded:
   type: Order
   properties:
-    credits_transactions?: CreditsTransaction[]
     sales: Sale[]
     coupon?: Coupon
     shipping_cost: integer
 OrderSale:
   type: Order
   properties:
-    credits_transactions?: CreditsTransaction[]
     user: User
     coupon?: Coupon
 
@@ -348,7 +346,6 @@ SaleExpanded:
   properties:
     allow_chilexpress: boolean
     is_chilexpress: boolean
-    credits_transactions: CreditsTransaction[]
     order: OrderSale
     products: Product[]
     shipping_method: ShippingMethod

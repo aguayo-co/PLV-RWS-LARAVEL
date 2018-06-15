@@ -286,10 +286,9 @@ class ProductController extends Controller
         ]);
 
         $loggedUser = auth()->user();
-        switch (true) {
+        if ($loggedUser && $loggedUser->hasRole('admin')) {
             // Show admin notes only to admin
-            case $loggedUser && $loggedUser->hasRole('admin'):
-                $collection->makeVisible(['admin_notes']);
+            $collection->makeVisible(['admin_notes']);
         }
 
         $collection->each(function ($product) use ($collection) {
@@ -305,8 +304,6 @@ class ProductController extends Controller
                 'followers', 'following',
             ]);
             $product->user->append([
-                'followers_count',
-                'following_count',
                 'following_count',
                 'followers_count',
                 'ratings_negative_count',

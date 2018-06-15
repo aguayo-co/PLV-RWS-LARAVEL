@@ -41,6 +41,16 @@ class SaleController extends Controller
             return;
         }
 
+        if (request()->get('buyer')) {
+            // Visibility should be different for this query.
+            // Check setVisibility().
+            return function ($query) use ($user) {
+                $query = $query->whereHas('order', function ($q) use ($user) {
+                    $q->where('user_id', $user->id);
+                });
+            };
+        }
+
         return function ($query) use ($user) {
             return $query->where('user_id', $user->id);
         };
@@ -111,17 +121,26 @@ class SaleController extends Controller
     protected function setVisibility(Collection $collection)
     {
         $collection->load([
-            'creditsTransactions',
-            'order.creditsTransactions',
+            'returns',
+            'shippingMethod',
+            'user',
+
+            'order.coupon',
             'order.user',
+
             'products.brand',
             'products.condition',
             'products.size',
             'products.user',
-            'returns',
-            'shippingMethod',
-            'user',
         ]);
+
+        // Information only the owner of the Order should see.
+        if (request()->get('buyer')) {
+            $collection->load([
+                'order.payments',
+            ]);
+        }
+
         $collection->each(function ($sale) {
             $sale->user->makeVisible(['email', 'phone']);
             if (Sale::STATUS_PAYED <= $sale->status && $sale->status < Sale::STATUS_CANCELED) {
@@ -137,6 +156,17 @@ class SaleController extends Controller
                 'is_chilexpress',
                 'coupon_discount',
             ]);
+
+            // Information only the owner of the Order should see.
+            if (request()->get('buyer')) {
+                $sale->order->append([
+                    'total',
+                    'used_credits',
+                    'due',
+                    'coupon_discount',
+                    'shipping_cost',
+                ]);
+            }
         });
     }
 }

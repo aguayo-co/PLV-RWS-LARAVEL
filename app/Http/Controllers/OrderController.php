@@ -360,16 +360,17 @@ class OrderController extends Controller
     {
         $collection->load([
             'coupon',
-            'creditsTransactions',
             'payments',
+            'user',
+
             'sales.products.brand',
             'sales.products.condition',
             'sales.products.size',
             'sales.products.user',
+
+            'sales.returns',
             'sales.shippingMethod',
             'sales.user.shippingMethods',
-            'sales.returns',
-            'user',
         ]);
         $collection->each(function ($order) {
             $order->user->makeVisible(['email', 'phone']);
