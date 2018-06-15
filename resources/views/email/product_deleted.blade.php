@@ -242,7 +242,7 @@
                             <tbody>
                               <tr>
                                 <td class="card" style="line-height:1;font-size:0px;">
-                                  <img src="{{ $product->images[0] }}" alt="{{ $product->title }}" class="img" style="width:100%;">
+                                  <img src="{{ array_get($product->images, 0) }}" alt="{{ $product->title }}" class="img" style="width:100%;">
                                 </td>
                               </tr>
                               <tr>

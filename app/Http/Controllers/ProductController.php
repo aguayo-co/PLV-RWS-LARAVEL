@@ -47,6 +47,7 @@ class ProductController extends Controller
         parent::__construct();
         $this->middleware('role:seller|admin')->only(['store', 'update']);
         $this->middleware(self::class . '::validateIsPublished')->only(['show']);
+        $this->middleware(self::class . '::validateCanBeDeleted')->only(['ownerDelete']);
     }
 
     /**
@@ -69,6 +70,20 @@ class ProductController extends Controller
         }
         abort(Response::HTTP_FORBIDDEN, 'Product not available for public view.');
     }
+
+    /**
+     * Middleware that validates permissions to delete a product.
+     */
+    public static function validateCanBeDeleted($request, $next)
+    {
+        $product = $request->route()->parameters['product'];
+        if ($product->status < Product::STATUS_PAYMENT) {
+            return $next($request);
+        }
+
+        abort(Response::HTTP_FORBIDDEN, 'Product can not be deleted.');
+    }
+
 
     protected function alterValidateData($data, Model $product = null)
     {
