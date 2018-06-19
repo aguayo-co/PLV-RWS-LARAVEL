@@ -83,6 +83,52 @@ class Product extends Model
         return $this->belongsTo('App\User');
     }
 
+    public function favoritedBy()
+    {
+        return $this->belongsToMany('App\User', 'favorites');
+    }
+
+    public function brand()
+    {
+        return $this->belongsTo('App\Brand');
+    }
+
+    public function campaigns()
+    {
+        return $this->belongsToMany('App\Campaign');
+    }
+
+    public function category()
+    {
+        return $this->belongsTo('App\Category');
+    }
+
+    public function size()
+    {
+        return $this->belongsTo('App\Size');
+    }
+
+    public function colors()
+    {
+        return $this->belongsToMany('App\Color');
+    }
+
+    public function condition()
+    {
+        return $this->belongsTo('App\Condition');
+    }
+
+    public function sales()
+    {
+        return $this->belongsToMany('App\Sale');
+    }
+
+    protected function setTitleAttribute($title)
+    {
+        $this->attributes['title'] = $title;
+        $this->attributes['slug'] = str_slug($title);
+    }
+
     protected function getColorIdsAttribute()
     {
         return $this->colors->pluck('id');
@@ -111,6 +157,9 @@ class Product extends Model
         $this->load('campaigns');
     }
 
+    #                                   #
+    # Start Images methods.             #
+    #                                   #
     protected function getImagePathAttribute()
     {
         $idPath = implode(str_split(str_pad($this->id, 9, 0, STR_PAD_LEFT), 3), '/');
@@ -173,50 +222,7 @@ class Product extends Model
     {
         $this->setFile('image_instagram', $cover);
     }
-
-    public function favoritedBy()
-    {
-        return $this->belongsToMany('App\User', 'favorites');
-    }
-
-    public function brand()
-    {
-        return $this->belongsTo('App\Brand');
-    }
-
-    public function campaigns()
-    {
-        return $this->belongsToMany('App\Campaign');
-    }
-
-    public function category()
-    {
-        return $this->belongsTo('App\Category');
-    }
-
-    public function size()
-    {
-        return $this->belongsTo('App\Size');
-    }
-
-    public function colors()
-    {
-        return $this->belongsToMany('App\Color');
-    }
-
-    public function condition()
-    {
-        return $this->belongsTo('App\Condition');
-    }
-
-    public function sales()
-    {
-        return $this->belongsToMany('App\Sale');
-    }
-
-    public function setTitleAttribute($title)
-    {
-        $this->attributes['title'] = $title;
-        $this->attributes['slug'] = str_slug($title);
-    }
+    #                                   #
+    # End Images methods.               #
+    #                                   #
 }
