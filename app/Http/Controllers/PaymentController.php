@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\ChilexpressGeodata;
+use App\Events\PaymentSuccessful;
 use App\Gateways\Gateway;
 use App\Http\Controllers\Order\CouponRules;
 use App\Http\Traits\CurrentUserOrder;
@@ -188,8 +188,14 @@ class PaymentController extends Controller
     {
         $this->validateOrderCanCheckout($order);
 
+        $gatewayName = $request->query('gateway');
+
+        if ($order->due > 0 && $gatewayName === 'free') {
+            abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Invalid gateway.');
+        }
+
         // Get the gateway to use.
-        $gateway = new Gateway($request->query('gateway'));
+        $gateway = new Gateway($gatewayName);
         // Create a Payment model with the selected gateway.
         $payment = $this->getPayment($gateway, $order);
         // Save the Gateway's request data in the Payment model.
@@ -202,10 +208,14 @@ class PaymentController extends Controller
             foreach ($order->sales as $sale) {
                 $sale->status = Sale::STATUS_PAYMENT;
                 $sale->save();
-            }
-            foreach ($order->products as $product) {
-                $product->status = Product::STATUS_PAYMENT;
-                $product->save();
+
+                foreach ($sale->products as $product) {
+                    $sale->products()->updateExistingPivot($product->id, [
+                        'price' => $product->sale_price,
+                    ]);
+                    $product->status = Product::STATUS_PAYMENT;
+                    $product->save();
+                }
             }
         });
 

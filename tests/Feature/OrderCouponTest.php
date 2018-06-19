@@ -9,6 +9,7 @@ use App\Category;
 use App\Color;
 use App\Condition;
 use App\Coupon;
+use App\Group;
 use App\Product;
 use App\ShippingMethod;
 use App\Size;
@@ -72,8 +73,12 @@ class OrderCouponTest extends TestCase
                 'coupon_code' => $coupon->code,
             ]);
 
+        $discount = round($product->price * $coupon->discount_value / 100);
+        $due = $product->price - $discount;
         $response->assertStatus(200)
-            ->assertJson(['due' => $product->price - round($product->price * $coupon->discount_value / 100)]);
+            ->assertJson(['due' => $due]);
+        $response->assertStatus(200)
+            ->assertJson(['coupon_discount' => $discount]);
     }
 
     public function testCouponBrandFilters()
@@ -90,6 +95,8 @@ class OrderCouponTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson(['due' => $product->price]);
+        $response->assertStatus(200)
+            ->assertJson(['coupon_discount' => 0]);
     }
 
     public function testCouponCampaignFilters()
@@ -106,6 +113,8 @@ class OrderCouponTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson(['due' => $product->price]);
+        $response->assertStatus(200)
+            ->assertJson(['coupon_discount' => 0]);
     }
 
     public function testCouponMinimumCommissionFilters()
@@ -121,6 +130,8 @@ class OrderCouponTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson(['due' => $product->price]);
+        $response->assertStatus(200)
+            ->assertJson(['coupon_discount' => 0]);
     }
 
     public function testCouponMinimumPriceFilters()
@@ -136,5 +147,26 @@ class OrderCouponTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson(['due' => $product->price]);
+        $response->assertStatus(200)
+            ->assertJson(['coupon_discount' => 0]);
+    }
+
+    public function testCouponDiscountedProductFilters()
+    {
+        $product = $this->createProduct();
+        $coupon = factory(Coupon::class)->create();
+        $group = factory(Group::class)->states(['with_discount'])->create();
+        $group->users()->sync([$product->user_id]);
+        $url = route('api.shopping_cart.update');
+        $response = $this->actingAs($this->user)
+            ->json('PATCH', $url, [
+                'add_product_ids' => [$product->id],
+                'coupon_code' => $coupon->code,
+            ]);
+
+        $response->assertStatus(200)
+            ->assertJson(['due' => $product->sale_price]);
+        $response->assertStatus(200)
+            ->assertJson(['coupon_discount' => 0]);
     }
 }

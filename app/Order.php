@@ -89,7 +89,7 @@ class Order extends Model
         }
 
         if ($this->products->count()) {
-            return $this->products->sum('price');
+            return $this->products->sum('sale_price');
         }
     }
 
@@ -146,8 +146,6 @@ class Order extends Model
 
         $discountedProducts = $this->getDiscountedProducts();
 
-        $productsTotal = $discountedProducts->sum('price');
-
         $discountPerProductId = collect();
         $productsTotal = $discountedProducts->sum('price');
         // The last product will be used to adjust to decimals.
@@ -178,16 +176,24 @@ class Order extends Model
             return $products;
         }
 
+        // Remove already discounted products.
+        $products = $products->filter(function ($product) {
+            return $product->sale_price === $product->price;
+        });
+
+        // Remove products that do not belong to the acceptable brands, if any.
         if ($coupon->brands_ids->isNotEmpty()) {
             $products = $products->whereIn('brand_id', $coupon->brands_ids->all());
         }
 
+        // Remove products that do not belong to the acceptable campaigns, if any.
         if ($coupon->campaigns_ids->isNotEmpty()) {
             $products = $products->filter(function ($product) use ($coupon) {
                 return $product->campaign_ids->intersect($coupon->campaigns_ids)->isNotEmpty();
             });
         }
 
+        // Remove products that do not meet the minimum commission, if there is a minimum.
         $minimumCommission = $coupon->minimum_commission;
         if ($minimumCommission) {
             $products = $products->filter(function ($product) use ($minimumCommission) {
@@ -195,6 +201,7 @@ class Order extends Model
             });
         }
 
+        // Remove products that do not meet the minimum price, if there is a minimum.
         $minimumPrice = $coupon->minimum_price;
         if ($minimumPrice) {
             $products = $products->filter(function ($product) use ($minimumPrice) {

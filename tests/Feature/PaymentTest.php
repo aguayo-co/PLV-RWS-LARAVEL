@@ -114,13 +114,31 @@ class PaymentTest extends TestCase
         $sale->shipping_method_id = $sale->user->shipping_method_ids[0];
         $sale->save();
 
-        $order = $sale->order;
-        $order->shipping_information = ['address' => 'An address'];
-        $order->save();
         $url = route('api.orders.payment.create', $sale->order);
         $response = $this->actingAs($this->user)->json('GET', $url);
         $response->assertStatus(422)
             ->assertJsonFragment(['Order needs shipping phone.']);
+    }
+
+    public function testSalePriceIsPersisted()
+    {
+        $sale = $this->getSale();
+        $sale->shipping_method_id = $sale->user->shipping_method_ids[0];
+        $sale->save();
+
+        $sale->products[0]->price = 0;
+        $sale->products[0]->save();
+
+        $this->assertNull($sale->fresh()->products[0]->pivot->price);
+
+        $order = $sale->order;
+        $order->shipping_information = ['phone' => 'phone'];
+        $order->save();
+        $url = route('api.orders.payment.create', [$sale->order, 'gateway' => 'free']);
+        $this->actingAs($this->user)->json('GET', $url);
+
+        $this->assertNotNull($sale->fresh()->products[0]->pivot->price);
+        $this->assertEquals($sale->fresh()->products[0]->pivot->price, 0);
     }
 
     public function testCouponStatusIsValidated()
@@ -160,5 +178,21 @@ class PaymentTest extends TestCase
         $response = $this->actingAs($this->user)->json('GET', $url);
         $response->assertStatus(422)
             ->assertJsonFragment(['Cupón vencido.']);
+    }
+
+    public function testFreeGatewayNotAllowed()
+    {
+        $sale = $this->getSale();
+        $sale->shipping_method_id = $sale->user->shipping_method_ids[0];
+        $sale->save();
+
+        $order = $sale->order;
+        $order->shipping_information = ['phone' => 'phone'];
+        $order->save();
+
+        $url = route('api.orders.payment.create', [$sale->order, 'gateway' => 'free']);
+        $response = $this->actingAs($this->user)->json('GET', $url);
+        $response->assertStatus(422)
+            ->assertJsonFragment(['Invalid gateway.']);
     }
 }

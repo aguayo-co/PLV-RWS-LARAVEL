@@ -80,7 +80,7 @@ class Sale extends Model
      */
     public function getTotalAttribute()
     {
-        return $this->products->sum('price');
+        return $this->products->sum('sale_price');
     }
 
     public function getDiscountPerProductAttribute()
@@ -101,7 +101,7 @@ class Sale extends Model
      */
     public function getReturnedTotalAttribute()
     {
-        return $this->products->whereIn('id', $this->returned_products_ids)->sum('price');
+        return $this->products->whereIn('id', $this->returned_products_ids)->sum('sale_price');
     }
 
     /**
