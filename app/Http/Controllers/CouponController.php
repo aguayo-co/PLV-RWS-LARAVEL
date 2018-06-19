@@ -35,7 +35,7 @@ class CouponController extends Controller
             'minimum_commission' => 'numeric|between:0,100',
             'first_purchase_only' => 'boolean',
             'discount_type' => $required . 'in:%,$',
-            'discount_value' => $required . 'integer|between:0,' . $discountValueMax,
+            'discount_value' => $required . 'integer|between:1,' . $discountValueMax,
             'status' => ['integer', Rule::in(Coupon::getStatuses())],
             'brands_ids' => 'array',
             'brands_ids.*' => 'integer|exists:brands,id',

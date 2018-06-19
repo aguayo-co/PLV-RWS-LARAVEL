@@ -24,6 +24,7 @@ class GroupController extends AdminController
         return [
             'name' => $required . 'string|unique:groups,name' . $ignore,
             'slug' => 'string|unique:groups,slug' . $ignore,
+            'discount_value' => $required . 'integer|between:1,100',
         ];
     }
 }

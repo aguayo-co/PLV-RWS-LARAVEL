@@ -5,6 +5,7 @@ namespace App;
 use App\Traits\DateSerializeFormat;
 use App\Traits\HasSingleFile;
 use App\Traits\HasStatuses;
+use App\Traits\ProductPrice;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
@@ -12,6 +13,7 @@ use Intervention\Image\Facades\Image;
 
 class Product extends Model
 {
+    use ProductPrice;
     use HasStatuses;
     use HasSingleFile;
     use DateSerializeFormat;
@@ -63,7 +65,7 @@ class Product extends Model
     protected $hidden = [
         'admin_notes',
     ];
-    protected $appends = ['images', 'image_instagram'];
+    protected $appends = ['images', 'image_instagram', 'sale_price'];
 
     protected function getEditableAttribute()
     {
@@ -120,7 +122,7 @@ class Product extends Model
 
     public function sales()
     {
-        return $this->belongsToMany('App\Sale');
+        return $this->belongsToMany('App\Sale')->withPivot('sale_return_id', 'price');
     }
 
     protected function setTitleAttribute($title)

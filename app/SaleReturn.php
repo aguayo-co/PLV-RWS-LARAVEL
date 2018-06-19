@@ -32,12 +32,12 @@ class SaleReturn extends Model
 
     public function products()
     {
-        return $this->belongsToMany('App\Product', 'product_sale');
+        return $this->belongsToMany('App\Product', 'product_sale')->withPivot('sale_id', 'price');
     }
 
     public function sales()
     {
-        return $this->belongsToMany('App\Sale', 'product_sale');
+        return $this->belongsToMany('App\Sale', 'product_sale')->withPivot('product_id', 'price');
     }
 
     protected function getSaleAttribute()

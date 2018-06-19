@@ -15,7 +15,7 @@ class Group extends Model
      * @var array
      */
     protected $fillable = [
-        'name',
+        'name', 'discount_value'
     ];
 
     public function getRouteKeyName()

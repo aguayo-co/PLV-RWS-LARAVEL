@@ -54,7 +54,7 @@ class Sale extends Model
      */
     public function products()
     {
-        return $this->belongsToMany('App\Product')->withPivot('sale_return_id');
+        return $this->belongsToMany('App\Product')->withPivot('sale_return_id', 'price');
     }
 
     public function getProductsIdsAttribute()

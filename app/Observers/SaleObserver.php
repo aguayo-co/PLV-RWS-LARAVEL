@@ -78,10 +78,6 @@ class SaleObserver
                 $this->sendReceivedNotifications();
                 break;
 
-            case Sale::STATUS_CANCELED:
-                $this->giveCreditsBackToBuyer();
-                break;
-
             case Sale::STATUS_COMPLETED:
                 $this->giveCreditsToSeller();
                 $this->sendCompletedNotifications();
@@ -93,6 +89,7 @@ class SaleObserver
 
             case Sale::STATUS_CANCELED:
                 $this->sendCanceledNotifications();
+                $this->giveCreditsBackToBuyer();
                 break;
         }
     }
