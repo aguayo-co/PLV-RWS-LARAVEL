@@ -90,6 +90,7 @@ class CreditsTransactionController extends Controller
     {
         $required = !$transaction ? 'required|' : '';
         $user = $this->getValidationUser($data, $transaction);
+        $statuses = CreditsTransaction::getStatuses();
         // Lower limit is the maximum amount a user can withdraw.
         // It has to be negative or 0,
         $lowerLimit = min(-data_get($user, 'credits', 0), 0);
@@ -113,7 +114,6 @@ class CreditsTransactionController extends Controller
                 "between:$lowerLimit,$upperLimit",
             ],
             'sale_id' => [
-                'nullable',
                 'empty_with:order_id',
                 'empty_with:transfer_status',
                 'integer',
@@ -122,7 +122,6 @@ class CreditsTransactionController extends Controller
                 }),
             ],
             'order_id' => [
-                'nullable',
                 'empty_with:sale_id',
                 'empty_with:transfer_status',
                 'integer',
@@ -131,11 +130,11 @@ class CreditsTransactionController extends Controller
                 }),
             ],
             'transfer_status' => [
-                'nullable',
                 'empty_with:sale_id',
                 'empty_with:order_id',
                 'integer',
-                Rule::in(CreditsTransaction::getStatuses()),
+                'max:' . (auth()->user()->hasRole('admin') ? last($statuses) : $statuses['STATUS_PENDING']),
+                Rule::in($statuses),
             ],
             'extra' => $required . 'array',
         ];
@@ -144,7 +143,7 @@ class CreditsTransactionController extends Controller
     protected function alterFillData($data, Model $transaction = null)
     {
         // Only admin can change transfer_status.
-        if (!auth()->user()->hasRole('admin')) {
+        if ($transaction && !auth()->user()->hasRole('admin')) {
             array_forget($data, 'transfer_status');
         }
 
@@ -166,7 +165,7 @@ class CreditsTransactionController extends Controller
             $data['sale_id'] = null;
             $data['transfer_status'] = null;
         }
-        if ($transferStatus) {
+        if ($transferStatus !== null) {
             $data['sale_id'] = null;
             $data['order_id'] = null;
         }
