@@ -6,6 +6,10 @@ Aparte de los criterios de filtrado globales, las conversaciones se pueden filtr
 |------|----|
 |unread|Boolean|
 |product_id|ContenidoEn|
+|private_with|[User Id]|
+
+El filtro `private_with` trae las conversaciones privadas que existan entre el usuario autenticado
+y el usuario pedido en `private_with`. Debe ser un ID de usuario.
 
 El filtro `unread` trae las conversaciones para las que el usuario actual tiene mensajes sin leer.
 

@@ -28,7 +28,7 @@ class ThreadController extends Controller
     }
 
     /**
-     * Middleware that validates permissions to set ratings.
+     * Middleware that validates permissions to access a thread.
      */
     public static function checkThreadPrivacy($request, $next)
     {
