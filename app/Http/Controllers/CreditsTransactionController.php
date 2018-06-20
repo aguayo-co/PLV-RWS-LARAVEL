@@ -90,9 +90,15 @@ class CreditsTransactionController extends Controller
     {
         $required = !$transaction ? 'required|' : '';
         $user = $this->getValidationUser($data, $transaction);
-        // Make sure we have a negative number or 0.
+        // Lower limit is the maximum amount a user can withdraw.
+        // It has to be negative or 0,
         $lowerLimit = min(-data_get($user, 'credits', 0), 0);
-        $upperLimit = auth()->user()->hasRole('admin') ? 9999999 : 0;
+        // Upper limit is changes for admins and non-admins.
+        // - Admins can add credits to users, their upper limit is
+        //   virtually non existing (DB constrained).
+        // - Non-admins need to withdraw at least 4000, so their upper limit
+        //   is negative: -4000
+        $upperLimit = auth()->user()->hasRole('admin') ? 9999999 : -4000;
         return [
             'user_id' => [
                 'integer',
