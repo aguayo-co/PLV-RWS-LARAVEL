@@ -191,11 +191,11 @@ class Product extends Model
             return;
         }
 
-        foreach ($images as $image) {
+        foreach ($images as $index => $image) {
             # Use Intervention Image to process the image
             $processedImage = Image::make($image)->encode('jpg', 80);
             $processedImage->stream();
-            $filename = uniqid() . '.jpg';
+            $filename = $index . '-' . uniqid() . '.jpg';
             Storage::put($this->image_path . $filename, $processedImage->__toString());
         }
         # Timestamps might not get updated if this was the only attribute that

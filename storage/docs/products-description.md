@@ -44,7 +44,8 @@ Aparte de los criterios de filtrado globales, los productos se pueden filtrar po
 ##### Agregar imágenes
 
 Las imágenes que se envíen en el campo `images`, serán agregadas al listado de imágenes que ya tenga
-el producto. Para eliminar imágenes se debe enviar la información en un campo `images_remove`.
+el producto. El índice con el que sea enviada la imagen dicta el orden en que sea devuelto en el
+producto. Para eliminar imágenes se debe enviar la información en un campo `images_remove`.
 
 ##### Eliminación de imágenes
 
