@@ -191,6 +191,8 @@ class Product extends Model
             return;
         }
 
+        Cache::forget($this->image_path);
+
         foreach ($images as $index => $image) {
             # Use Intervention Image to process the image
             $processedImage = Image::make($image)->encode('jpg', 80);
