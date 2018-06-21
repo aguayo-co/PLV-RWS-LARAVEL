@@ -52,7 +52,7 @@ class Product extends Model
         'status',
         'images',
         'image_instagram',
-        'delete_images',
+        'images_remove',
         'color_ids',
         'campaign_ids',
         'admin_notes',
@@ -203,7 +203,7 @@ class Product extends Model
         $this->updateTimestamps();
     }
 
-    protected function setDeleteImagesAttribute(array $images)
+    protected function setImagesRemoveAttribute(array $images)
     {
         $imagePath = $this->image_path;
         Cache::forget($imagePath);

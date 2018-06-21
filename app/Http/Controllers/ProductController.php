@@ -129,8 +129,8 @@ class ProductController extends Controller
             'images' => $required . 'array',
             'images.*' => 'image',
             'image_instagram' => 'nullable|image',
-            'delete_images' => 'array',
-            'delete_images.*' => 'string',
+            'images_remove' => 'array',
+            'images_remove.*' => 'string',
             'admin_notes' => 'string|max:10000',
         ];
     }
