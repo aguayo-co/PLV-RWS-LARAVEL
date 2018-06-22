@@ -1,6 +1,6 @@
 BaseObject:
   properties:
-    id?: datetime
+    id?: integer
     created_at?: datetime
     updated_at?: datetime
 Property:
@@ -50,8 +50,8 @@ MenuItemRequest:
   properties:
     name: string
     url?: string
-    parent_id?: number
-    menu_id?: number
+    parent_id?: integer
+    menu_id?: integer
     icon?: string
 MenuItem:
   type: [MenuItemRequest, BaseObject]
@@ -104,7 +104,7 @@ CampaignExpanded:
 CategoryRequest:
   type: Property
   properties:
-    parent_id?: number
+    parent_id?: integer
 Category:
   type: [CategoryRequest, PropertyBaseObject]
 CategoryExpanded:
@@ -132,7 +132,7 @@ ConditionExpanded:
 SizeRequest:
   properties:
     name: string
-    parent_id?: number
+    parent_id?: integer
 Size:
   type: [SizeRequest, BaseObject]
 SizeExpanded:
@@ -146,9 +146,9 @@ ProductBase:
     title: string
     description: string
     dimensions: string
-    originalPrice: number
-    price: number
-    commission: number
+    original_price: integer
+    price: integer
+    commission: integer
     user_id: integer
     brand_id: integer
     category_id: integer
@@ -169,6 +169,7 @@ Product:
     images: string[]
     image_instagram: string
     slug: string
+    sale_price: integer
 ProductExpanded:
   type: Product
   properties:
