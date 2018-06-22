@@ -17,6 +17,10 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
+        'App\Events\PaymentStarted' => [
+            'App\Listeners\LockOrder',
+        ],
+
         'App\Events\PaymentSuccessful' => [
             'App\Listeners\ApproveOrder',
         ]

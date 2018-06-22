@@ -120,6 +120,11 @@ class Order extends Model
      */
     public function getCouponDiscountAttribute()
     {
+        $appliedDiscount = data_get($this->applied_coupon, 'discount');
+        if ($appliedDiscount !== null) {
+            return $appliedDiscount;
+        }
+
         $coupon = $this->coupon;
         if (!$coupon) {
             return 0;
@@ -142,6 +147,11 @@ class Order extends Model
         $discount = $this->coupon_discount;
         if (!$discount) {
             return collect();
+        }
+
+        $appliedPerProduct = data_get($this->applied_coupon, 'discount_per_product');
+        if ($appliedPerProduct) {
+            return collect($appliedPerProduct);
         }
 
         $discountedProducts = $this->getDiscountedProducts();
@@ -230,6 +240,17 @@ class Order extends Model
     {
         return json_decode($value, true);
     }
+
+    public function setAppliedCouponAttribute($value)
+    {
+        $this->attributes['applied_coupon'] = json_encode($value);
+    }
+
+    public function getAppliedCouponAttribute($value)
+    {
+        return json_decode($value, true);
+    }
+
 
     public function setExtraAttribute($value)
     {

@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\PaymentStarted;
 use App\Events\PaymentSuccessful;
 use App\Gateways\Gateway;
 use App\Http\Controllers\Order\CouponRules;
 use App\Http\Traits\CurrentUserOrder;
 use App\Order;
 use App\Payment;
-use App\Product;
-use App\Sale;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -202,24 +201,10 @@ class PaymentController extends Controller
         $payment->request = $gateway->paymentRequest($payment, $request->all());
         $payment->save();
 
-        $order->status = Order::STATUS_PAYMENT;
-        DB::transaction(function () use ($order) {
-            $order->save();
-            foreach ($order->sales as $sale) {
-                $sale->status = Sale::STATUS_PAYMENT;
-                $sale->save();
-
-                foreach ($sale->products as $product) {
-                    $sale->products()->updateExistingPivot($product->id, [
-                        'price' => $product->sale_price,
-                    ]);
-                    $product->status = Product::STATUS_PAYMENT;
-                    $product->save();
-                }
-            }
-        });
+        event(new PaymentStarted($order));
 
         // Dispatch event if we have a payment that is already successful.
+        // Possible with "Free" payments.
         if ($payment->status === Payment::STATUS_SUCCESS) {
             event(new PaymentSuccessful($order));
         }
