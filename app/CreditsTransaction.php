@@ -15,6 +15,7 @@ class CreditsTransaction extends Model
 
     const STATUS_PENDING = 0;
     const STATUS_COMPLETED = 1;
+    const STATUS_REJECTED = 99;
 
     /**
      * Get the user that owns the address.

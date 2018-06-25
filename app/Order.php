@@ -56,6 +56,9 @@ class Order extends Model
         return $this->hasMany('App\CreditsTransaction');
     }
 
+    /**
+     * Return the amount of credits used in this order as a positive integer.
+     */
     public function getUsedCreditsAttribute()
     {
         return -$this->creditsTransactions->where('amount', '<', 0)->sum('amount');

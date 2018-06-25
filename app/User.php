@@ -381,6 +381,7 @@ class User extends Authenticatable
 
         return $query->leftJoin('credits_transactions', 'credits_transactions.user_id', '=', 'users.id')
             ->leftJoin('orders as tr_orders', 'tr_orders.id', '=', 'credits_transactions.order_id')
+            ->where('credits_transactions.transfer_status', '!=', CreditsTransaction::STATUS_REJECTED)
             ->where(function ($query) {
                 $query->whereNull('credits_transactions.order_id')
                     ->orWhere('tr_orders.status', '!=', Order::STATUS_SHOPPING_CART);

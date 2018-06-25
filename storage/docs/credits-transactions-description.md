@@ -6,12 +6,16 @@ Este tiene dos posibles valores:
 
 - **0**: Pendiente
 - **1**: Completada
+- **99**: Rechazada
 
-Sin importar el estado de la transferencia, los créditos de la misma son descontados del total disponible para el usuario.
+##### Créditos de transferencias rechazadas
+
+Las solicitudes de transferencia con status `99 - Rechazada`, no son tenidas en cuenta para el total
+de los créditos del usuario.
 
 ##### Créditos de carro de compras
 
-Cuando un usuario agrega créditos a el pago de una orden en el carro de compras, pero no procede con el pago de
+Cuando un usuario agrega créditos al pago de una orden en el carro de compras, pero no procede con el pago de
 la orden, la transacción generada para dicho pago queda en el sistema pero estos créditos no son descontados del
 total disponible del usuario.
 

@@ -194,7 +194,7 @@ class CreditsTransactionController extends Controller
                 $transaction->user->notify(new CreditsApproved(['transaction' => $transaction]));
                 break;
 
-            case CreditsTransaction::STATUS_PENDING:
+            case CreditsTransaction::STATUS_REJECTED:
                 $transaction->user->notify(new CreditsRejected(['transaction' => $transaction]));
                 break;
         }

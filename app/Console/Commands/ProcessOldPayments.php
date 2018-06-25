@@ -65,6 +65,17 @@ class ProcessOldPayments extends Command
     {
         $payment->order->status = Order::STATUS_CANCELED;
         $payment->order->save();
+
+        $usedCredits = $payment->order->used_credits;
+
+        if ($usedCredits) {
+            CreditsTransaction::create([
+                'user_id' => $sale->order->user_id,
+                'amount' => $usedCredits,
+                'order_id' => $sale->id,
+                'extra' => ['reason' => 'Order was canceled. No payment was received.']
+            ]);
+        }
     }
 
     protected function sendNotifications($payment)
