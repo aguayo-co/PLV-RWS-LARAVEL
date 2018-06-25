@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Coupon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
