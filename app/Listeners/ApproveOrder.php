@@ -68,7 +68,7 @@ class ApproveOrder
             'user_id' => $order->user_id,
             'amount' => $order->total,
             'order_id' => $order->id,
-            'extra' => ['reason' => 'Credits purchase.']
+            'extra' => ['reason' => __('prilov.credits.reasons.purchased')]
         ]);
     }
 }

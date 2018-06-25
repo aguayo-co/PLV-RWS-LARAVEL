@@ -73,7 +73,7 @@ class ProcessOldPayments extends Command
                 'user_id' => $sale->order->user_id,
                 'amount' => $usedCredits,
                 'order_id' => $sale->id,
-                'extra' => ['reason' => 'Order was canceled. No payment was received.']
+                'extra' => ['reason' => __('prilov.credits.reasons.orderCanceled')]
             ]);
         }
     }

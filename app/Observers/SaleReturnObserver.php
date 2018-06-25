@@ -82,7 +82,7 @@ class SaleReturnObserver
             'user_id' => $sale->order->user_id,
             'amount' => $sale->returned_total - $sale->returned_discount,
             'sale_id' => $sale->id,
-            'extra' => ['reason' => 'Return was completed.']
+            'extra' => ['reason' => __('prilov.credits.reasons.returnCompleted')]
         ]);
     }
 
@@ -94,7 +94,7 @@ class SaleReturnObserver
             'user_id' => $sale->user_id,
             'amount' => $sale->returned_total - $sale->returned_commission,
             'sale_id' => $sale->id,
-            'extra' => ['reason' => 'Return was canceled.']
+            'extra' => ['reason' => __('prilov.credits.reasons.returnCanceled')]
         ]);
     }
 

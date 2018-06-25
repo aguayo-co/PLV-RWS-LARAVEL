@@ -336,22 +336,26 @@ class OrderController extends Controller
         $hasCredits = false;
 
         $transactions = CreditsTransaction::where(
-            ['order_id' => $order->id, 'user_id' => $order->user->id, 'extra->origin' => 'order']
+            ['order_id' => $order->id, 'user_id' => $order->user->id]
         )->get();
 
+        // If user is using credits with this order.
+        // Leave one transaction alone to set the credits on that one.
         if ((int)$usedCredits !== 0) {
             $hasCredits = true;
             $transactions->shift();
         }
 
+        // Delete any extra transactions, as before paying an order
+        // there should be only one transaction per order.
         foreach ($transactions as $transaction) {
             $transaction->delete();
         }
 
         if ($hasCredits) {
             CreditsTransaction::updateOrCreate(
-                ['order_id' => $order->id, 'user_id' => $order->user->id, 'extra->origin' => 'order'],
-                ['amount' => -$usedCredits, 'extra' => ['origin' => 'order']]
+                ['order_id' => $order->id, 'user_id' => $order->user->id],
+                ['amount' => -$usedCredits, 'extra' => ['reason' => __('prilov.credits.reasons.orderPayment')]]
             );
         }
     }

@@ -152,7 +152,7 @@ class SaleObserver
             'user_id' => $sale->order->user_id,
             'amount' => $sale->total - $sale->coupon_discount + $sale->shipping_cost,
             'sale_id' => $sale->id,
-            'extra' => ['reason' => 'Sale was canceled.']
+            'extra' => ['reason' => __('prilov.credits.reasons.saleCanceled')]
         ]);
     }
 
@@ -187,7 +187,7 @@ class SaleObserver
             'user_id' => $sale->user_id,
             'amount' => $sale->total - $sale->commission,
             'sale_id' => $sale->id,
-            'extra' => ['reason' => 'Order was completed.']
+            'extra' => ['reason' => __('prilov.credits.reasons.orderCompleted')]
         ]);
     }
 
@@ -195,14 +195,14 @@ class SaleObserver
     {
         $sale = $this->sale;
         $returnedProductsIds = $sale->returned_products_ids->implode(', ');
-        $reason = 'Order was completed with products ":products" returned.';
+        $reason = __('prilov.credits.reasons.orderPartial', ['products' => $returnedProductsIds]);
         $amount = $sale->total - $sale->commission - $sale->returned_total;
 
         CreditsTransaction::create([
             'user_id' => $sale->user_id,
             'amount' => $amount,
             'sale_id' => $sale->id,
-            'extra' => ['reason' => __($reason, ['products' => $returnedProductsIds])]
+            'extra' => ['reason' => $reason]
         ]);
     }
 }
