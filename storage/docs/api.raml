@@ -307,6 +307,15 @@ resourceTypes:
     get:
       is: [needOwner, needAdmin]
 
+/api/payrolls:
+  type: collection
+  get:
+    is: [needAdmin]
+  /{payroll-id}:
+    type: singleItem
+    get:
+      is: [needAdmin]
+
 /api/threads:
   description: !include threads-description.md
   type: collection

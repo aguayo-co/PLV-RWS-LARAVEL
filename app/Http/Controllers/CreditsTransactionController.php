@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\CreditsTransaction;
-use App\Order;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use App\Notifications\CreditsWithdraw;

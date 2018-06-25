@@ -430,8 +430,21 @@ CreditsTransactionRequest:
     extra: object
 CreditsTransaction:
   type: [CreditsTransactionRequest, BaseObject]
+  properties:
+    payroll_id: integer
 CreditsTransactionExpanded:
   type: [CreditsTransaction]
+
+PayrollRequest:
+  type: Property
+  properties:
+    credits_transactions_ids: integer[]
+ShippingMethod:
+  type: [ShippingMethodRequest, PropertyBaseObject]
+ShippingMethodExpanded:
+  type: ShippingMethod
+  properties:
+    credits_transactions: CreditsTransaction[]
 
 ShippingMethodRequest:
   type: Property

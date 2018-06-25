@@ -35,6 +35,11 @@ class CreditsTransaction extends Model
         return $this->belongsTo('App\Sale');
     }
 
+    public function payroll()
+    {
+        return $this->belongsTo('App\Payroll');
+    }
+
     public function setExtraAttribute($value)
     {
         $this->attributes['extra'] = json_encode($value);
