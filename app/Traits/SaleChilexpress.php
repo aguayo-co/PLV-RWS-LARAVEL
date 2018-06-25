@@ -109,7 +109,7 @@ trait SaleChilexpress
         $ref = "{$order->id}-{$this->id}";
 
         $chilexpress = app()->get('chilexpress');
-        $codigoServicio = getChilexpressService($shipFrom, $shipTo);
+        $codigoServicio = $this->getChilexpressService($shipFrom, $shipTo);
         return $chilexpress->order($ref, $codigoServicio, $this->user, $order->user, $shipFrom, $shipTo, 0.5, 10, 10, 10);
     }
 }
