@@ -164,11 +164,25 @@ class CreditsTransactionController extends Controller
             $data['transfer_status'] = null;
         }
         if ($transferStatus !== null) {
+            if (!$transaction) {
+                $this->setBankAccount($data);
+            }
             $data['sale_id'] = null;
             $data['order_id'] = null;
         }
 
         return $data;
+    }
+
+    protected function setBankAccount(&$data)
+    {
+        $userId = array_get($data, 'user_id');
+        if (!$userId) {
+            return;
+        }
+
+        $user = User::find($userId);
+        $data['extra']['bank_account'] = $user->bank_account;
     }
 
     public function postStore(Request $request, Model $transaction)
