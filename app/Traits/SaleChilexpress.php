@@ -64,9 +64,9 @@ trait SaleChilexpress
      */
     public function getAllowChilexpressAttribute()
     {
-        // When out of shopping cart, information is not relevant.
+        // When out of shopping cart, use is_chilexpress as reference.
         if ($this->status !== Sale::STATUS_SHOPPING_CART) {
-            return;
+            return $this->is_chilexpress;
         }
 
         $shipFrom = $this->ship_from;

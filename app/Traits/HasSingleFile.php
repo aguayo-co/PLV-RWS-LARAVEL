@@ -59,17 +59,16 @@ trait HasSingleFile
         $this->updateTimestamps();
     }
 
-
     protected function getFileUrl($attribute)
     {
-        $url = null;
-
         $path = $this->getBasePathFor($attribute);
-        if ($url = Cache::get($path)) {
+        $url = Cache::get($path);
+        if ($url) {
             return $url;
         }
 
-        if ($files = Storage::files($path)) {
+        $files = Storage::files($path);
+        if ($files) {
             $url = asset(Storage::url($files[0]));
         }
         cache::put($path, $url, 1440);
