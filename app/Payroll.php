@@ -3,11 +3,15 @@
 namespace App;
 
 use App\Traits\DateSerializeFormat;
+use App\Traits\SaveLater;
 use Illuminate\Database\Eloquent\Model;
 
 class Payroll extends Model
 {
     use DateSerializeFormat;
+    use SaveLater;
+
+    protected $fillable = ['credits_transactions_ids'];
 
     /**
      * Get the children for the item.
@@ -19,6 +23,23 @@ class Payroll extends Model
 
     protected function getCreditsTransactionsIdsAttribute()
     {
-        return $this->credits_transactions->pluck('id');
+        return $this->creditsTransactions->pluck('id');
+    }
+
+    protected function setCreditsTransactionsIdsAttribute(array $ids)
+    {
+        if ($this->saveLater('credits_transactions_ids', $ids)) {
+            return;
+        }
+        $payroll = $this;
+        $this->creditsTransactions()->whereNotIn('id', $ids)->get()->each(function ($transaction) use ($payroll) {
+            $transaction->payroll()->associate($payroll);
+            $transaction->save();
+        });
+        CreditsTransaction::whereIn('id', $ids)->get()->each(function ($transaction) use ($payroll) {
+            $transaction->payroll()->associate($payroll);
+            $transaction->save();
+        });
+        $this->load('creditsTransactions');
     }
 }

@@ -7,6 +7,7 @@ use App\Payroll;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class PayrollController extends AdminController
 {
@@ -30,7 +31,8 @@ class PayrollController extends AdminController
             'credits_transactions_ids.*' => [
                 'integer',
                 Rule::exists('credits_transactions', 'id')->where(function ($query) {
-                    $query->where('status', CreditsTransaction::STATUS_PENDING);
+                    $query->where('transfer_status', CreditsTransaction::STATUS_PENDING);
+                    $query->whereNull('payroll_id');
                 }),
             ],
         ];
@@ -45,26 +47,5 @@ class PayrollController extends AdminController
         $collection->each(function ($payroll) {
             $payroll->append(['credits_transactions_ids']);
         });
-    }
-
-    protected function syncCreditsTransactions(Request $request, Model $payroll)
-    {
-        if ($request->has('credits_transactions_ids')) {
-            $payroll->creditsTransactions()->sync($request->credits_transactions_ids);
-        }
-    }
-
-    public function postUpdate(Request $request, Model $payroll)
-    {
-        $payroll = parent::postUpdate($request, $payroll);
-        $this->syncCreditsTransactions($request, $payroll);
-        return $payroll;
-    }
-
-    public function postStore(Request $request, Model $order)
-    {
-        $payroll = parent::postStore($request, $payroll);
-        $this->syncCreditsTransactions($request, $payroll);
-        return $payroll;
     }
 }
