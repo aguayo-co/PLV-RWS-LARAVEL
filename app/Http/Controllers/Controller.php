@@ -143,8 +143,9 @@ class Controller extends BaseController
         $alter = $this->alterIndexQuery();
         $query = call_user_func($this->modelClass . '::when', $alter, $alter);
         $query = $this->applyParamsToQuery($request, $query);
+        $items = $request->items ? (Int)$request->items : 12;
         $pagination = $query
-            ->paginate((Int)$request->items ?? 12)
+            ->paginate($items)
             ->appends($request->query());
 
         $collection = $pagination->getCollection();
