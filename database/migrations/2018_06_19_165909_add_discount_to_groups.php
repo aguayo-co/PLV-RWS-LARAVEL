@@ -14,7 +14,7 @@ class AddDiscountToGroups extends Migration
     public function up()
     {
         Schema::table('groups', function (Blueprint $table) {
-            $table->integer('discount_value')->unsigned()->nullable();
+            $table->integer('discount_value')->unsigned()->after('slug')->nullable();
         });
     }
 
