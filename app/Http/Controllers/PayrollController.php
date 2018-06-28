@@ -31,8 +31,24 @@ class PayrollController extends AdminController
             'credits_transactions_ids.*' => [
                 'integer',
                 Rule::exists('credits_transactions', 'id')->where(function ($query) {
-                    $query->where('transfer_status', CreditsTransaction::STATUS_PENDING);
+                    $query->whereNotNull('transfer_status');
                     $query->whereNull('payroll_id');
+                }),
+            ],
+
+            'completed_credits_transactions_ids' => 'array',
+            'completed_credits_transactions_ids.*' => [
+                'integer',
+                Rule::exists('credits_transactions', 'id')->where(function ($query) {
+                    $query->whereNotNull('payroll_id');
+                }),
+            ],
+
+            'rejected_credits_transactions_ids' => 'array',
+            'rejected_credits_transactions_ids.*' => [
+                'integer',
+                Rule::exists('credits_transactions', 'id')->where(function ($query) {
+                    $query->whereNotNull('payroll_id');
                 }),
             ],
         ];
@@ -47,5 +63,26 @@ class PayrollController extends AdminController
         $collection->each(function ($payroll) {
             $payroll->append(['credits_transactions_ids']);
         });
+    }
+
+    public function postUpdate(Request $request, Model $payroll)
+    {
+        $toComplete = $payroll->creditsTransactions
+            ->whereNotIn('transfer_status', [CreditsTransaction::STATUS_COMPLETED])
+            ->whereIn('id', $request->completed_credits_transactions_ids);
+        foreach ($toComplete as $creditsTransaction) {
+            $creditsTransaction->transfer_status = CreditsTransaction::STATUS_COMPLETED;
+            $creditsTransaction->save();
+        }
+
+        $toReject = $payroll->creditsTransactions
+            ->whereNotIn('transfer_status', [CreditsTransaction::STATUS_REJECTED])
+            ->whereIn('id', $request->rejected_credits_transactions_ids);
+        foreach ($toReject as $creditsTransaction) {
+            $creditsTransaction->transfer_status = CreditsTransaction::STATUS_REJECTED;
+            $creditsTransaction->save();
+        }
+
+        return parent::postUpdate($request, $payroll);
     }
 }

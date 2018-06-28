@@ -27,3 +27,4 @@ siguientes criterios:
 |filtro|tipo|
 |------|----|
 |transfer_status|Entre|
+|payroll_id|ContenidoEn|
