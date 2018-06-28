@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Http\Response;
 
 class PayrollController extends AdminController
 {
@@ -16,7 +17,7 @@ class PayrollController extends AdminController
     public function __construct()
     {
         parent::__construct();
-        $this->middleware('role:admin');
+        $this->middleware('role:admin')->except('download');
     }
 
     /**
@@ -54,6 +55,24 @@ class PayrollController extends AdminController
         ];
     }
 
+    public function download(Request $request, Model $payroll)
+    {
+        $transfers = [];
+
+        foreach ($payroll->creditsTransactions as $transaction) {
+            $transfer = data_get($transaction, 'extra.bank_account', []);
+            $transfer['rut'] = explode('-', data_get($transfer, 'rut', ''));
+            $transfer['amount'] = $transaction->amount;
+            $transfer['email'] = $transaction->user->email;
+            $transfers[] = $transfer;
+        }
+
+        return response()
+            ->view('downloads.payroll', ['transfers' => $transfers])
+            ->header('Content-Type', 'text/xml, application/xml')
+            ->header('Content-Disposition', 'attachment; filename=payroll-' . $payroll->id . '.xml');
+    }
+
     /**
      * Bring menu items for each menu with up to two levels of children.
      */
@@ -61,7 +80,7 @@ class PayrollController extends AdminController
     {
         $collection->load('creditsTransactions');
         $collection->each(function ($payroll) {
-            $payroll->append(['credits_transactions_ids']);
+            $payroll->append(['credits_transactions_ids', 'download_url']);
         });
     }
 

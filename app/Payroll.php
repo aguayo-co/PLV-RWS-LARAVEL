@@ -5,6 +5,7 @@ namespace App;
 use App\Traits\DateSerializeFormat;
 use App\Traits\SaveLater;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\URL;
 
 class Payroll extends Model
 {
@@ -41,5 +42,14 @@ class Payroll extends Model
             $transaction->save();
         });
         $this->load('creditsTransactions');
+    }
+
+    protected function getDownloadUrlAttribute()
+    {
+        return URL::temporarySignedRoute(
+            'downloads.payroll',
+            now()->addMinutes(30),
+            ['payroll' => $this->id]
+        );
     }
 }

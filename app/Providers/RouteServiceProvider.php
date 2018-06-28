@@ -81,6 +81,7 @@ class RouteServiceProvider extends ServiceProvider
     public function map()
     {
         $this->mapApiRoutes();
+        $this->mapDownloadRoutes();
 
         $this->mapWebRoutes();
 
@@ -114,6 +115,22 @@ class RouteServiceProvider extends ServiceProvider
              ->middleware('api')
              ->namespace($this->namespace)
              ->group(base_path('routes/api.php'));
+    }
+
+    /**
+     * Define the "download" routes for the application.
+     *
+     * These routes use the same auth as the api,
+     * but should not require json.
+     *
+     * @return void
+     */
+    protected function mapDownloadRoutes()
+    {
+        Route::prefix('downloads')
+            ->middleware('downloads')
+            ->namespace($this->namespace)
+            ->group(base_path('routes/downloads.php'));
     }
 
     /**
