@@ -6,7 +6,7 @@
   xmlns:x="urn:schemas-microsoft-com:office:excel"
   xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
   xmlns:html="http://www.w3.org/TR/REC-html40">
-  <Worksheet ss:Name="Credits to transfer">
+<Worksheet ss:Name="Payroll-{{ $payroll->id }} Transfers">
     <Table>
       <Row>
         <Cell><Data ss:Type="String">Nº Cuenta de Cargo</Data></Cell>
@@ -25,7 +25,7 @@
         <Cell><Data ss:Type="String">Monto Boleta</Data></Cell>
       </Row>
       @foreach ($transfers as $transfer)<Row>
-        <Cell><Data ss:Type="String"></Data></Cell>
+        <Cell><Data ss:Type="String">61649236</Data></Cell>
         <Cell><Data ss:Type="String">{{ data_get($transfer, 'accountNumber') }}</Data></Cell>
         <Cell><Data ss:Type="String">{{ data_get($transfer, 'bankId') }}</Data></Cell>
         <Cell><Data ss:Type="String">{{ data_get($transfer, 'rut.0') }}</Data></Cell>

@@ -58,8 +58,10 @@ class PayrollController extends AdminController
     public function download(Request $request, Model $payroll)
     {
         $transfers = [];
+        $transactions = $payroll->creditsTransactions()
+            ->where('transfer_status', CreditsTransaction::STATUS_PENDING)->get();
 
-        foreach ($payroll->creditsTransactions as $transaction) {
+        foreach ($transactions as $transaction) {
             $transfer = data_get($transaction, 'extra.bank_account', []);
             $transfer['rut'] = explode('-', data_get($transfer, 'rut', ''));
             $transfer['amount'] = $transaction->amount;
@@ -68,7 +70,10 @@ class PayrollController extends AdminController
         }
 
         return response()
-            ->view('downloads.payroll', ['transfers' => $transfers])
+            ->view('downloads.payroll', [
+                'payroll' => $payroll,
+                'transfers' => $transfers,
+            ])
             ->header('Content-Type', 'text/xml, application/xml')
             ->header('Content-Disposition', 'attachment; filename=payroll-' . $payroll->id . '.xml');
     }
