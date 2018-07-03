@@ -162,6 +162,9 @@ class SaleController extends Controller
             // Optional information.
             // Permissions checked in alterIndexQuery
             if (request()->get('buyer')) {
+                $sale->append([
+                    'used_credits',
+                ]);
                 $sale->order->append([
                     'used_credits',
                     'due',

@@ -83,6 +83,14 @@ class Sale extends Model
         return $this->products->sum('sale_price');
     }
 
+    /**
+     * Return the amount of credits used in the order that correspond to this sale.
+     */
+    public function getUsedCreditsAttribute()
+    {
+        return $this->order->used_credits_per_sale->get($this->id)['used_credits'];
+    }
+
     public function getDiscountPerProductAttribute()
     {
         return $this->order->discount_per_product->only($this->products_ids);

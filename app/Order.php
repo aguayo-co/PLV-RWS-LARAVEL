@@ -65,6 +65,34 @@ class Order extends Model
     }
 
     /**
+     * Return the amount of credits that correspond to each sale.
+     */
+    public function getUsedCreditsPerSaleAttribute()
+    {
+        $usedCredits = $this->used_credits;
+        $baseValue = $this->total + $this->shipping_cost;
+
+        $sales = collect($this->sales->all());
+        $creditsPerSaleId = collect();
+
+        // The last sale will be used to adjust to decimals.
+        $lastSale = $sales->pop();
+        foreach ($sales as $sale) {
+            $saleValue = $sale->total + $sale->shipping_cost;
+            $creditsPerSaleId->put($sale->id, [
+                'id' => $sale->id,
+                'used_credits' => round($saleValue * $usedCredits / $baseValue),
+            ]);
+        }
+        $creditsPerSaleId->put($lastSale->id, [
+            'id' => $lastSale->id,
+            'used_credits' => $usedCredits - $creditsPerSaleId->sum('used_credits'),
+        ]);
+
+        return $creditsPerSaleId;
+    }
+
+    /**
      * Get the order products.
      */
     public function getProductsAttribute()
