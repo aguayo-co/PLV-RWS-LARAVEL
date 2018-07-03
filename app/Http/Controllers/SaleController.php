@@ -134,9 +134,10 @@ class SaleController extends Controller
             'products.user',
         ]);
 
-        // Information only the owner of the Order should see.
+        // Optional information.
+        // Permissions checked in alterIndexQuery
         if (request()->get('buyer')) {
-            $collection->load([
+            $collection->loadMissing([
                 'order.payments',
             ]);
         }
@@ -155,12 +156,13 @@ class SaleController extends Controller
                 'allow_chilexpress',
                 'is_chilexpress',
                 'coupon_discount',
+                'total',
             ]);
 
-            // Information only the owner of the Order should see.
+            // Optional information.
+            // Permissions checked in alterIndexQuery
             if (request()->get('buyer')) {
                 $sale->order->append([
-                    'total',
                     'used_credits',
                     'due',
                     'coupon_discount',
