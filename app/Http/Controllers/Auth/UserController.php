@@ -26,6 +26,7 @@ class UserController extends Controller
     public static $allowedWhereHas = [
         'group_ids' => 'groups',
         'roles_ids' => 'roles',
+        'roles_names' => 'roles,name',
     ];
 
     public static $searchIn = ['first_name', 'last_name'];
