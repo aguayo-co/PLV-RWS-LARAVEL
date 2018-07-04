@@ -11,7 +11,7 @@ trait CanFilter
 {
     public static $allowedWhereIn = ['id'];
     //  Examples:
-    // ['query_name' => 'relation,[column]', 'color_ids' => 'colors',  'sellers_ids' => 'sale,user_id']
+    // ['query_name' => 'relation[,column]', 'color_ids' => 'colors',  'sellers_ids' => 'sale,user_id']
     public static $allowedWhereHas = [];
     public static $allowedWhereBetween = [];
     public static $allowedWhereDates = ['created_at', 'updated_at'];
@@ -144,6 +144,7 @@ trait CanFilter
         }
         foreach ($this->getWhereHas($filters, $allowedWhereHas) as $relation => $in) {
             $relation = explode(',', $relation);
+            # Check if we have a column to use instead of 'id'.
             $column = array_get($relation, 1, 'id');
             $query = $query->whereHas($relation[0], function ($q) use ($column, $in) {
                 $q->whereIn($column, $in);

@@ -40,6 +40,7 @@ Aparte de los criterios de filtrado globales, los usuarios se pueden filtrar por
 |------|----|
 |email|ContenidoEn|
 |group_ids|ContenidoEn|
+|roles_ids|ContenidoEn|
 
 ##### Revisión de existencia de cuenta por email
 

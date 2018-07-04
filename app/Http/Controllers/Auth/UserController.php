@@ -23,7 +23,10 @@ class UserController extends Controller
     protected $modelClass = User::class;
 
     public static $allowedWhereIn = ['id', 'email'];
-    public static $allowedWhereHas = ['group_ids' => 'groups'];
+    public static $allowedWhereHas = [
+        'group_ids' => 'groups',
+        'roles_ids' => 'roles',
+    ];
 
     public static $searchIn = ['first_name', 'last_name'];
 
