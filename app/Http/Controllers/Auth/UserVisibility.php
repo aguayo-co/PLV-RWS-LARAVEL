@@ -15,6 +15,9 @@ trait UserVisibility
             case $loggedUser && $loggedUser->hasRole('admin'):
                 $collection->makeVisible(['email', 'bank_account', 'phone']);
                 $collection->load(['roles']);
+                $collection->each(function ($user) {
+                    $user->append(['unread_count']);
+                });
         }
 
         $collection->load([

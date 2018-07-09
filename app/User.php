@@ -203,6 +203,11 @@ class User extends Authenticatable
         return json_decode($value, true);
     }
 
+    public function getUnreadCountAttribute()
+    {
+        return $this->newThreadsCount();
+    }
+
     #                                     #
     # Begin Products Information methods. #
     #                                     #

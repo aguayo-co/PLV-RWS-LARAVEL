@@ -103,7 +103,7 @@ class ThreadController extends Controller
     }
 
     /**
-     * Filters the index query for "unread" messages.
+     * Filters the index query.
      *
      * @return Closure
      */
@@ -181,5 +181,13 @@ class ThreadController extends Controller
     protected function setVisibility(Collection $collection)
     {
         $collection->load('messages', 'participants.user');
+        $loggedUser = auth()->user();
+        $collection->each(function ($thread) use ($loggedUser) {
+            $thread->participants->each(function ($participant) use ($loggedUser) {
+                if ($loggedUser->is($participant->user)) {
+                    $participant->user->append(['unread_count']);
+                }
+            });
+        });
     }
 }
