@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Notifications\Messages\UserMailMessage;
+use DateTime;
 use Illuminate\Auth\Notifications\ResetPassword as ResetPasswordNotification;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -20,6 +22,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        // Set global serialization options.
+        Carbon::serializeUsing(function ($carbon) {
+            return $carbon->format(DateTime::ATOM);
+        });
+
         # Change the default rendering method for ResetPassword.
         ResetPasswordNotification::$toMailCallback = function ($notifiable, $token) {
             return (new UserMailMessage($notifiable))->view(

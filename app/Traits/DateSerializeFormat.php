@@ -7,8 +7,11 @@ use DateTimeInterface;
 
 trait DateSerializeFormat
 {
+    /**
+     * Pass date untouched so that global serialization setting is used.
+     */
     protected function serializeDate(DateTimeInterface $date)
     {
-        return $date->format(DateTime::ATOM);
+        return $date;
     }
 }

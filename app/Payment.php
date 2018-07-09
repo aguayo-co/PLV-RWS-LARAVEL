@@ -21,7 +21,7 @@ class Payment extends Model
 
     protected $fillable = ['order_id', 'status'];
     protected $hidden = ['request'];
-    protected $appends = ['request_data', 'transfer_receipt'];
+    protected $appends = ['request_data', 'transfer_receipt', 'cancel_by'];
 
     public function __construct(array $attributes = array())
     {
@@ -81,5 +81,13 @@ class Payment extends Model
     protected function setTransferReceiptAttribute($transferReceipt)
     {
         $this->setFile('transfer_receipt', $transferReceipt);
+    }
+
+    protected function getCancelByAttribute()
+    {
+        if (!in_array($this->status, [Payment::STATUS_ERROR, Payment::STATUS_PENDING])) {
+            return null;
+        }
+        return $this->updated_at->addMinutes(config('prilov.payments.minutes_until_canceled'));
     }
 }
