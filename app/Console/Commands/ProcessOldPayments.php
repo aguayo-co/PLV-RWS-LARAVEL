@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\CreditsTransaction;
 use App\Notifications\PurchaseCanceled;
 use App\Order;
 use App\Payment;
@@ -70,9 +71,9 @@ class ProcessOldPayments extends Command
 
         if ($usedCredits) {
             CreditsTransaction::create([
-                'user_id' => $sale->order->user_id,
+                'user_id' => $payment->order->user_id,
                 'amount' => $usedCredits,
-                'order_id' => $sale->id,
+                'order_id' => $payment->order->id,
                 'extra' => ['reason' => __('prilov.credits.reasons.orderCanceled')]
             ]);
         }
