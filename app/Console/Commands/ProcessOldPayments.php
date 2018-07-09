@@ -81,7 +81,7 @@ class ProcessOldPayments extends Command
 
     protected function sendNotifications($payment)
     {
-        if ($payment->gateway === 'transfer') {
+        if ($payment->gateway === 'Transfer') {
             $payment->order->user->notify(new PurchaseCanceled(['order' => $payment->order]));
         }
     }
