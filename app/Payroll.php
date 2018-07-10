@@ -44,12 +44,18 @@ class Payroll extends Model
         $this->load('creditsTransactions');
     }
 
-    protected function getDownloadUrlAttribute()
+    protected function getDownloadUrlsAttribute()
     {
-        return URL::temporarySignedRoute(
+        $pending = URL::temporarySignedRoute(
             'downloads.payroll',
             now()->addMinutes(30),
             ['payroll' => $this->id]
         );
+        $complete = URL::temporarySignedRoute(
+            'downloads.payroll',
+            now()->addMinutes(30),
+            ['payroll' => $this->id, 'complete' => 'complete']
+        );
+        return [$pending, $complete];
     }
 }

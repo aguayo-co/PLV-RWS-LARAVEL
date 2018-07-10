@@ -58,14 +58,17 @@ class PayrollController extends AdminController
     public function download(Request $request, Model $payroll)
     {
         $transfers = [];
-        $transactions = $payroll->creditsTransactions()
-            ->where('transfer_status', CreditsTransaction::STATUS_PENDING)->get();
+        $query = $payroll->creditsTransactions();
+        if (!$request->complete) {
+            $query = $query->where('transfer_status', CreditsTransaction::STATUS_PENDING);
+        }
+        $transactions = $query->get();
 
         foreach ($transactions as $transaction) {
             $transfer = data_get($transaction, 'extra.bank_account', []);
             $transfer['rut'] = explode('-', data_get($transfer, 'rut', ''));
-            $transfer['amount'] = $transaction->amount;
-            $transfer['commission'] = $transaction->commission;
+            $transfer['amount'] = -$transaction->amount;
+            $transfer['commission'] = -$transaction->commission;
             $transfer['email'] = $transaction->user->email;
             $transfers[] = $transfer;
         }
@@ -86,7 +89,7 @@ class PayrollController extends AdminController
     {
         $collection->load('creditsTransactions');
         $collection->each(function ($payroll) {
-            $payroll->append(['credits_transactions_ids', 'download_url']);
+            $payroll->append(['credits_transactions_ids', 'download_urls']);
         });
     }
 
