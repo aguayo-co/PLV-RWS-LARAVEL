@@ -370,7 +370,6 @@ class OrderController extends Controller
             'sales.products.brand',
             'sales.products.condition',
             'sales.products.size',
-            'sales.products.user',
 
             'sales.returns',
             'sales.shippingMethod',
@@ -386,7 +385,7 @@ class OrderController extends Controller
                     'shipping_cost',
                     'allow_chilexpress',
                     'is_chilexpress',
-                    'coupon_discount',
+                    'total',
                 ]);
             });
             $order->append([

@@ -41,9 +41,11 @@ class SaleController extends Controller
             return;
         }
 
+        // Display sales with buyers information.
+        // Visibility should be different for this query.
+        // Check setVisibility().
+        // Limit to orders of the current logged in user.
         if (request()->get('buyer')) {
-            // Visibility should be different for this query.
-            // Check setVisibility().
             return function ($query) use ($user) {
                 $query = $query->whereHas('order', function ($q) use ($user) {
                     $q->where('user_id', $user->id);
@@ -144,6 +146,7 @@ class SaleController extends Controller
 
         $collection->each(function ($sale) {
             $sale->user->makeVisible(['email', 'phone']);
+            // Show contact data only when order has been successful.
             if (Sale::STATUS_PAYED <= $sale->status && $sale->status < Sale::STATUS_CANCELED) {
                 $sale->order->user->makeVisible(['email', 'phone']);
             }
@@ -155,7 +158,6 @@ class SaleController extends Controller
                 'shipping_cost',
                 'allow_chilexpress',
                 'is_chilexpress',
-                'coupon_discount',
                 'total',
             ]);
 
@@ -166,6 +168,7 @@ class SaleController extends Controller
                     'used_credits',
                 ]);
                 $sale->order->append([
+                    'total',
                     'used_credits',
                     'due',
                     'coupon_discount',
