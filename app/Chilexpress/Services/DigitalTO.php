@@ -41,7 +41,7 @@ trait DigitalTO
             'codigoServicio' => $codigoServicio,
             'comunaOrigen' => $origen->chilexpressGeodata->name,
             'numeroTCC' => env('CHILEXPRESS_TCC'),
-            'referenciaEnvio' => 'PRILOV - ' . $ref,
+            'referenciaEnvio' => config('prilov.chilexpress.referencia_base') . $ref,
             'referenciaEnvio2' => null,
             'eoc' => '0',
             'Remitente' => [

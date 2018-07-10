@@ -12,4 +12,7 @@ return [
     'payments' => [
         'minutes_until_canceled' => env('PRILOV_MINUTES_UNTIL_CANCELED', 45),
     ],
+    'chilexpress' => [
+        'referencia_base' => 'PRILOV - ',
+    ]
 ];
