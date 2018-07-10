@@ -44,8 +44,11 @@ Aparte de los criterios de filtrado globales, los productos se pueden filtrar po
 ##### Agregar imágenes
 
 Las imágenes que se envíen en el campo `images`, serán agregadas al listado de imágenes que ya tenga
-el producto. El índice con el que sea enviada la imagen dicta el orden en que sea devuelto en el
-producto. Para eliminar imágenes se debe enviar la información en un campo `images_remove`.
+el producto. El índice con el que sea enviada la imagen dicta nombre con el que sea guardado.
+Si la imagen se envía en con el índice 3, el nombre será algo así: `3-6886876.jpg`.
+Existen imágenes que no siguen este patrón de nombre, y son imágenes antiguas migradas
+de la versión anterior del sitio.
+Para eliminar imágenes se debe enviar la información en un campo `images_remove`.
 
 ##### Eliminación de imágenes
 
