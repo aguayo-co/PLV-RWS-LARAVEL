@@ -186,6 +186,7 @@ class SaleObserver
         CreditsTransaction::create([
             'user_id' => $sale->user_id,
             'amount' => $sale->total - $sale->commission,
+            'commission' => $sale->commission,
             'sale_id' => $sale->id,
             'extra' => ['reason' => __('prilov.credits.reasons.orderCompleted')]
         ]);
@@ -201,6 +202,7 @@ class SaleObserver
         CreditsTransaction::create([
             'user_id' => $sale->user_id,
             'amount' => $amount,
+            'commission' => $sale->commission,
             'sale_id' => $sale->id,
             'extra' => ['reason' => $reason]
         ]);

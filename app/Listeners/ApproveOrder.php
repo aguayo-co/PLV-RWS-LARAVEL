@@ -37,11 +37,11 @@ class ApproveOrder
 
         switch (true) {
             case $order->sales->count() > 0:
-                $this->approveShoppingCartOrder($order);
+                $this->shoppingCartOrderApproved($order);
                 break;
 
             case data_get($order->extra, 'product') === 'credits':
-                $this->approveTransactionOrder($order);
+                $this->transactionOrderApproved($order);
                 break;
         }
 
@@ -49,20 +49,21 @@ class ApproveOrder
         $order->save();
     }
 
-    protected function approveShoppingCartOrder($order)
+    protected function shoppingCartOrderApproved($order)
     {
         // We want to fire events.
         foreach ($order->sales as $sale) {
             $sale->status = Sale::STATUS_PAYED;
             $sale->save();
         }
+        // We want to fire events.
         foreach ($order->products as $product) {
             $product->status = Product::STATUS_SOLD;
             $product->save();
         }
     }
 
-    protected function approveTransactionOrder($order)
+    protected function transactionOrderApproved($order)
     {
         CreditsTransaction::create([
             'user_id' => $order->user_id,

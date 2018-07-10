@@ -395,6 +395,7 @@ class User extends Authenticatable
                     ->orWhere('tr_orders.status', '!=', Order::STATUS_SHOPPING_CART);
             })
             ->selectRaw('CAST(SUM(credits_transactions.amount) AS SIGNED) credits')
+            ->selectRaw('CAST(SUM(credits_transactions.commission) AS SIGNED) commissions')
             ->groupBy(['users.id']);
     }
 }

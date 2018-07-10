@@ -65,6 +65,7 @@ class PayrollController extends AdminController
             $transfer = data_get($transaction, 'extra.bank_account', []);
             $transfer['rut'] = explode('-', data_get($transfer, 'rut', ''));
             $transfer['amount'] = $transaction->amount;
+            $transfer['commission'] = $transaction->commission;
             $transfer['email'] = $transaction->user->email;
             $transfers[] = $transfer;
         }

@@ -38,7 +38,7 @@
         <Cell><Data ss:Type="String">Transferencia de créditos en Prilov</Data></Cell>
         <Cell><Data ss:Type="String">{{ data_get($transfer, 'email') }}</Data></Cell>
         <Cell><Data ss:Type="String">{{ data_get($transfer, 'fullName') }}</Data></Cell>
-        <Cell><Data ss:Type="String">0</Data></Cell>
+        <Cell><Data ss:Type="String">{{ data_get($transfer, 'commission') }}</Data></Cell>
       </Row>
     @endforeach</Table>
   </Worksheet>

@@ -93,12 +93,13 @@ class CreditsTransactionController extends Controller
         // Lower limit is the maximum amount a user can withdraw.
         // It has to be negative or 0,
         $lowerLimit = min(-data_get($user, 'credits', 0), 0);
-        // Upper limit is changes for admins and non-admins.
+        // Upper limit changes for admins and non-admins.
         // - Admins can add credits to users, their upper limit is
         //   virtually non existing (DB constrained).
         // - Non-admins need to withdraw at least 4000, so their upper limit
-        //   is negative: -4000
-        $upperLimit = auth()->user()->hasRole('admin') ? 9999999 : -4000;
+        //   is negative: -4000, and they need to withdraw the full amount
+        //   of available credits they have, so can be even lower.
+        $upperLimit = auth()->user()->hasRole('admin') ? 9999999 : min(-4000, $lowerLimit);
         return [
             'user_id' => [
                 'integer',
@@ -112,6 +113,7 @@ class CreditsTransactionController extends Controller
                 'integer',
                 "between:$lowerLimit,$upperLimit",
             ],
+            'commission' => 'nullable|integer|min:0|empty_with:sale_id|empty_with:transfer_status',
             'sale_id' => [
                 'empty_with:order_id',
                 'empty_with:transfer_status',
@@ -141,13 +143,8 @@ class CreditsTransactionController extends Controller
 
     protected function alterFillData($data, Model $transaction = null)
     {
-        // Only admin can change transfer_status.
-        if ($transaction && !auth()->user()->hasRole('admin')) {
-            array_forget($data, 'transfer_status');
-        }
-
         // In case a user is not specified, use logged in user.
-        if (!$transaction && !array_get($data, 'user_id')) {
+        if (!$transaction && !array_has($data, 'user_id')) {
             $data['user_id'] = auth()->user()->id;
         }
 
@@ -172,7 +169,50 @@ class CreditsTransactionController extends Controller
             $data['order_id'] = null;
         }
 
+        $this->setCommission($data, $transaction);
+
         return $data;
+    }
+
+    protected function setCommission(&$data, $transaction)
+    {
+        // Never allow sent data from non admins.
+        if (!auth()->user()->hasRole('admin')) {
+            array_forget($data, 'commission');
+        }
+
+        // If we received valid data, allow it.
+        if (array_has($data, 'commission')) {
+            return;
+        }
+
+        // Do not calculate for existing transactions.
+        if ($transaction) {
+            return;
+        }
+
+        $orderId = array_get($data, 'order_id');
+        $saleId = array_get($data, 'sale_id');
+        $transferStatus = array_get($data, 'transfer_status');
+
+        // No commission allowed for Transactions with OrderId.
+        if ($orderId) {
+            $data['commission'] = null;
+            return;
+        }
+
+        // When from a sale, it is the value of the commission for that sale.
+        if ($saleId) {
+            $sale = Sale::find($saleId);
+            $data['commission'] = $sale->commission;
+            return;
+        }
+
+        // If a withdraw, use sum of commission until now.
+        if ($transferStatus !== null) {
+            $user = User::withCredits()->find(array_get($data, 'user_id'));
+            $data['commission'] = -data_get($user, 'commissions', 0);
+        }
     }
 
     protected function setBankAccount(&$data)

@@ -253,6 +253,7 @@ UserExpanded:
     following_count: integer
     favorites_ids: integer[]
     credits: integer
+    commissions: integer
     purchased_products_count: integer
     published_products_count: integer
     sold_products_count: integer
@@ -428,6 +429,7 @@ CreditsTransactionRequest:
   properties:
     user_id: integer
     amount: integer
+    commission?: integer
     sale_id?: integer
     order_id?: integer
     transfer_status?: integer

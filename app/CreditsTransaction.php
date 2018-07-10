@@ -11,7 +11,7 @@ class CreditsTransaction extends Model
     use HasStatuses;
     use DateSerializeFormat;
 
-    protected $fillable = ['user_id', 'amount', 'sale_id', 'order_id', 'extra', 'transfer_status'];
+    protected $fillable = ['user_id', 'amount', 'commission', 'sale_id', 'order_id', 'extra', 'transfer_status'];
 
     const STATUS_PENDING = 0;
     const STATUS_COMPLETED = 1;
