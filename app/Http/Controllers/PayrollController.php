@@ -66,7 +66,13 @@ class PayrollController extends AdminController
 
         foreach ($transactions as $transaction) {
             $transfer = data_get($transaction, 'extra.bank_account', []);
-            $transfer['rut'] = explode('-', data_get($transfer, 'rut', ''));
+            // Chilean rut has 8 digits and a verification number.
+            // Ignore anything else.
+            $cleanRut = preg_replace('/[^0-9]/', '', data_get($transfer, 'rut', ''));
+            $transfer['rut'] = [
+                substr($cleanRut, 0, 8),
+                substr($cleanRut, 8, 1)
+            ];
             $transfer['amount'] = -$transaction->amount;
             $transfer['commission'] = -$transaction->commission;
             $transfer['email'] = $transaction->user->email;
