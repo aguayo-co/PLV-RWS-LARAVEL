@@ -136,6 +136,7 @@ class SaleObserver
 
     protected function sendCompletedNotifications()
     {
+        $sale = $this->sale;
         $sale->user->notify(new Accepted(['sale' => $sale]));
     }
 
@@ -158,6 +159,7 @@ class SaleObserver
 
     protected function sendReceivedNotifications()
     {
+        $sale = $this->sale;
         $sale->user->notify(new ReceivedAgreement(['sale' => $sale]));
     }
 
