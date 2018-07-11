@@ -35,7 +35,7 @@
         <Cell><Data ss:Type="String"></Data></Cell>
         <Cell><Data ss:Type="String"></Data></Cell>
         <Cell><Data ss:Type="String">REM</Data></Cell>
-        <Cell><Data ss:Type="String">Transferencia de créditos en Prilov</Data></Cell>
+        <Cell><Data ss:Type="String">Creditos Prilov</Data></Cell>
         <Cell><Data ss:Type="String">{{ data_get($transfer, 'email') }}</Data></Cell>
         <Cell><Data ss:Type="String">{{ data_get($transfer, 'fullName') }}</Data></Cell>
         <Cell><Data ss:Type="String">{{ data_get($transfer, 'commission') }}</Data></Cell>
