@@ -55,11 +55,23 @@ class CreditsTransactionController extends Controller
     protected function alterIndexQuery()
     {
         return function ($query) {
-            $filterManual = array_get(request()->query('filter'), 'manual');
-            if ($filterManual) {
-                $query = $query->whereNull('order_id')
-                ->whereNull('sale_id')
-                ->whereNull('transfer_status');
+            $relatedTo = array_get(request()->query('filter'), 'related_to');
+            switch ($relatedTo) {
+                case 'orders':
+                    $query = $query->whereNotNull('order_id')
+                        ->whereNull('sale_id')
+                        ->whereNull('transfer_status');
+                    break;
+                case 'sales':
+                    $query = $query->whereNull('order_id')
+                        ->whereNotNull('sale_id')
+                        ->whereNull('transfer_status');
+                    break;
+                case 'none':
+                    $query = $query->whereNull('order_id')
+                        ->whereNull('sale_id')
+                        ->whereNull('transfer_status');
+                    break;
             }
 
             // When user is not admin, limit to current user transactions.
