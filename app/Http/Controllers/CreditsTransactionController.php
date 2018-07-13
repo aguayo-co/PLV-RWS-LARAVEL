@@ -50,19 +50,25 @@ class CreditsTransactionController extends Controller
     }
 
     /**
-     * When user is not admin, limit to current user sales.
-     *
      * @return Closure
      */
     protected function alterIndexQuery()
     {
-        $user = auth()->user();
-        if ($user->hasRole('admin')) {
-            return;
-        }
+        return function ($query) {
+            $filterManual = array_get(request()->query('filter'), 'manual');
+            if ($filterManual) {
+                $query = $query->whereNull('order_id')
+                ->whereNull('sale_id')
+                ->whereNull('transfer_status');
+            }
 
-        return function ($query) use ($user) {
-            return $query->where('user_id', $user->id);
+            // When user is not admin, limit to current user transactions.
+            $user = auth()->user();
+            if (!$user->hasRole('admin')) {
+                $query = $query->where('user_id', $user->id);
+            }
+
+            return $query;
         };
     }
 
@@ -74,14 +80,13 @@ class CreditsTransactionController extends Controller
      */
     protected function getValidationUser(array $data, ?Model $transaction)
     {
-        $userId = null;
+        $userId = auth()->id();
         if (array_has($data, 'user_id')) {
             $userId = array_get($data, 'user_id');
         }
         if ($transaction) {
             $userId = $transaction->user_id;
         }
-        $userId = auth()->id();
         return User::withCredits()->find($userId);
     }
 
