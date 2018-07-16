@@ -14,16 +14,26 @@ class Rating extends Model
 
     const STATUS_UNPUBLISHED = 0;
     const STATUS_PUBLISHED = 1;
+    const STATUS_HIDDEN = 99;
 
     protected $primaryKey = 'sale_id';
     public $incrementing = false;
 
     public $fillable = ['seller_rating', 'seller_comment', 'buyer_rating', 'buyer_comment'];
 
-
     public static function boot()
     {
         parent::boot();
+
+        self::saving(function ($rating) {
+            // Set to publish if both ratings have been set.
+            if ($rating->status == Rating::STATUS_UNPUBLISHED
+                && $rating->seller_rating !== null
+                && $rating->buyer_rating !== null) {
+                $rating->status = Rating::STATUS_PUBLISHED;
+            }
+        });
+
         self::saved(function ($rating) {
             if (!array_has($rating->getChanges(), 'status')) {
                 return;

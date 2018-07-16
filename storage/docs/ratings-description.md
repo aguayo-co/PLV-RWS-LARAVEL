@@ -5,6 +5,7 @@ Una calificación puede tener los siguientes estados:
 
 - **0**: No publicada
 - **1**: Publicada
+- **99**: Escondida
 
 Una venta se puede calificar después de que la misma ha sido pagada, y se pueden modificar cuando se encuentra
 en estado `No publicada`.

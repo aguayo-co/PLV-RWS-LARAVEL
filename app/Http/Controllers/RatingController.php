@@ -63,7 +63,7 @@ class RatingController extends Controller
             abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Sale not ready to be rated.');
         }
 
-        if ($rating->status === Rating::STATUS_PUBLISHED && !auth()->user()->hasRole('admin')) {
+        if ($rating->status !== Rating::STATUS_UNPUBLISHED && !auth()->user()->hasRole('admin')) {
             abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Can not modify a published rating.');
         }
 
@@ -112,13 +112,18 @@ class RatingController extends Controller
         // not set by the current user.
         $unpublished = $collection->where('status', Rating::STATUS_UNPUBLISHED);
         $unpublished->each(function ($rating) use ($user) {
-            // Rating not published, hide ratings not made by current user.
             if (!$user || $rating->sale->user_id !== $user->id) {
                 $rating->makeHidden(['seller_rating', 'seller_comment']);
             }
             if (!$user || $rating->sale->order->user_id !== $user->id) {
                 $rating->makeHidden(['buyer_rating', 'buyer_comment']);
             }
+        });
+
+        // For hidden ratings, hide ratings and comments.
+        $unpublished = $collection->where('status', Rating::STATUS_HIDDEN);
+        $unpublished->each(function ($rating) {
+            $rating->makeHidden(['seller_rating', 'seller_comment'], ['buyer_rating', 'buyer_comment']);
         });
     }
 }
