@@ -181,7 +181,16 @@ class ThreadController extends Controller
     protected function setVisibility(Collection $collection)
     {
         $collection->load('messages', 'participants.user');
+        $this->setUnreadForCurrentUser($collection);
+    }
+
+    protected function setUnreadForCurrentUser(Collection $collection)
+    {
         $loggedUser = auth()->user();
+        if (!$loggedUser) {
+            return;
+        }
+
         $collection->each(function ($thread) use ($loggedUser) {
             $thread->participants->each(function ($participant) use ($loggedUser) {
                 if ($loggedUser->is($participant->user)) {
