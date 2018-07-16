@@ -40,18 +40,15 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
-            'throttle:60,1',
             'wants_json',
             'bindings',
         ],
 
         'downloads' => [
-            'throttle:60,1',
             'bindings',
         ],
 
         'callback' => [
-            'throttle:60,1',
         ],
     ];
 
