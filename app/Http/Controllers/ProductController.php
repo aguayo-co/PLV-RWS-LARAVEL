@@ -99,7 +99,7 @@ class ProductController extends Controller
             'title' => $required . 'string',
             'slug' => 'string',
             'description' => $required . 'string|max:10000',
-            'dimensions' => $required . 'string|max:10000',
+            'dimensions' => 'nullable|string|max:10000',
             'original_price' => $required . 'integer|between:0,9999999',
             'price' => $required . 'integer|between:0,9999999',
             'commission' => $required . 'numeric|between:0,100',

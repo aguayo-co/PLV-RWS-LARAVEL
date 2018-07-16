@@ -21,7 +21,7 @@ class CreateProductsTable extends Migration
             $table->string('title');
             $table->string('slug');
             $table->text('description');
-            $table->text('dimensions');
+            $table->text('dimensions')->nullable();
             $table->integer('original_price')->unsigned();
             $table->integer('price')->unsigned();
             $table->tinyInteger('commission')->unsigned();
