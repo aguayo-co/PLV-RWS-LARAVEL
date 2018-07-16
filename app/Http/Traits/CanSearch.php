@@ -2,9 +2,9 @@
 
 namespace App\Http\Traits;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 
 trait CanSearch
 {
@@ -24,7 +24,7 @@ trait CanSearch
 
         $columns = implode(',' . $table, $controllerClass::$searchIn);
 
-        $search = $request->query('q') ?: [];
+        $search = $request->query('q') ?: null;
 
         if ($search && $columns) {
             $query = $query->whereRaw('MATCH (' . $table . $columns . ') AGAINST(? IN BOOLEAN MODE)', $search);

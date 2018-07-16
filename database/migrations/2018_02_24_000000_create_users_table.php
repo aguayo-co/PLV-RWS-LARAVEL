@@ -25,7 +25,7 @@ class CreateUsersTable extends Migration
             $table->boolean('vacation_mode')->default(false);
             $table->timestamps();
         });
-        DB::statement('ALTER TABLE users ADD FULLTEXT search(first_name, last_name)');
+        DB::statement('ALTER TABLE users ADD FULLTEXT search(email, first_name, last_name)');
     }
 
     /**

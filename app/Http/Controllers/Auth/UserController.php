@@ -29,7 +29,7 @@ class UserController extends Controller
         'roles_names' => 'roles,name',
     ];
 
-    public static $searchIn = ['first_name', 'last_name'];
+    public static $searchIn = ['email', 'first_name', 'last_name'];
 
     protected function alterValidateData($data, Model $user = null)
     {
