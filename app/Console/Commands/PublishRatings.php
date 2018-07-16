@@ -47,7 +47,7 @@ class PublishRatings extends Command
 
         // We want to fire events.
         foreach ($ratings as $rating) {
-            $rating->status = Rating::STATUS_UNPUBLISHED;
+            $rating->status = Rating::STATUS_PUBLISHED;
             $rating->save();
         }
     }
