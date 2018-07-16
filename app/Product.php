@@ -67,11 +67,13 @@ class Product extends Model
     ];
     protected $appends = ['images', 'image_instagram', 'sale_price'];
 
+    // Editable means it has been approved, but not sold.
     protected function getEditableAttribute()
     {
         return Product::STATUS_APPROVED <= $this->status && $this->status < Product::STATUS_PAYMENT;
     }
 
+    // Means it has been approved, and is available
     protected function getSaleableAttribute()
     {
         return Product::STATUS_APPROVED <= $this->status && $this->status <= Product::STATUS_AVAILABLE;
