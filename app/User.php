@@ -344,7 +344,25 @@ class User extends Authenticatable
         return $query
             ->leftJoinSub($subQuery, 'group_user', 'group_user.user_id', '=', 'users.id')
             ->orderBy('group_user.has_group', 'desc')
-            ->orderBy('group_user.group_id', $direction)->orderBy('group_user.group_id');
+            ->orderBy('group_user.group_id', $direction);
+    }
+
+    /**
+     * Order users by their group_ids relation.
+     * Always shows users with no groups at the end.
+     *
+     * Can change the direction based on the lowest id of all
+     * the groups a user belongs to.
+     */
+    public function scopeOrderedByLatestProduct($query, $direction = 'asc')
+    {
+        $subQuery = DB::table('products')
+            ->select('user_id')
+            ->selectRaw('MAX(created_at) as created_at')
+            ->groupBy('user_id');
+        return $query
+            ->leftJoinSub($subQuery, 'products', 'products.user_id', '=', 'users.id')
+            ->orderBy('products.created_at', $direction);
     }
 
     /**

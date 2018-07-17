@@ -41,6 +41,7 @@ Aparte de los criterios de filtrado globales, los usuarios se pueden filtrar por
 |email|ContenidoEn|
 |group_ids|ContenidoEn|
 |roles_ids|ContenidoEn|
+|with_products|Booleano|
 
 ##### Revisión de existencia de cuenta por email
 

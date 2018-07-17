@@ -94,17 +94,28 @@ class UserController extends Controller
     {
         return function ($query) {
             $orderBy = explode(',', request()->query('orderby'));
-            $direction = null;
+
             if (in_array('group_id', $orderBy)) {
-                $direction = 'asc';
+                $query = $query->OrderedByGroup('asc');
             }
             if (in_array('-group_id', $orderBy)) {
-                $direction = 'desc';
+                $query = $query->OrderedByGroup('desc');
             }
 
-            if ($direction) {
-                $query = $query->OrderedByGroup($direction);
+            if (in_array('latest_product', $orderBy)) {
+                $query = $query->OrderedByLatestProduct('asc');
             }
+            if (in_array('-latest_product', $orderBy)) {
+                $query = $query->OrderedByLatestProduct('desc');
+            }
+
+            $withProducts = array_get(request()->query('filter'), 'with_products');
+            if ($withProducts) {
+                $query = $query->whereHas('products', function ($subQuery) {
+                    $subQuery->whereBetween('status', [Product::STATUS_APPROVED, Product::STATUS_AVAILABLE]);
+                });
+            }
+
             return $query->withPurchasedProductsCount()
                 ->withCredits();
         };
@@ -232,7 +243,8 @@ class UserController extends Controller
     public function index(Request $request)
     {
         // Quick email existence validation.
-        if ($email = $request->query('email')) {
+        $email = $request->query('email');
+        if ($email) {
             if (User::where('email', $email)->count()) {
                 return;
             }
