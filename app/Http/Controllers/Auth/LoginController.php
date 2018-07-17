@@ -110,6 +110,7 @@ class LoginController extends Controller
         $this->clearLoginAttempts($request);
 
         $user = $this->guard()->user();
+        auth()->setUser($user);
 
         $user = User::WithPurchasedProductsCount()
             ->withCredits()->findOrFail($user->id);
