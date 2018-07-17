@@ -320,125 +320,6 @@
                     <tr class="row" style="width:100%;">
                       <td class="cell spacing txt" align="center" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Ya confirmamos el pago por parte de la compradora.</td>
                     </tr>
-                    <tr class="row" style="width:100%;">
-                      <td class="cell spacing_table" align="center" style="padding-top:30px;padding-bottom:40px;padding-right:0;padding-left:0;">
-                        <!-- Resumen de compra -->
-                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                          <thead>
-                            <tr>
-                              <th colspan="2" class="table__header uppercase" style="text-transform:uppercase;font-size:18px;padding-top:16px;padding-bottom:16px;padding-right:0;padding-left:0;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#000;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Resumen de compra</th>
-                            </tr>
-                          </thead>
-                          <!-- Total de orden con descuento -->
-                          <tfoot class="table__footer">
-                            <tr>
-                              <td align="left" class="spacing_sub-cell table__footer-cell" style="padding-top:12px;font-size:18px;font-weight:bold;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Total de tu orden:</td>
-                              <td align="right" class="spacing_sub-cell table__footer-cell" style="padding-top:12px;font-size:18px;font-weight:bold;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">$60.000</td>
-                            </tr>
-                          </tfoot>
-                          <!-- end Total de orden con descuento -->                          
-                          <tbody>
-                            <!-- Productos de resumen de compra -->
-                            <tr>
-                              <td colspan="2" class="spacing_head-cell" style="padding-top:20px;">
-                                <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                                  <thead>
-                                    <tr>
-                                      <th align="left" class="sub-thead" style="font-size:16px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Chaqueta</th>
-                                      <th align="right" class="sub-thead" style="font-size:16px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">$34.000</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    <tr>
-                                      <td align="left" class="sub-cell" style="padding-top:6px;font-size:12px;color:#9B9B9B;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Envío estándar</td>
-                                      <td align="right" class="sub-cell" style="padding-top:6px;font-size:12px;color:#9B9B9B;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">$</td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td colspan="2" class="spacing_sub-cell" style="padding-top:12px;">
-                                <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                                  <thead>
-                                    <tr>
-                                      <th align="left" class="sub-thead" style="font-size:16px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Botas</th>
-                                      <th align="right" class="sub-thead" style="font-size:16px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">$18.000</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    <tr>
-                                      <td align="left" class="sub-cell" style="padding-top:6px;font-size:12px;color:#9B9B9B;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Envío estándar</td>
-                                      <td align="right" class="sub-cell" style="padding-top:6px;font-size:12px;color:#9B9B9B;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">$</td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td colspan="2" class="spacing_sub-cell" style="padding-top:12px;">
-                                <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                                  <thead>
-                                    <tr>
-                                      <th align="left" class="sub-thead" style="font-size:16px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Poncho</th>
-                                      <th align="right" class="sub-thead" style="font-size:16px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">$8.000</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    <tr>
-                                      <td align="left" class="sub-cell" style="padding-top:6px;font-size:12px;color:#9B9B9B;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Envío estándar</td>
-                                      <td align="right" class="sub-cell" style="padding-top:6px;font-size:12px;color:#9B9B9B;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">$</td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td colspan="2" class="spacing_sub-cell" style="padding-top:12px;">
-                                <!-- total de la orden -->
-                                <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                                  <thead>
-                                    <tr>
-                                      <th align="left" class="sub-thead" style="font-size:16px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Total de la orden</th>
-                                      <th align="right" class="sub-thead" style="font-size:16px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">$63.000</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    <tr>
-                                      <td align="left" class="sub-cell" style="padding-top:6px;font-size:12px;color:#9B9B9B;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Envío estándar</td>
-                                      <td align="right" class="sub-cell" style="padding-top:6px;font-size:12px;color:#9B9B9B;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">$</td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                                <!-- total de la orden -->                                
-                              </td>
-                            </tr>
-                            <tr>
-                              <td colspan="2" class="spacing_sub-cell spacing_foot-cell" style="padding-bottom:12px;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#EFEFEF;padding-top:12px;">
-                                <!-- código de descuento -->
-                                <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                                  <thead>
-                                    <tr>
-                                      <th align="left" class="sub-thead" style="font-size:16px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Código de descuento</th>
-                                      <th align="right" class="sub-thead" style="font-size:16px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">$0</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    <tr>
-                                      <td align="left" class="sub-cell" style="padding-top:6px;font-size:12px;color:#9B9B9B;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Envío estándar</td>
-                                      <td align="right" class="sub-cell" style="padding-top:6px;font-size:12px;color:#9B9B9B;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">$</td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                                <!-- end código de descuento -->                                
-                              </td>
-                            </tr>
-                            <!-- end Productos de resumen de compra -->
-                          </tbody>
-                        </table>
-                        <!-- end Resumen de compra -->
-                      </td>
-                    </tr>
                   </table>
                 </td>
               </tr>
@@ -447,7 +328,7 @@
                   <!-- Método de envío -->
                   <table class="table__medium" width="500" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
                     <thead>
-                      <th class="bb_light head-table_second" style="padding-bottom:6px;font-size:16px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#EFEFEF;">MÉTODO ENVÍO</th>
+                      <th class="bb_light head-table_second" style="padding-bottom:6px;font-size:16px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#EFEFEF;">Envío con CHILEXPRESS</th>
                     </thead>
                     <tbody>
                       <tr>
@@ -463,25 +344,6 @@
               </tr>
               <tr class="row" style="width:100%;">
                 <td align="center">
-                  <!-- Vendedora -->
-                  <table class="table__medium" width="500" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
-                    <thead>
-                      <th class="bb_light head-table_second" style="padding-bottom:6px;font-size:16px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#EFEFEF;">VENDEDORA</th>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td class="txt-table_second txt-table_second-grey" align="center" style="padding-top:12px;padding-bottom:30px;padding-right:0;padding-left:0;font-size:16px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;font-weight:bold;color:#707070;">
-                          <img src="{{ env('APP_FRONT_URL') }}static/img/mailing/user-avatar.png" alt="a la espera de envio" width="40" class="v-align_middle" style="display:inline-block;vertical-align:middle;">
-                          <span class="v-align_middle" style="display:inline-block;vertical-align:middle;">&nbsp;Daniela Villanueva</span>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  <!-- end Vendedora -->
-                </td>
-              </tr>
-              <tr class="row" style="width:100%;">
-                <td align="center">
                   <table class="table__pre-footer" width="500" cellpadding="0" cellspacing="0" border="0">
                     <tbody>
                       <tr>
@@ -493,9 +355,9 @@
                       </tr>
                       <tr>
                         <td class="table-prefooter__cell table-prefooter__spacing-cell" align="center" style="padding-top:10px;padding-bottom:10px;padding-right:0;padding-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">
-                          Tienes X horas para enviar el producto. Debes dirigirte a cualquier sucursal de Chilexpress y enviar el producto con los datos que verás acá:
+                          Debes dirigirte a cualquier sucursal de Chilexpress y enviar el producto con los datos que verás acá:
                           <br>
-                          <a href="{{ env('APP_FRONT_URL') }}user/tus-ventas" class="link nav__link" style="display:inline-block;margin-top:5px;margin-bottom:5px;margin-right:5px;margin-left:5px;text-align:center;color:#000000;border-bottom-width:2px;border-bottom-style:solid;border-bottom-color:#f65a66;text-decoration:none;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;padding-top:30px;">Ver datos de envío</a>                          
+                          <a href="{{ env('APP_FRONT_URL') }}user/tus-ventas" class="link nav__link" style="display:inline-block;margin-top:5px;margin-bottom:5px;margin-right:5px;margin-left:5px;text-align:center;color:#000000;border-bottom-width:2px;border-bottom-style:solid;border-bottom-color:#f65a66;text-decoration:none;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;padding-top:30px;">Ver datos de envío</a>
                         </td>
                       </tr>
                       <tr>
