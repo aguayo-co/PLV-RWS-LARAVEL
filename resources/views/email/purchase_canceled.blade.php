@@ -215,7 +215,7 @@
                       </td>
                     </tr>
                     <tr class="row" style="width:100%;">
-                      <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Tenemos una mala noticia :( La compra de <strong>NOMBRE DEL PRODUCTO</strong> y <strong>X ITEMS MÁS</strong> fue cancelada porque no subiste el comprobante de tu transferencia o el que subiste no era válido.</td>
+                      <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Tenemos una mala noticia :( Tu compra fue cancelada porque no subiste el comprobante de tu transferencia o el que subiste no era válido.</td>
                     </tr>
                     <tr class="row" style="width:100%;">
                       <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Puedes volver a intentarlo, agregando él o los productos que quieres al carrito y siguiendo los pasos para el pago.</td>

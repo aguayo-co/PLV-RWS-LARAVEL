@@ -233,30 +233,7 @@
                       </td>
                     </tr>
                     <tr class="row" style="width:100%;">
-                      <td class="cell spacing txt center" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;text-align:center;font-size:18px;font-family:'Montserrat', arial;line-height:1.4;">Tu producto:</td>
-                    </tr>
-                    <tr class="row" style="width:100%;">
-                      <td class="cell spacing txt" align="center" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', arial;line-height:1.4;">
-                        <a href="{{ env('APP_FRONT_URL') }}editar-producto/{{ $product->id }}" class="link" style="color: #000000;">
-                          <table width="240" cellpadding="0" cellspacing="0" border="0">
-                            <tbody>
-                              <tr>
-                                <td class="card" style="line-height:1;font-size:0px;">
-                                  <img src="{{ array_get($product->images, 0) }}" alt="{{ $product->title }}" class="img" style="width:100%;">
-                                </td>
-                              </tr>
-                              <tr>
-                                <td class="card__caption" style="font-weight:bold;padding-top:20px;padding-bottom:20px;padding-right:0;padding-left:0;font-size:16px;font-family:'Montserrat', arial;line-height:1.4;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#000000;">
-                                  {{ $product->title }}
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </a>
-                      </td>
-                    </tr>
-                    <tr class="row" style="width:100%;">
-                      <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', arial;line-height:1.4;">Te queremos confirmar que tu producto NOMBRE DEL PRODUCTO, fue eliminado de tu perfil y ya no se encuentra disponible.</td>
+                      <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', arial;line-height:1.4;">Te queremos confirmar que tu producto <strong>{{ $product->title }}</strong>, fue eliminado de tu perfil y ya no se encuentra disponible.</td>
                     </tr>
                     <tr class="row" style="width:100%;">
                       <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', arial;line-height:1.4;">Gracias por publicar en Prilov.</td>

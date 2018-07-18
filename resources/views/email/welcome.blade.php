@@ -263,7 +263,7 @@
         <td class="cell" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;">
           <p class="kicker" style="display:block;width:92%;margin-top:0;margin-bottom:40px;margin-right:auto;margin-left:auto;line-height:1.4;text-align:center;font-size:18px;text-transform:uppercase;font-family:'Montserrat', Arial, Helvetica, sans-serif;">Bienvenida a la comunidad de Prilovers.</p>
           <p class="kicker" style="display:block;width:92%;margin-top:0;margin-bottom:40px;margin-right:auto;margin-left:auto;line-height:1.4;text-align:center;font-size:18px;text-transform:uppercase;font-family:'Montserrat', Arial, Helvetica, sans-serif;">¡Ya somos más de
-            <span class="highlight" style="color:#f65a66;">50.000</span> mujeres que compartimos nuestro clóset!</p>
+            <span class="highlight" style="color:#f65a66;">70.000</span> mujeres que compartimos nuestro clóset!</p>
         </td>
       </tr>
       <tr class="row" style="width:100%;">

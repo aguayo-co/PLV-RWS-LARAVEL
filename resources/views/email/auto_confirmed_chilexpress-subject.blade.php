@@ -1,1 +1,1 @@
-Bacán, tu compra de  [Jean Zara y 3 productos más] ya fue confirmada
+Bacán, tu compra ya fue confirmada
