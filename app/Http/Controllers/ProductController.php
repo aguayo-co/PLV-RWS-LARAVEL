@@ -179,7 +179,7 @@ class ProductController extends Controller
         }
 
         // A product can be set to revision if it is currently rejected.
-        if ((int)$status === Product::STATUS_CHANGED_FOR_APPROVAL && $product->status !== Product::STATUS_REJECTED) {
+        if ((int)$status === Product::STATUS_CHANGED_FOR_APPROVAL && $product->status > Product::STATUS_CHANGED_FOR_APPROVAL) {
             abort(
                 Response::HTTP_FORBIDDEN,
                 'Only admin can change status.'
