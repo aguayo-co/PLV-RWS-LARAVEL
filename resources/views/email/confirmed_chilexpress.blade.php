@@ -328,13 +328,13 @@
                   <!-- Método de envío -->
                   <table class="table__medium" width="500" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
                     <thead>
-                      <th class="bb_light head-table_second" style="padding-bottom:6px;font-size:16px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#EFEFEF;">Envío con CHILEXPRESS</th>
+                      <th class="bb_light head-table_second" style="padding-bottom:6px;font-size:16px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#EFEFEF;">MÉTODO DE ENVÍO</th>
                     </thead>
                     <tbody>
                       <tr>
                         <td class="txt-table_second" align="center" style="padding-top:12px;padding-bottom:30px;padding-right:0;padding-left:0;font-size:16px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">
                           <img src="{{ env('APP_FRONT_URL') }}static/img/mailing/ico-shipping.jpg" alt="a la espera de envio" width="30" class="v-align_middle" style="display:inline-block;vertical-align:middle;">
-                          <span class="v-align_middle" style="display:inline-block;vertical-align:middle;">&nbsp;A la espera de envío</span>
+                          <span class="v-align_middle" style="display:inline-block;vertical-align:middle;">&nbsp;Chilexpress</span>
                         </td>
                       </tr>
                     </tbody>
