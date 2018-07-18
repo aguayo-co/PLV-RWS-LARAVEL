@@ -89,9 +89,17 @@ class MercadoPago implements PaymentGateway
 
     public function validateCallbackData($data)
     {
-        if (!array_get($data, 'type') || !array_get($data, 'data') || !ctype_digit(array_get($data, 'data.id'))) {
-            abort(Response::HTTP_BAD_REQUEST, __('Invalid callback: ERROR'));
+        // IPN
+        if (array_has($data, 'topic') && ctype_digit(array_get($data, 'id'))) {
+            return;
         }
+
+        // Webhooks
+        if (array_has($data, 'type') && ctype_digit(array_get($data, 'data.id'))) {
+            return;
+        }
+
+        abort(Response::HTTP_BAD_REQUEST, __('Invalid callback: ERROR'));
     }
 
     public function setCallback($data)
@@ -105,11 +113,13 @@ class MercadoPago implements PaymentGateway
         }
 
         // Anything but payment, ignore.
-        if (array_get($data, 'type') !== 'payment') {
+        if (array_get($data, 'type') !== 'payment' && array_get($data, 'topic') !== 'payment') {
             abort(Response::HTTP_OK, __('Non payment callback: IGNORING'));
         }
 
-        $paymentInfo = $mercadoPago->get_payment_info(array_get($data, 'data.id'));
+        $paymentId = array_has($data, 'topic') ? array_get($data, 'id') : array_get($data, 'data.id');
+
+        $paymentInfo = $mercadoPago->get_payment_info($paymentId);
         if ($paymentInfo['status'] != 200) {
             abort(Response::HTTP_BAD_GATEWAY, __('Invalid MercadoPago info: ERROR'));
         }
