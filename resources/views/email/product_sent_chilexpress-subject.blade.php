@@ -1,1 +1,1 @@
-Tu [Jean Zara y 3 productos más] ya están en camino
+Tu compra ya está en camino
