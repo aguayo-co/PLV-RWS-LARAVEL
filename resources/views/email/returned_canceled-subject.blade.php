@@ -1,1 +1,1 @@
-Hemos cancelado la venta de [Jean Zara y 3 productos más]
+Hemos cancelado una de tus ventas
