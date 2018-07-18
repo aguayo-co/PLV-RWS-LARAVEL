@@ -1,1 +1,1 @@
-La vendedora ya recibió el {{$product->title}}
+La vendedora ya recibió tu devolución
