@@ -215,7 +215,7 @@
                       </td>
                     </tr>
                     <tr class="row" style="width:100%;">
-                      <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Solicitaste la devolución de <strong>{{ $product->title }}</strong>. Ahora debes ponerte en contacto con la vendedora y coordinar la devolución de tu compra.</td>
+                      <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Solicitaste una devolución. Ahora debes ponerte en contacto con la vendedora y coordinar la devolución de tu compra.</td>
                     </tr>
                     <tr class="row" style="width:100%;">
                       <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Una vez que ella marque la devolución recibida, serán devueltos tus créditos y podrás solicitar el pago a tu cuenta bancaria.</td>
