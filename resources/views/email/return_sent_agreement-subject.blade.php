@@ -1,1 +1,1 @@
-Ya te devolvieron el producto [PRODUCTO]
+Ya te devolvieron el producto
