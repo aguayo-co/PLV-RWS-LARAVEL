@@ -1,1 +1,1 @@
-Los créditos de tu venta de [Jean Zara y 3 productos más] ya fueron generados
+Los créditos de tu venta de ya fueron generados
