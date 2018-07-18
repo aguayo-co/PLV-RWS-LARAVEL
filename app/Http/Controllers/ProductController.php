@@ -45,7 +45,7 @@ class ProductController extends Controller
     public function __construct()
     {
         parent::__construct();
-        $this->middleware('role:seller|admin')->only(['store', 'update']);
+        $this->middleware('role:seller|admin')->only(['store']);
         $this->middleware(self::class . '::validateIsPublished')->only(['show']);
         $this->middleware(self::class . '::validateCanBeDeleted')->only(['ownerDelete']);
     }
