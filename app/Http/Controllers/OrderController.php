@@ -58,7 +58,8 @@ class OrderController extends Controller
     protected function alterIndexQuery()
     {
         $user = auth()->user();
-        if ($user->hasRole('admin')) {
+        $showAll = array_get(request()->query('filter'), 'all');
+        if ($user->hasRole('admin') && $showAll) {
             return;
         }
 
