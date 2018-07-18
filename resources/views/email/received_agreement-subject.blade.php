@@ -1,1 +1,1 @@
-La compradora ya nos confirmó que recibió [Jean Zara y 3 productos más]
+La compradora ya nos confirmó que recibió tu envío

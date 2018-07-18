@@ -215,7 +215,7 @@
                       </td>
                     </tr>
                     <tr class="row" style="width:100%;">
-                      <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Tu compradora ya confirmó que recibido su compra. En un plazo máximo de dos días, si la compradora no reporta ningún problema, te transferiremos tus créditos.</td>
+                      <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Tu compradora ya confirmó que recibido su compra. En un plazo máximo de {{ config('prilov.sales.days_delivered_to_completed') }} días, si la compradora no reporta ningún problema, te transferiremos tus créditos.</td>
                     </tr>
                     <tr class="row" style="width:100%;">
                       <td class="cell spacing txt highlight" align="center" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;color:#f65a66;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Kisses!</td>
