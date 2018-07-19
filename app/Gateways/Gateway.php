@@ -3,6 +3,7 @@
 namespace App\Gateways;
 
 use App\Events\PaymentSuccessful;
+use App\Order;
 use App\Payment;
 use Illuminate\Http\Response;
 
@@ -87,7 +88,9 @@ class Gateway
         switch ($statusChanged) {
             case Payment::STATUS_SUCCESS:
                 event(new PaymentSuccessful($payment->order));
-                $gateway->sendApprovedNotification();
+                if ($payment->order->status === Order::STATUS_PAYED) {
+                    $gateway->sendApprovedNotification();
+                }
                 break;
 
             case Payment::STATUS_ERROR:

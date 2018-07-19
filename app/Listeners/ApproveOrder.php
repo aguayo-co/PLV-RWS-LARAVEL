@@ -31,7 +31,7 @@ class ApproveOrder
     {
         $order = $event->order;
 
-        if ($order->status === Order::STATUS_PAYED) {
+        if ($order->status >= Order::STATUS_PAYED) {
             return;
         }
 
