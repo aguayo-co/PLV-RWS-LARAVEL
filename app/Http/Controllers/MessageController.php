@@ -31,6 +31,7 @@ class MessageController extends Controller
             'body' => [
                 trim($required, '|'),
                 'string',
+                'max:10000',
                 $this->bodyFilterRule()
             ],
             'recipients' => 'array',

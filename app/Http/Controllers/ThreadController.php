@@ -95,6 +95,7 @@ class ThreadController extends Controller
             'body' => [
                 trim($required, '|'),
                 'string',
+                'max:10000',
                 $this->bodyFilterRule()
             ],
             'recipients' => $required . 'array',

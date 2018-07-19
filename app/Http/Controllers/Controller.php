@@ -85,11 +85,31 @@ class Controller extends BaseController
 
         # This is a hack to ensure we don't pass a string we can't put in the DB.
         foreach ($rules as &$rule) {
-            if (is_string($rule) && strpos($rule, 'string') !== false) {
-                $rule = $rule . '|max:' . Schema::getFacadeRoot()::$defaultStringLength;
+            // Are we validating a string?
+            if (is_string($rule) && strpos($rule, 'string') === false) {
+                break;
             }
-            if (is_array($rule) && in_array('string', $rule) === true) {
-                $rule[] = 'max:' . Schema::getFacadeRoot()::$defaultStringLength;
+            if (is_array($rule) && in_array('string', $rule) === false) {
+                break;
+            }
+
+            // Do we have a max already? If not, add one.
+            if (is_string($rule) && strpos($rule, 'max:') === false) {
+                $rule = $rule . '|max:' . Schema::getFacadeRoot()::$defaultStringLength;
+                break;
+            }
+
+            if (is_array($rule)) {
+                $hasRule = false;
+                foreach ($rule as $r) {
+                    if (is_string($r) && strpos($r, 'max:') !== false) {
+                        $hasRule = true;
+                        break;
+                    }
+                }
+                if (!$hasRule) {
+                    $rule[] = 'max:' . Schema::getFacadeRoot()::$defaultStringLength;
+                }
             }
         }
 
