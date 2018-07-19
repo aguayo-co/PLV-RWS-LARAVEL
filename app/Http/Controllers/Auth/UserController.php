@@ -119,7 +119,6 @@ class UserController extends Controller
             return $query->withPurchasedProductsCount()
                 ->withCredits();
         };
-        return;
     }
 
     protected function processFollowing(Request $request, Model $user)
