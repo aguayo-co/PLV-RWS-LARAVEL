@@ -24,11 +24,11 @@ class BannerController extends AdminController
         return [
             'name' => $required . 'string|unique:banners,name' . $ignore,
             'slug' => 'string|unique:banners,slug' . $ignore,
-            'title' => $required . 'string',
-            'subtitle' => $required . 'string',
+            'title' => 'nullable|string',
+            'subtitle' => 'nullable|string',
             'image' => 'nullable|image',
             'button_text' => 'nullable|string',
-            'url' => $required . 'string',
+            'url' => 'nullable|string',
         ];
     }
 }
