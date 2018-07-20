@@ -142,7 +142,7 @@ class AddressController extends Controller
             $adm1->children = $groupedAdmin2[$adm1->admin1_code]->keyBy('name');
         }
 
-        return $admin1->keyBy('name');
+        return response($admin1->keyBy('name'))->header("Cache-Control", "public, max-age=3600");
     }
 
     protected function setVisibility(Collection $collection)

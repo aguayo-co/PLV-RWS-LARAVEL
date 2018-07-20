@@ -87,6 +87,19 @@ class MercadoPago implements PaymentGateway
         }
     }
 
+    protected function getPaymentId($data)
+    {
+        if (array_has($data, 'topic')) {
+            return array_get($data, 'id');
+        }
+
+        if (array_get($data, 'type')) {
+            return array_get($data, 'data.id');
+        }
+
+        return array_get($data, 'collection_id');
+    }
+
     public function validateCallbackData($data)
     {
         // IPN
@@ -96,6 +109,11 @@ class MercadoPago implements PaymentGateway
 
         // Webhooks
         if (array_has($data, 'type') && ctype_digit(array_get($data, 'data.id'))) {
+            return;
+        }
+
+        // From user response page.
+        if (array_has($data, 'collection_id')) {
             return;
         }
 
@@ -113,11 +131,13 @@ class MercadoPago implements PaymentGateway
         }
 
         // Anything but payment, ignore.
-        if (array_get($data, 'type') !== 'payment' && array_get($data, 'topic') !== 'payment') {
+        if (array_get($data, 'type') !== 'payment' &&
+            array_get($data, 'topic') !== 'payment' &&
+            !array_has($data, 'merchant_order_id')) {
             abort(Response::HTTP_OK, __('Non payment callback: IGNORING'));
         }
 
-        $paymentId = array_has($data, 'topic') ? array_get($data, 'id') : array_get($data, 'data.id');
+        $paymentId = $this->getPaymentId($data);
 
         $paymentInfo = $mercadoPago->get_payment_info($paymentId);
         if ($paymentInfo['status'] != 200) {

@@ -74,7 +74,10 @@ class Gateway
         $gateway->setCallback($data);
 
         $payment = $this->getPaymentFromReference($gateway->getReference());
-        $payment->status = $gateway->getStatus();
+        // DO not change approved payments status.
+        if ($payment->status !== Payment::STATUS_SUCCESS) {
+            $payment->status = $gateway->getStatus();
+        }
         $gateway->setPayment($payment);
 
         $attempts = $payment->attempts;

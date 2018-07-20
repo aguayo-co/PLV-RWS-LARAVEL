@@ -79,7 +79,8 @@ class Controller extends BaseController
      */
     protected function validate(array $data, Model $model = null)
     {
-        if (!$rules = $this->validationRules($data, $model)) {
+        $rules = $this->validationRules($data, $model);
+        if (!$rules) {
             return;
         }
 
@@ -172,7 +173,14 @@ class Controller extends BaseController
         $this->setVisibility($collection);
         $pagination->setCollection($collection);
 
-        return $pagination;
+        $response = response($pagination);
+
+        // Cache public requests.
+        if (auth()->guest()) {
+            $response->header("Cache-Control", "public, max-age=120");
+        }
+
+        return $response;
     }
 
     /**
@@ -185,7 +193,15 @@ class Controller extends BaseController
     public function show(Request $request, Model $model)
     {
         $this->setVisibility(Collection::wrap($model));
-        return $model;
+
+        $response = response($model);
+
+        // Cache public requests.
+        if (auth()->guest()) {
+            $response->header("Cache-Control", "public, max-age=120");
+        }
+
+        return $response;
     }
 
     /**
