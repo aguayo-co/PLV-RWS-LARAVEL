@@ -10,7 +10,7 @@ return [
         'days_created_to_canceled' => env('PRILOV_DAYS_CREATED_TO_CANCELED', 2),
     ],
     'payments' => [
-        'minutes_until_canceled' => env('PRILOV_MINUTES_UNTIL_CANCELED', 20),
+        'minutes_until_canceled' => env('PRILOV_MINUTES_UNTIL_CANCELED', 60),
     ],
     'chilexpress' => [
         'referencia_base' => 'PRILOV - ',
