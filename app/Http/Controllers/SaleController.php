@@ -148,7 +148,10 @@ class SaleController extends Controller
         $collection->each(function ($sale) {
             $sale->user->makeVisible(['email', 'phone']);
             // Show contact data only when order has been successful.
-            if (Sale::STATUS_PAYED <= $sale->status && $sale->status < Sale::STATUS_CANCELED) {
+            // Or for admins.
+            $loggedUser = auth()->user();
+            if (($loggedUser && $loggedUser->hasRole('admin'))
+                || (Sale::STATUS_PAYED <= $sale->status && $sale->status < Sale::STATUS_CANCELED)) {
                 $sale->order->user->makeVisible(['email', 'phone']);
             }
             if ($sale->status <= Sale::STATUS_PAYED || $sale->status === Sale::STATUS_CANCELED) {

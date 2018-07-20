@@ -379,7 +379,9 @@ class OrderController extends Controller
         $collection->each(function ($order) {
             $order->user->makeVisible(['email', 'phone']);
             $order->sales->each(function ($sale) {
-                if (Sale::STATUS_PAYED <= $sale->status && $sale->status < Sale::STATUS_CANCELED) {
+                $loggedUser = auth()->user();
+                if (($loggedUser && $loggedUser->hasRole('admin'))
+                    || (Sale::STATUS_PAYED <= $sale->status && $sale->status < Sale::STATUS_CANCELED)) {
                     $sale->user->makeVisible(['email', 'phone']);
                 }
                 $sale->append([

@@ -306,12 +306,11 @@ class ProductController extends Controller
             $collection->makeVisible(['admin_notes']);
         }
 
-        $collection->each(function ($product) use ($collection) {
-            if ($collection->count() > 1) {
-                $product->user->makeHidden([
-                    'ratings', 'ratingArchives',
-                ]);
+        $collection->each(function ($product) use ($collection, $loggedUser) {
+            if ($loggedUser && $loggedUser->hasRole('admin')) {
+                $product->user->makeVisible(['email', 'phone']);
             }
+
             $product->append([
                 'color_ids', 'campaign_ids'
             ]);
