@@ -152,7 +152,7 @@ class Product extends Model
         return $this->campaigns->pluck('id');
     }
 
-    protected function setCampaignIdsAttribute(array $campaignIds)
+    protected function setCampaignIdsAttribute(?array $campaignIds)
     {
         if ($this->saveLater('campaign_ids', $campaignIds)) {
             return;

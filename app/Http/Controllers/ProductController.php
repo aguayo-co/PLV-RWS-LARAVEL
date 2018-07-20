@@ -122,7 +122,7 @@ class ProductController extends Controller
             ],
             'color_ids' => $required . 'array|max:2',
             'color_ids.*' => 'integer|exists:colors,id',
-            'campaign_ids' => 'array',
+            'campaign_ids' => 'nullable|array',
             'campaign_ids.*' => 'integer|exists:campaigns,id',
             'condition_id' => $required . 'integer|exists:conditions,id',
             'status' => ['integer', Rule::in(Product::getStatuses())],
