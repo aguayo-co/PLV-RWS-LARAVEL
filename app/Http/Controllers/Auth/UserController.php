@@ -64,7 +64,7 @@ class UserController extends Controller
                     $query->where('user_id', $user ? $user->id : null);
                 }),
             ],
-            'group_ids' => 'array',
+            'group_ids' => 'nullable|array',
             'group_ids.*' => 'integer|exists:groups,id',
             'shipping_method_ids' => 'array',
             'shipping_method_ids.*' => 'integer|exists:shipping_methods,id',

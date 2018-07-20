@@ -140,7 +140,7 @@ class User extends Authenticatable
         return $this->belongsToMany('App\Product', 'favorites');
     }
 
-    protected function setGroupIdsAttribute(array $groupIds)
+    protected function setGroupIdsAttribute(?array $groupIds)
     {
         if ($this->saveLater('group_ids', $groupIds)) {
             return;
