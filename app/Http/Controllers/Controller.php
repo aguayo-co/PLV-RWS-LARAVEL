@@ -173,14 +173,7 @@ class Controller extends BaseController
         $this->setVisibility($collection);
         $pagination->setCollection($collection);
 
-        $response = response($pagination);
-
-        // Cache public requests.
-        if (auth()->guest()) {
-            $response->header("Cache-Control", "public, max-age=120");
-        }
-
-        return $response;
+        return $pagination;
     }
 
     /**
@@ -194,14 +187,7 @@ class Controller extends BaseController
     {
         $this->setVisibility(Collection::wrap($model));
 
-        $response = response($model);
-
-        // Cache public requests.
-        if (auth()->guest()) {
-            $response->header("Cache-Control", "public, max-age=120");
-        }
-
-        return $response;
+        return $model;
     }
 
     /**
