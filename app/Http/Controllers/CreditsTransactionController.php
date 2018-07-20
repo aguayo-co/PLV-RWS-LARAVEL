@@ -6,6 +6,7 @@ use App\CreditsTransaction;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use App\Notifications\CreditsWithdraw;
@@ -270,5 +271,13 @@ class CreditsTransactionController extends Controller
         }
 
         return $transaction;
+    }
+
+    protected function setVisibility(Collection $collection)
+    {
+        $loggedUser = auth()->user();
+        if ($loggedUser && $loggedUser->hasRole('admin')) {
+            $collection->load(['user']);
+        }
     }
 }
