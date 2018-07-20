@@ -22,12 +22,12 @@ trait CanSearch
     {
         $table = $query->getQuery()->from . '.';
 
-        $columns = implode(',' . $table, $controllerClass::$searchIn);
+        $columns = $table . implode(',' . $table, $controllerClass::$searchIn);
 
         $search = $request->query('q') ?: null;
 
         if ($search && $columns) {
-            $query = $query->whereRaw('MATCH (' . $table . $columns . ') AGAINST(? IN BOOLEAN MODE)', $search);
+            $query = $query->whereRaw('MATCH (' . $columns . ') AGAINST(? IN BOOLEAN MODE)', $search);
         }
         return $query;
     }
