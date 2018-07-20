@@ -103,16 +103,18 @@ class MercadoPago implements PaymentGateway
     public function validateCallbackData($data)
     {
         // IPN
+        // https://www.mercadopago.cl/developers/es/api-docs/basic-checkout/ipn/
         if (array_has($data, 'topic') && ctype_digit(array_get($data, 'id'))) {
             return;
         }
 
         // Webhooks
+        // https://www.mercadopago.cl/developers/es/solutions/payments/custom-checkout/webhooks/
         if (array_has($data, 'type') && ctype_digit(array_get($data, 'data.id'))) {
             return;
         }
 
-        // From user response page.
+        // User response page
         if (array_has($data, 'collection_id')) {
             return;
         }
