@@ -29,7 +29,6 @@ trait CanSearch
         if ($search && $columns) {
             $query = $query->whereRaw('MATCH (' . $columns . ') AGAINST(? IN BOOLEAN MODE)', $search);
             $query = $query->orderByRaw('MATCH (' . $columns . ') AGAINST(? IN BOOLEAN MODE) DESC', $search);
-
         }
         return $query;
     }
