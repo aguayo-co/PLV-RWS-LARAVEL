@@ -11,6 +11,7 @@ class SliderController extends AdminController
     protected $modelClass = Slider::class;
 
     public static $allowedOrderBy = ['id', 'created_at', 'updated_at', 'priority'];
+    public static $allowedWhereBetween = ['priority'];
     public static $allowedWhereLike = ['slug'];
 
     protected function alterValidateData($data, Model $slider = null)
