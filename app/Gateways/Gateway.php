@@ -9,7 +9,7 @@ use Illuminate\Http\Response;
 
 class Gateway
 {
-    protected $gateway;
+    public $gateway;
     protected $order;
     protected const BASE_REF = "-_PRILOV_LV";
 

@@ -223,6 +223,9 @@ class PaymentController extends Controller
         // Possible with "Free" payments.
         if ($payment->status === Payment::STATUS_SUCCESS) {
             event(new PaymentSuccessful($order));
+            if ($payment->order->status === Order::STATUS_PAYED) {
+                $gateway->gateway->sendApprovedNotification();
+            }
         }
 
         return $payment;
@@ -248,6 +251,7 @@ class PaymentController extends Controller
         ]);
         $collection->each(function ($payment) {
             $payment->order->user->makeVisible(['email', 'phone']);
+            $payment->order->append(['due']);
         });
     }
 }

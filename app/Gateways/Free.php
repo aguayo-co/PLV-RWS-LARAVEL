@@ -7,18 +7,12 @@ use App\Payment;
 
 class Free implements PaymentGateway
 {
+    use AutoNotificationsTrait;
+
     public function getPaymentRequest($data)
     {
         $this->payment->status = Payment::STATUS_SUCCESS;
         return [];
-    }
-
-    public function sendApprovedNotification()
-    {
-    }
-
-    public function sendRejectedNotification()
-    {
     }
 
     public function validateCallbackData($data)
