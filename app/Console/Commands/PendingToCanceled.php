@@ -11,21 +11,14 @@ use App\Sale;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
-class ProcessOldPayments extends Command
+class PendingToCanceled extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'payments:pending-to-canceled';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Mark old payments (pending or rejected) as canceled.';
+    protected $signature = 'payments:pending-to-canceled {payment?* : The ID of the payment to cancel.}';
 
     /**
      * Create a new command instance.
@@ -34,6 +27,9 @@ class ProcessOldPayments extends Command
      */
     public function __construct()
     {
+        $days = config('prilov.payments.minutes_until_canceled');
+        $this->description = "Mark payments (pending or rejected) as canceled.\n";
+        $this->description .= "If non are given, cancel payments that have not been updated in {$days} minutes";
         parent::__construct();
     }
 
@@ -44,11 +40,7 @@ class ProcessOldPayments extends Command
      */
     public function handle()
     {
-        $paymentBefore = now()->subMinutes(config('prilov.payments.minutes_until_canceled'));
-
-        $payments = Payment::whereIn('status', [Payment::STATUS_ERROR, Payment::STATUS_PENDING])
-            ->where('updated_at', '<', $paymentBefore)->get();
-
+        $payments = $this->getPayments();
         // We want to fire events.
         foreach ($payments as $payment) {
             DB::transaction(function () use ($payment) {
@@ -60,6 +52,20 @@ class ProcessOldPayments extends Command
             });
             $this->sendNotifications($payment);
         }
+    }
+
+    protected function getPayments()
+    {
+        $query = Payment::whereIn('status', [Payment::STATUS_ERROR, Payment::STATUS_PENDING]);
+
+
+        $paymentIds = $this->argument('payment');
+        if ($paymentIds) {
+            return $query->where('id', $paymentIds)->get();
+        }
+
+        $paymentBefore = now()->subMinutes(config('prilov.payments.minutes_until_canceled'));
+        return $query->where('updated_at', '<', $paymentBefore)->get();
     }
 
     protected function cancelOrder($payment)
