@@ -22,6 +22,7 @@ class SaleController extends Controller
 
     public static $allowedWhereIn = ['id', 'user_id'];
     public static $allowedWhereBetween = ['status'];
+    public static $allowedWhereHas = ['buyer_id' => 'order,user_id'];
 
     public function __construct()
     {
