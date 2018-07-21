@@ -74,7 +74,7 @@ class ThreadController extends Controller
             return;
         }
 
-        $threads = Thread::whereNotNull('private')
+        $threads = Thread::where('private', true)->whereNull('product_id')
             ->between([auth()->id(), array_first($recipients)])
             ->count();
 
@@ -88,6 +88,7 @@ class ThreadController extends Controller
     protected function validationRules(array $data, ?Model $thread)
     {
         $required = !$thread ? 'required|' : '';
+        $requiredRecipients = !$thread ? 'required_without:product_id|' : '';
         return [
             'subject' => $required . 'string',
             'private' => $required . 'boolean|empty_with:product_id',
@@ -98,7 +99,7 @@ class ThreadController extends Controller
                 'max:10000',
                 $this->bodyFilterRule()
             ],
-            'recipients' => $required . 'array',
+            'recipients' => $requiredRecipients . 'array',
             'recipients.*' => 'integer|exists:users,id|not_in:' . auth()->id(),
         ];
     }
