@@ -31,6 +31,11 @@ class Coupon extends Model
         'campaigns_ids',
     ];
 
+    protected $casts = [
+        'valid_from' => 'datetime',
+        'valid_to' => 'datetime',
+    ];
+
     public function brands()
     {
         return $this->morphedByMany('App\Brand', 'couponable');
