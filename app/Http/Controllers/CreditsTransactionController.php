@@ -17,7 +17,7 @@ class CreditsTransactionController extends Controller
 {
     protected $modelClass = CreditsTransaction::class;
 
-    public static $allowedWhereIn = ['id', 'payroll_id'];
+    public static $allowedWhereIn = ['id', 'payroll_id', 'user_id'];
     public static $allowedWhereBetween = ['transfer_status'];
 
     public function __construct()

@@ -28,3 +28,4 @@ siguientes criterios:
 |------|----|
 |transfer_status|Entre|
 |payroll_id|ContenidoEn|
+|user_id|ContenidoEn|

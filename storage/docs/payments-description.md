@@ -6,3 +6,4 @@ Aparte de los criterios de filtrado globales, los pagos se pueden filtrar por lo
 |------|----|
 |gateway|ContenidoEn|
 |status|ContenidoEn|
+|order_id|ContenidoEn|
