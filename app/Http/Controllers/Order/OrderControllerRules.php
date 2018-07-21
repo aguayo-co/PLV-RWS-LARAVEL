@@ -143,7 +143,7 @@ trait OrderControllerRules
             if ($payment->gateway !== 'Transfer') {
                 return $fail(__('El pago no es de tipo Transferencia.'));
             }
-            if ($payment->status !== Payment::STATUS_PENDING && $payment->status !== Payment::STATUS_PROCESSING) {
+            if ($payment->status === Payment::STATUS_SUCCESS || $payment->status === Payment::STATUS_CANCELED) {
                 return $fail(__('El pago ya no acepta recibos.'));
             }
         };
