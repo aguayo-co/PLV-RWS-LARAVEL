@@ -246,5 +246,8 @@ class PaymentController extends Controller
         $collection->load([
             'order.user',
         ]);
+        $collection->each(function ($payment) {
+            $payment->order->user->makeVisible(['email', 'phone']);
+        });
     }
 }
