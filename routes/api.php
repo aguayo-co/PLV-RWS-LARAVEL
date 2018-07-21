@@ -98,7 +98,9 @@ Route::name('api.')->group(function () {
 
         # Routes for Payments.
         Route::get('payments', 'PaymentController@index')->name('payments');
-        Route::get('payments/{payment}', 'PaymentController@show')->name('payment');
+        Route::get('payments/{payment}', 'PaymentController@show')->name('payment')->where('product', ID_REGEX);
+        Route::patch('payments/{payment}', 'PaymentController@update')
+            ->name('payment.update')->where('product', ID_REGEX);
         Route::post('payments', 'PaymentController@store')->name('payment.create');
 
         # Alternative routes for payment methods.

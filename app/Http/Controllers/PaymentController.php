@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -30,7 +31,7 @@ class PaymentController extends Controller
     {
         parent::__construct();
 
-        $this->middleware('role:admin')->only('index');
+        $this->middleware('role:admin')->only(['index', 'update']);
         $this->middleware(self::class . '::validateUserIsOwner')->only(['generatePayment']);
     }
 
@@ -150,6 +151,21 @@ class PaymentController extends Controller
         $payment->gateway = $gateway->getName();
         $payment->status = Payment::STATUS_PENDING;
         $payment->order_id = $order->id;
+
+        return $payment;
+    }
+
+    /**
+     * Only change we accept on a payment is canceling it.
+     */
+    public function update(Request $request, Model $payment)
+    {
+        if ($request->cancel === 'cancel') {
+            Artisan::call('payments:pending-to-canceled', ['payment' => $payment->id]);
+        }
+
+        $payment = $payment->fresh();
+        $this->setVisibility(Collection::wrap($payment));
 
         return $payment;
     }
