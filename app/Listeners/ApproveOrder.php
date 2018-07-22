@@ -31,6 +31,8 @@ class ApproveOrder
     {
         $order = $event->order;
 
+        // If an order is out of payment,
+        // Changes in the payment model should not affect it.
         if ($order->status >= Order::STATUS_PAYED) {
             return;
         }
