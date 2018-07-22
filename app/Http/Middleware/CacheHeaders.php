@@ -23,7 +23,6 @@ class CacheHeaders
 
         $options = [];
         $options['etag'] = md5($response->getContent());
-        $options['public'] = true;
 
         switch ($request->route()->getName()) {
             // case 'api.product.get':
@@ -69,6 +68,7 @@ class CacheHeaders
             case 'api.sliders':
             case 'api.slider.get':
                 $options['max_age'] = '3600';
+                $options['public'] = true;
         }
 
         $response->setCache($options);
