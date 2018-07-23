@@ -82,7 +82,8 @@ class Gateway
         $gateway->setPayment($payment);
 
         $attempts = $payment->attempts;
-        $attempts[] = $gateway->getData();
+        $key = md5(json_encode($gateway->getData()));
+        $attempts[$key] = $gateway->getData();
 
         $payment->attempts = $attempts;
         $statusChanged = array_get($payment->getDirty(), 'status');
