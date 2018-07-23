@@ -5,6 +5,7 @@ namespace App;
 use App\Traits\DateSerializeFormat;
 use App\Traits\HasSingleFile;
 use App\Traits\HasStatuses;
+use App\Traits\HasStatusHistory;
 use App\Traits\ProductPrice;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
@@ -15,6 +16,7 @@ class Product extends Model
 {
     use ProductPrice;
     use HasStatuses;
+    use HasStatusHistory;
     use HasSingleFile;
     use DateSerializeFormat;
 
@@ -63,7 +65,7 @@ class Product extends Model
      * @var array
      */
     protected $hidden = [
-        'admin_notes',
+        'admin_notes', 'status_history'
     ];
     protected $appends = ['images', 'image_instagram', 'sale_price'];
 
