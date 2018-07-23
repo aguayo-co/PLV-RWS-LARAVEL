@@ -215,14 +215,21 @@ class PaymentController extends Controller
         $payment = $this->getPayment($gateway, $order);
         // Save the Gateway's request data in the Payment model.
         $payment->request = $gateway->paymentRequest($payment, $request->all());
-        $payment->save();
 
-        event(new PaymentStarted($order));
+        DB::transaction(function () use ($payment, $order, $gateway) {
+            $payment->save();
 
-        // Dispatch event if we have a payment that is already successful.
-        // Possible with "Free" payments.
+            event(new PaymentStarted($order));
+
+            // Dispatch event if we have a payment that is already successful.
+            // Possible with "Free" payments.
+            if ($payment->status === Payment::STATUS_SUCCESS) {
+                event(new PaymentSuccessful($order));
+            }
+        });
+
+        // Send notifications if payment is successful.
         if ($payment->status === Payment::STATUS_SUCCESS) {
-            event(new PaymentSuccessful($order));
             if ($payment->order->status === Order::STATUS_PAYED) {
                 $gateway->gateway->sendApprovedNotification();
             }
@@ -236,10 +243,8 @@ class PaymentController extends Controller
      */
     public function gatewayCallback(Request $request, $gateway)
     {
-        DB::transaction(function () use ($request, $gateway) {
-            $gateway = new Gateway($gateway);
-            $gateway->processCallback($request->all());
-        });
+        $gateway = new Gateway($gateway);
+        $gateway->processCallback($request->all());
 
         return 'Prilov!';
     }

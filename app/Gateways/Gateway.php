@@ -6,6 +6,7 @@ use App\Events\PaymentSuccessful;
 use App\Order;
 use App\Payment;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class Gateway
 {
@@ -84,13 +85,17 @@ class Gateway
         $attempts[] = $gateway->getData();
 
         $payment->attempts = $attempts;
-        $payment->save();
+        $statusChanged = array_get($payment->getDirty(), 'status');
 
-        $statusChanged = array_get($payment->getChanges(), 'status');
+        DB::transaction(function () use ($payment, $statusChanged) {
+            $payment->save();
+            if ($statusChanged === Payment::STATUS_SUCCESS) {
+                event(new PaymentSuccessful($payment->order));
+            }
+        });
 
         switch ($statusChanged) {
             case Payment::STATUS_SUCCESS:
-                event(new PaymentSuccessful($payment->order));
                 if ($payment->order->status === Order::STATUS_PAYED) {
                     $gateway->sendApprovedNotification();
                 }
@@ -100,6 +105,7 @@ class Gateway
                 $gateway->sendRejectedNotification();
                 break;
         }
+
 
         return $payment;
     }
