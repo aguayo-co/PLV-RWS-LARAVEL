@@ -75,8 +75,8 @@ class Gateway
         $gateway->setCallback($data);
 
         $payment = $this->getPaymentFromReference($gateway->getReference());
-        // DO not change approved payments status.
-        if ($payment->status !== Payment::STATUS_SUCCESS) {
+        // Do not change approved or canceled payments status.
+        if ($payment->status !== Payment::STATUS_SUCCESS && $payment->status !== Payment::STATUS_CANCELED) {
             $payment->status = $gateway->getStatus();
         }
         $gateway->setPayment($payment);
