@@ -20,4 +20,7 @@ return [
             'purchased' => 'Compra de créditos.',
         ],
     ],
+    'products' => [
+        'notAvailable' => 'Alguno de los productos ya no está disponible.'
+    ]
 ];
