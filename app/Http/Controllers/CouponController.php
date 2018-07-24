@@ -25,13 +25,14 @@ class CouponController extends Controller
     protected function validationRules(array $data, ?Model $coupon)
     {
         $required = !$coupon ? 'required|' : '';
+        $ignore = $coupon ? ',' . $coupon->id : '';
         $discountType = data_get($data, 'discount_type', data_get($coupon, 'discount_type'));
         $discountValueMax = $discountType === '%' ? 100 : '9999999';
         return [
             'description' => $required . 'string|max:10000',
-            'code' =>  $required . 'string',
-            'valid_from' => 'date|required_with:valid_to',
-            'valid_to' => 'date|required_with:valid_from|after:valid_from',
+            'code' =>  $required . 'string|unique:coupons,code' . $ignore,
+            'valid_from' => 'nullable|date|required_with:valid_to',
+            'valid_to' => 'nullable|date|required_with:valid_from|after:valid_from',
             'minimum_price' => 'integer|between:0,9999999',
             'minimum_commission' => 'numeric|between:0,100',
             'first_purchase_only' => 'boolean',
