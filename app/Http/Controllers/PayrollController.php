@@ -70,8 +70,8 @@ class PayrollController extends AdminController
             // Ignore anything else.
             $cleanRut = preg_replace('/[^0-9]/', '', data_get($transfer, 'rut', ''));
             $transfer['rut'] = [
-                substr($cleanRut, 0, 8),
-                substr($cleanRut, 8, 1)
+                substr($cleanRut, 0, -1),
+                substr($cleanRut, -1)
             ];
             $transfer['amount'] = -$transaction->amount;
             $transfer['commission'] = -$transaction->commission;
