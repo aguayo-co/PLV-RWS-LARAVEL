@@ -173,6 +173,7 @@ class SaleController extends Controller
                     'used_credits',
                 ]);
                 $sale->order->append([
+                    'active_payment',
                     'total',
                     'used_credits',
                     'due',

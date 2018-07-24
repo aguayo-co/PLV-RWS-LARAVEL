@@ -58,7 +58,6 @@ class PendingToCanceled extends Command
     {
         $query = Payment::whereIn('status', [Payment::STATUS_ERROR, Payment::STATUS_PENDING]);
 
-
         $paymentIds = $this->argument('payment');
         if ($paymentIds) {
             return $query->where('id', $paymentIds)->get();

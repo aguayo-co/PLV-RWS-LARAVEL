@@ -9,8 +9,8 @@ trait CurrentUserOrder
     /**
      * Get an Order model for the current user based on the status provided.
      *
-     * Only one Order should exists for each of this statuses for every user
-     * at a given moment.
+     * The oldest one should be used at any moment until that one is moved to
+     * a different status.
      */
     public function currentUserOrder($status = Order::STATUS_SHOPPING_CART)
     {

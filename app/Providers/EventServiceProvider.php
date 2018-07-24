@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Observers\PaymentObserver;
 use App\Observers\SaleObserver;
 use App\Observers\SaleReturnObserver;
+use App\Payment;
 use App\Sale;
 use App\SaleReturn;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -36,5 +38,6 @@ class EventServiceProvider extends ServiceProvider
         parent::boot();
         SaleReturn::observe(SaleReturnObserver::class);
         Sale::observe(SaleObserver::class);
+        Payment::observe(PaymentObserver::class);
     }
 }

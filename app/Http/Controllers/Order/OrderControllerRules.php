@@ -133,17 +133,17 @@ trait OrderControllerRules
     /**
      * Rule that validates that an order has a Payment with gateway Transfer.
      */
-    protected function paymentIsTransferRule($order)
+    protected function paymentAcceptsReceiptRule($order)
     {
         return function ($attribute, $value, $fail) use ($order) {
-            $payment = data_get($order, 'payments.0', null);
+            $payment = $order->active_payment;
             if (!$payment) {
-                return $fail(__('No Existe un pago en la orden.'));
+                return $fail(__('No Existe un pago pendiente en la orden.'));
             }
             if ($payment->gateway !== 'Transfer') {
                 return $fail(__('El pago no es de tipo Transferencia.'));
             }
-            if ($payment->status === Payment::STATUS_SUCCESS || $payment->status === Payment::STATUS_CANCELED) {
+            if ($payment->status === Payment::STATUS_SUCCESS) {
                 return $fail(__('El pago ya no acepta recibos.'));
             }
         };

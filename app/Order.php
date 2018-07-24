@@ -44,7 +44,7 @@ class Order extends Model
     }
 
     /**
-     * Get the order payments.
+     * Get the order sales.
      */
     public function sales()
     {
@@ -54,6 +54,14 @@ class Order extends Model
     public function creditsTransactions()
     {
         return $this->hasMany('App\CreditsTransaction');
+    }
+
+    /**
+     * Get active payment or none if all are canceled.
+     */
+    public function getActivePaymentAttribute()
+    {
+        return $this->payments->whereNotIn('status', Payment::STATUS_CANCELED)->last();
     }
 
     /**

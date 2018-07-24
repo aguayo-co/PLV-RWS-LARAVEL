@@ -7,7 +7,7 @@ use App\Coupon;
 use App\CreditsTransaction;
 use App\Http\Controllers\Order\CouponRules;
 use App\Http\Controllers\Order\OrderControllerRules;
-use App\Http\Traits\CurrentUserOrder;
+use App\Http\Controllers\Order\ShoppingCart;
 use App\Order;
 use App\Payment;
 use App\Product;
@@ -27,8 +27,8 @@ use Illuminate\Validation\Rule;
 class OrderController extends Controller
 {
     use CouponRules;
-    use CurrentUserOrder;
     use OrderControllerRules;
+    use ShoppingCart;
 
     protected $modelClass = Order::class;
 
@@ -69,86 +69,6 @@ class OrderController extends Controller
     }
 
     /**
-     * Get a Sale model for the given seller and order.
-     * Create a new one if one does not exist.
-     */
-    protected function getSale($order, $sellerId)
-    {
-        $sale = $order->sales->firstWhere('user_id', $sellerId);
-        if (!$sale) {
-            $sale = new Sale();
-            $sale->user_id = $sellerId;
-            $sale->order_id = $order->id;
-
-            $sale->status = Sale::STATUS_SHOPPING_CART;
-            $sale->save();
-        }
-        return $sale;
-    }
-
-    /**
-     * Get the products and group them by the user_id..
-     */
-    protected function getProductsByUser($productIds)
-    {
-        return Product::whereIn('id', $productIds)
-            ->whereBetween('status', [Product::STATUS_APPROVED, Product::STATUS_AVAILABLE])
-            ->get()->groupBy('user_id');
-    }
-
-    /**
-     * Add products to the given cart/Order.
-     */
-    protected function addProducts($order, $productIds)
-    {
-        foreach ($this->getProductsByUser($productIds) as $userId => $products) {
-            $sale = $this->getSale($order, $userId);
-            $sale->products()->syncWithoutDetaching($products->pluck('id'));
-        }
-
-        return $order;
-    }
-
-    /**
-     * Remove products from the given cart/Order.
-     */
-    protected function removeProducts($order, $productIds)
-    {
-        foreach ($order->sales as $sale) {
-            $sale->products()->detach($productIds);
-            $sale->load('products');
-            if (!count($sale->products)) {
-                $sale->delete();
-            }
-        }
-
-        return $order;
-    }
-
-    /**
-     * Process data for sales.
-     *
-     * @param  $order \App\Order The order the sales belong to
-     * @param  $sales array Data to be applied to sales, keyed by sale id.
-     */
-    protected function processSalesData($order, $sales)
-    {
-        foreach ($sales as $saleId => $data) {
-            $sale = $order->sales->firstWhere('id', $saleId);
-            $shippingMethodId = array_get($data, 'shipping_method_id');
-            if ($shippingMethodId) {
-                $sale->shipping_method_id = $shippingMethodId;
-                $sale->save();
-            }
-            $status = array_get($data, 'status');
-            if ($status) {
-                $sale->status = $status;
-                $sale->save();
-            }
-        }
-    }
-
-    /**
      * Set validation messages for ValidationRules.
      */
     protected function validationMessages()
@@ -176,7 +96,11 @@ class OrderController extends Controller
             ],
             'phone' => 'string',
 
-            'add_product_ids' => 'array',
+            // Should be allowed only for Order in shopping cart.
+            'add_product_ids' => [
+                'array',
+                $this->getOrderInShoppingCartRule($order),
+            ],
             'add_product_ids.*' => [
                 'integer',
                 Rule::exists('products', 'id')->where(function ($query) {
@@ -184,9 +108,14 @@ class OrderController extends Controller
                 }),
             ],
 
-            'remove_product_ids' => 'array',
+            // Should be allowed only for Order in shopping cart.
+            'remove_product_ids' => [
+                'array',
+                $this->getOrderInShoppingCartRule($order),
+            ],
             'remove_product_ids.*' => 'integer|exists:products,id',
 
+            // Should be allowed only for Order in shopping cart.
             'used_credits' => [
                 'integer',
                 'between:0,' . max($availableCredits, 0),
@@ -194,6 +123,8 @@ class OrderController extends Controller
             ],
 
             'sales' => 'array',
+
+            // IDs should be valid sales for the current order.
             'sales.*' => [
                 'bail',
                 'array',
@@ -201,13 +132,16 @@ class OrderController extends Controller
                 $this->getSaleIsValidRule($order),
             ],
 
+            // Should be allowed only in Order in shopping cart.
             'sales.*.shipping_method_id' => [
                 'bail',
                 'integer',
+                $this->getOrderInShoppingCartRule($order),
                 $this->getSaleInShoppingCartRule($order),
                 $this->getShippingMethodRule($order)
             ],
 
+            // Should set only for payed orders.
             'sales.*.status' => [
                 'bail',
                 'integer',
@@ -215,21 +149,22 @@ class OrderController extends Controller
                 $this->getStatusRule($order),
             ],
 
+            // Should be allowed only if order is in ShoppingCart
             'coupon_code' => array_merge([
                 'bail',
                 'nullable',
                 'string',
                 'exists:coupons,code',
+                $this->getOrderInShoppingCartRule($order),
             ], $this->getCouponRules($order)),
 
+            // Should be allowed only for Transfers.
             'transfer_receipt' => [
                 'image',
-                $this->paymentIsTransferRule($order)
+                $this->paymentAcceptsReceiptRule($order)
             ],
-
         ];
     }
-
 
     protected function alterFillData($data, Model $order = null)
     {
@@ -268,21 +203,44 @@ class OrderController extends Controller
     }
 
     /**
-     * An alias for the show() method for the current logged in user.
+     * Process data for sales.
      */
-    public function getShoppingCart(Request $request)
+    protected function processSalesData(Request $request, Model $order)
     {
-        return $this->show($request, $this->currentUserOrder());
+        $sales = $request->sales;
+        if (!$sales) {
+            return;
+        }
+
+        foreach ($sales as $saleId => $data) {
+            $sale = $order->sales->firstWhere('id', $saleId);
+            $shippingMethodId = array_get($data, 'shipping_method_id');
+            if ($shippingMethodId) {
+                $sale->shipping_method_id = $shippingMethodId;
+                $sale->save();
+            }
+            $status = array_get($data, 'status');
+            if ($status) {
+                $sale->status = $status;
+                $sale->save();
+            }
+        }
     }
 
     /**
-     * An alias for the update() method for the current logged in user.
+     * Set transfer receipt for payment.
      */
-    public function updateShoppingCart(Request $request)
+    protected function setReceipt(Request $request, Model $order)
     {
-        $order = $this->currentUserOrder();
+        $transferReceipt = $request->transfer_receipt;
+        if (!$transferReceipt) {
+            return;
+        }
 
-        return $this->update($request, $order);
+        $activePayment = $order->activePayment;
+        $activePayment->status = Payment::STATUS_PROCESSING;
+        $activePayment->transfer_receipt = $transferReceipt;
+        $activePayment->save();
     }
 
     /**
@@ -290,27 +248,13 @@ class OrderController extends Controller
      */
     public function postUpdate(Request $request, Model $order)
     {
-        $addProductIds = $request->add_product_ids;
-        if ($addProductIds) {
-            $this->addProducts($order, $addProductIds);
-        }
+        $this->addProducts($request, $order);
 
-        $removeProductIds = $request->remove_product_ids;
-        if ($removeProductIds) {
-            $this->removeProducts($order, $removeProductIds);
-        }
+        $this->removeProducts($request, $order);
 
-        $sales = $request->sales;
-        if ($sales) {
-            $this->processSalesData($order, $sales);
-        }
+        $this->processSalesData($request, $order);
 
-        $transferReceipt = $request->transfer_receipt;
-        if ($transferReceipt) {
-            $order->payments[0]->status = Payment::STATUS_PROCESSING;
-            $order->payments[0]->transfer_receipt = $transferReceipt;
-            $order->payments[0]->save();
-        }
+        $this->setReceipt($request, $order);
 
         if ($request->has('used_credits')) {
             $this->setOrderCredits($request->used_credits, $order);
@@ -392,6 +336,7 @@ class OrderController extends Controller
                 ]);
             });
             $order->append([
+                'active_payment',
                 'total',
                 'used_credits',
                 'due',

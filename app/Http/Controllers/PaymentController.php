@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\PaymentStarted;
 use App\Events\PaymentSuccessful;
-use App\Gateways\Gateway;
+use App\Gateways\GatewayManager;
 use App\Http\Controllers\Order\CouponRules;
 use App\Http\Traits\CurrentUserOrder;
 use App\Order;
@@ -145,10 +145,10 @@ class PaymentController extends Controller
     /**
      * Create a new payment for the given order, with the given gateway.
      */
-    protected function getPayment(Gateway $gateway, Model $order)
+    protected function createPayment(GatewayManager $gatewayManager, Model $order)
     {
         $payment = new Payment();
-        $payment->gateway = $gateway->getName();
+        $payment->gateway = $gatewayManager->getName();
         $payment->status = Payment::STATUS_PENDING;
         $payment->order_id = $order->id;
 
@@ -210,13 +210,13 @@ class PaymentController extends Controller
         }
 
         // Get the gateway to use.
-        $gateway = new Gateway($gatewayName);
+        $gatewayManager = new GatewayManager($gatewayName);
         // Create a Payment model with the selected gateway.
-        $payment = $this->getPayment($gateway, $order);
+        $payment = $this->createPayment($gatewayManager, $order);
         // Save the Gateway's request data in the Payment model.
-        $payment->request = $gateway->paymentRequest($payment, $request->all());
+        $payment->request = $gatewayManager->paymentRequest($payment, $request->all());
 
-        DB::transaction(function () use ($payment, $order, $gateway) {
+        DB::transaction(function () use ($payment, $order) {
             $payment->save();
 
             event(new PaymentStarted($order));
@@ -231,7 +231,7 @@ class PaymentController extends Controller
         // Send notifications if payment is successful.
         if ($payment->status === Payment::STATUS_SUCCESS) {
             if ($payment->order->status === Order::STATUS_PAYED) {
-                $gateway->gateway->sendApprovedNotification();
+                $gatewayManager->gateway->sendApprovedNotification();
             }
         }
 
@@ -241,10 +241,10 @@ class PaymentController extends Controller
     /**
      * Process a callback from the gateway.
      */
-    public function gatewayCallback(Request $request, $gateway)
+    public function gatewayCallback(Request $request, $gatewayName)
     {
-        $gateway = new Gateway($gateway);
-        $gateway->processCallback($request->all());
+        $gatewayManager = new GatewayManager($gatewayName);
+        $gatewayManager->processCallback($request->all());
 
         return 'Prilov!';
     }

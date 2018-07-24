@@ -8,7 +8,7 @@ use App\Payment;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
-class Gateway
+class GatewayManager
 {
     public $gateway;
     protected $order;
