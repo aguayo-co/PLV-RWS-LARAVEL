@@ -298,6 +298,8 @@ class ProductController extends Controller
             'user.following:id',
             'user.groups',
             'user.shippingMethods',
+            'user.ratings',
+            'user.ratingArchives',
         ]);
 
         $loggedUser = auth()->user();
@@ -315,7 +317,7 @@ class ProductController extends Controller
                 'color_ids', 'campaign_ids'
             ]);
             $product->user->makeHidden([
-                'followers', 'following',
+                'followers', 'following', 'ratings', 'ratingArchives'
             ]);
             $product->user->append([
                 'following_count',
