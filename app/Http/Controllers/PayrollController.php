@@ -72,6 +72,8 @@ class PayrollController extends AdminController
                 substr($cleanRut, 0, -1),
                 substr($cleanRut, -1)
             ];
+            $cleanAccountNumber = preg_replace('/[^0-9]/', '', data_get($transfer, 'accountNumber', ''));
+            $transfer['accountNumber'] = $cleanAccountNumber;
             $transfer['amount'] = -$transaction->amount;
             $transfer['commission'] = -$transaction->commission;
             $transfer['email'] = $transaction->user->email;
