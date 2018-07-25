@@ -66,9 +66,8 @@ class PayrollController extends AdminController
 
         foreach ($transactions as $transaction) {
             $transfer = data_get($transaction, 'extra.bank_account', []);
-            // Chilean rut has 8 digits and a verification number.
-            // Ignore anything else.
-            $cleanRut = preg_replace('/[^0-9]/', '', data_get($transfer, 'rut', ''));
+            // Clean RUT number.
+            $cleanRut = preg_replace('/[^0-9a-z]/i', '', data_get($transfer, 'rut', ''));
             $transfer['rut'] = [
                 substr($cleanRut, 0, -1),
                 substr($cleanRut, -1)
