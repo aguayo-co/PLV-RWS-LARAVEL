@@ -7,8 +7,8 @@ use App\Payroll;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Illuminate\Http\Response;
+use Illuminate\Validation\Rule;
 
 class PayrollController extends AdminController
 {
@@ -77,11 +77,13 @@ class PayrollController extends AdminController
             $transfer['amount'] = -$transaction->amount;
             $transfer['commission'] = -$transaction->commission;
             $transfer['email'] = $transaction->user->email;
+            $transfer['bankId'] = sprintf('%02d', $transfer['bankId']);
             $transfers[] = $transfer;
         }
 
         return response()
             ->view('downloads.payroll', [
+                'date' => now('America/Santiago')->format("Y-m-d\TH:i:s") . '.000',
                 'payroll' => $payroll,
                 'transfers' => $transfers,
             ])

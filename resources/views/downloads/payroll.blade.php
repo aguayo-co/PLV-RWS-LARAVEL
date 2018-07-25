@@ -6,7 +6,13 @@
   xmlns:x="urn:schemas-microsoft-com:office:excel"
   xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
   xmlns:html="http://www.w3.org/TR/REC-html40">
-<Worksheet ss:Name="Payroll-{{ $payroll->id }} Transfers">
+  <Styles>
+    <Style ss:ID="s99">
+      <NumberFormat ss:Format="yyyy\-mm\-dd\ hh:mm:ss;@"/>
+    </Style>
+  </Styles>
+
+  <Worksheet ss:Name="Payroll-{{ $payroll->id }} Transfers">
     <Table>
       <Row>
         <Cell><Data ss:Type="String">Nº Cuenta de Cargo</Data></Cell>
@@ -16,13 +22,14 @@
         <Cell><Data ss:Type="String">Dig. Verif. Beneficiario</Data></Cell>
         <Cell><Data ss:Type="String">Nombre Beneficiario</Data></Cell>
         <Cell><Data ss:Type="String">Monto Transferencia</Data></Cell>
-        <Cell><Data ss:Type="String">Nro.Factura Boleta (1)</Data></Cell>
-        <Cell><Data ss:Type="String">Nº Orden de Compra(1)</Data></Cell>
-        <Cell><Data ss:Type="String">Tipo de Pago(2)</Data></Cell>
+        <Cell><Data ss:Type="String">Nro. Factura Boleta (1)</Data></Cell>
+        <Cell><Data ss:Type="String">Nº Orden de Compra (1)</Data></Cell>
+        <Cell><Data ss:Type="String">Tipo de Pago (2)</Data></Cell>
         <Cell><Data ss:Type="String">Mensaje Destinatario (3)</Data></Cell>
-        <Cell><Data ss:Type="String">Email Destinatario(3)</Data></Cell>
-        <Cell><Data ss:Type="String">Cuenta Destino inscrita como(4)</Data></Cell>
+        <Cell><Data ss:Type="String">Email Destinatario (3)</Data></Cell>
+        <Cell><Data ss:Type="String">Cuenta Destino inscrita como (4)</Data></Cell>
         <Cell><Data ss:Type="String">Monto Boleta</Data></Cell>
+        <Cell><Data ss:Type="String">Fecha de generación</Data></Cell>
       </Row>
       @foreach ($transfers as $transfer)<Row>
         <Cell><Data ss:Type="String">61649236</Data></Cell>
@@ -39,6 +46,7 @@
         <Cell><Data ss:Type="String">{{ data_get($transfer, 'email') }}</Data></Cell>
         <Cell><Data ss:Type="String">{{ data_get($transfer, 'fullName') }}</Data></Cell>
         <Cell><Data ss:Type="String">{{ data_get($transfer, 'commission') }}</Data></Cell>
+        <Cell ss:StyleID="s99"><Data ss:Type="DateTime">{{ $date }}</Data></Cell>
       </Row>
     @endforeach</Table>
   </Worksheet>
