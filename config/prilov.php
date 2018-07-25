@@ -11,6 +11,10 @@ return [
     ],
     'payments' => [
         'minutes_until_canceled' => env('PRILOV_MINUTES_UNTIL_CANCELED', 60),
+        'percentage_fee' => [
+            'pay_u' => 5,
+            'mercado_pago' => 5,
+        ]
     ],
     'chilexpress' => [
         'referencia_base' => 'PRILOV - ',

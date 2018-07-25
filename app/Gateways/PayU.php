@@ -33,13 +33,17 @@ class PayU implements PaymentGateway
         return 'CLP';
     }
 
+    protected function getAmount()
+    {
+        return (int) ($this->payment->total * (100 + config('prilov.payments.percentage_fee.pay_u')) / 100);
+    }
+
     protected function getRequestSignature($reference)
     {
-        $payment = $this->payment;
         $apiKey = $this->getApiKey();
         $merchantId = $this->getMerchantId();
         $currency = $this->getCurrency();
-        return md5("{$apiKey}~{$merchantId}~{$reference}~{$payment->total}~{$currency}");
+        return md5("{$apiKey}~{$merchantId}~{$reference}~{$this->getAmount()}~{$currency}");
     }
 
     protected function getCallbackSignature($data)
@@ -76,7 +80,7 @@ class PayU implements PaymentGateway
                 'accountId' => $this->getAccountId(),
                 'merchantId' => $this->getMerchantId(),
                 'referenceCode' => $data['reference'],
-                'amount' => $this->payment->total,
+                'amount' => $this->getAmount(),
                 'currency' => 'CLP',
                 'signature' => $this->getRequestSignature($data['reference']),
                 'description' => "Transacción Prilov",

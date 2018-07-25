@@ -35,6 +35,11 @@ class MercadoPago implements PaymentGateway
         return 'CLP';
     }
 
+    protected function getAmount()
+    {
+        return (int) ($this->payment->total * (100 + config('prilov.payments.percentage_fee.mercado_pago')) / 100);
+    }
+
     public function getPaymentRequest($data)
     {
         $buyer = $this->payment->order->user;
@@ -45,7 +50,7 @@ class MercadoPago implements PaymentGateway
                 [
                     'currency_id' => $this->GetCurrency(),
                     'quantity' => 1,
-                    'unit_price' => $this->payment->total,
+                    'unit_price' => $this->getAmount(),
                 ],
             ],
             'payer' => [
