@@ -36,6 +36,7 @@ trait ShoppingCart
             ]);
         }
         DB::transaction(function () use ($order) {
+            $order->applied_coupon = null;
             $order->status = Order::STATUS_SHOPPING_CART;
             $order->save();
             foreach ($order->payments as $payment) {
@@ -45,10 +46,13 @@ trait ShoppingCart
             foreach ($order->sales as $sale) {
                 $sale->status = Sale::STATUS_SHOPPING_CART;
                 $sale->save();
-            }
-            foreach ($order->products as $product) {
-                $product->status = Product::STATUS_AVAILABLE;
-                $product->save();
+                foreach ($sale->products as $product) {
+                    $sale->products()->updateExistingPivot($product->id, [
+                        'price' => null,
+                    ]);
+                    $product->status = Product::STATUS_AVAILABLE;
+                    $product->save();
+                }
             }
         });
 

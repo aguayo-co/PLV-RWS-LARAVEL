@@ -282,6 +282,10 @@ class Order extends Model
 
     public function setAppliedCouponAttribute($value)
     {
+        if ($value === null) {
+            $this->attributes['applied_coupon'] = null;
+            return;
+        }
         $this->attributes['applied_coupon'] = json_encode($value);
     }
 
