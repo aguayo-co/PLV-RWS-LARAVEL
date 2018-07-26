@@ -52,6 +52,12 @@ class LockOrder
     {
         foreach ($sales as $sale) {
             $sale->status = Sale::STATUS_PAYMENT;
+
+            $shipmentDetails = $sale->shipment_details;
+            $shipmentDetails['cost'] = $sale->shipping_cost;
+            $shipmentDetails['address_from'] = $sale->ship_from;
+            $sale->shipment_details = $shipmentDetails;
+
             $sale->save();
             $this->lockProducts($sale);
         }

@@ -45,7 +45,12 @@ trait ShoppingCart
             }
             foreach ($order->sales as $sale) {
                 $sale->status = Sale::STATUS_SHOPPING_CART;
+                $shipmentDetails = $sale->shipment_details;
+                unset($shipmentDetails['cost']);
+                unset($shipmentDetails['address_from']);
+                $sale->shipment_details = $shipmentDetails;
                 $sale->save();
+
                 foreach ($sale->products as $product) {
                     $sale->products()->updateExistingPivot($product->id, [
                         'price' => null,

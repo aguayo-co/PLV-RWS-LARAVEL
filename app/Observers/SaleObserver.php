@@ -32,14 +32,6 @@ class SaleObserver
     {
         $this->sale = $sale;
 
-        // When moving into STATUS_PAYMENT, set cost and address_from to be persisted.
-        if ($sale->status === Sale::STATUS_PAYMENT && array_has($sale->getDirty(), 'status')) {
-            $shipmentDetails = $sale->shipment_details;
-            $shipmentDetails['cost'] = $sale->shipping_cost;
-            $shipmentDetails['address_from'] = $sale->ship_from;
-            $sale->shipment_details = $shipmentDetails;
-        }
-
         // Check and remove Chilexpress as shipping method if not allowed.
         // Remove only if explicitly disallowed.
         if ($sale->status === Sale::STATUS_SHOPPING_CART
