@@ -30,10 +30,10 @@ trait HasSingleFile
         $path = $this->getBasePathFor($attribute);
         Cache::forget($path);
 
-        Storage::deleteDirectory($path);
+        Storage::cloud()->deleteDirectory($path);
         if ($file) {
             $filename = uniqid() . '.' . $file->extension();
-            Storage::putFileAs($path, $file, $filename);
+            Storage::cloud()->putFileAs($path, $file, $filename);
         }
         # Timestamps might not get updated if this was the only attribute that
         # changed in the model. Force timestamp update.
@@ -49,10 +49,10 @@ trait HasSingleFile
         $path = $this->getBasePathFor($attribute);
         Cache::forget($path);
 
-        Storage::deleteDirectory($path);
+        Storage::cloud()->deleteDirectory($path);
         if ($content) {
             $filename = uniqid() . '.' . $ext;
-            Storage::put($path . $filename, $content);
+            Storage::cloud()->put($path . $filename, $content);
         }
         # Timestamps might not get updated if this was the only attribute that
         # changed in the model. Force timestamp update.
@@ -63,15 +63,17 @@ trait HasSingleFile
     {
         $path = $this->getBasePathFor($attribute);
         $url = Cache::get($path);
-        if ($url) {
-            return $url;
+        if ($url !== null) {
+            // If empty string, return null. No value.
+            return $url ?: null;
         }
 
-        $files = Storage::files($path);
+        $files = Storage::cloud()->files($path);
         if ($files) {
-            $url = asset(Storage::url($files[0]));
+            $url = asset(Storage::cloud()->url($files[0]));
         }
-        cache::put($path, $url, 1440);
+        // Store an empty string to note the field is empty.
+        cache::put($path, $url ?? '', 1440);
         return $url;
     }
 }

@@ -176,13 +176,13 @@ class Product extends Model
     {
         $imagePath = $this->image_path;
         $images = Cache::get($imagePath);
-        if ($images) {
+        if ($images !== null) {
             return $images;
         }
 
         $images = [];
-        foreach (Storage::files($imagePath) as $image) {
-            $images[] = asset(Storage::url($image));
+        foreach (Storage::cloud()->files($imagePath) as $image) {
+            $images[] = asset(Storage::cloud()->url($image));
         }
 
         Cache::put($imagePath, $images, 1440);
@@ -202,7 +202,7 @@ class Product extends Model
             $processedImage = Image::make($image)->encode('jpg', 80);
             $processedImage->stream();
             $filename = $index . '-' . uniqid() . '.jpg';
-            Storage::put($this->image_path . $filename, $processedImage->__toString());
+            Storage::cloud()->put($this->image_path . $filename, $processedImage->__toString());
         }
         # Timestamps might not get updated if this was the only attribute that
         # changed in the model. Force timestamp update.
@@ -215,8 +215,8 @@ class Product extends Model
         Cache::forget($imagePath);
 
         foreach ($images as $image) {
-            if ($image && Storage::exists($this->image_path . $image)) {
-                Storage::delete($this->image_path . $image);
+            if ($image && Storage::cloud()->exists($this->image_path . $image)) {
+                Storage::cloud()->delete($this->image_path . $image);
             }
         }
     }
