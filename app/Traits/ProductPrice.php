@@ -24,12 +24,13 @@ trait ProductPrice
     {
         // If the product is loaded form a sale
         // which has a price in its pivot table, us that price.
-        if (data_get($this, 'pivot.price')) {
-            return $this->pivot->price;
+        $price = data_get($this, 'pivot.price');
+        if ($price !== null) {
+            return $price;
         }
 
         // If product is set as sold, and we didn't have a pivot table
-        // then get salePrice form the sale it was sold with.
+        // or price was null then get salePrice form the sale it was sold with.
         if ($this->status >= Product::STATUS_PAYMENT) {
             return $this->getSalePriceFromSale();
         }
@@ -43,7 +44,7 @@ trait ProductPrice
     {
         // If it was loaded by itself, get the sale that it was sold with.
         $sale = $this->sales()
-            ->whereBetween('status', [Sale::STATUS_PAYMENT, SAle::STATUS_COMPLETED_PARTIAL])
+            ->whereBetween('status', [Sale::STATUS_PAYMENT, Sale::STATUS_COMPLETED_PARTIAL])
             ->first();
 
         // It might happen that there is no sale.

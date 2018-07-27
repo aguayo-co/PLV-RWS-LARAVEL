@@ -142,7 +142,16 @@ class SaleController extends Controller
         // Permissions checked in alterIndexQuery
         if (request()->get('buyer')) {
             $collection->loadMissing([
+                'order.creditsTransactions',
                 'order.payments',
+                // When printing with buyers info, the order needs all the sales
+                // to calculate information.
+                // Eager load sales again with the products.
+                // This might seem redundant, but since from the sale there
+                // is information that we do not have, we need the order with all
+                // its related models loaded to calculate everything.
+                'order.sales.products',
+                'order.sales.shippingMethod',
             ]);
         }
 
@@ -169,6 +178,7 @@ class SaleController extends Controller
             // Optional information.
             // Permissions checked in alterIndexQuery
             if (request()->get('buyer')) {
+                $sale->order->makeHidden(['sales', 'creditsTransactions']);
                 $sale->append([
                     'used_credits',
                 ]);

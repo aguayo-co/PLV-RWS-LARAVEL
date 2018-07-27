@@ -309,6 +309,7 @@ class OrderController extends Controller
     {
         $collection->load([
             'coupon',
+            'creditsTransactions',
             'payments',
             'user',
 
@@ -335,6 +336,8 @@ class OrderController extends Controller
                     'total',
                 ]);
             });
+
+            $order->makeHidden(['creditsTransactions']);
             $order->append([
                 'active_payment',
                 'total',
