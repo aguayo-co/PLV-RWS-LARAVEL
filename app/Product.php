@@ -185,7 +185,7 @@ class Product extends Model
             $images[] = asset(Storage::cloud()->url($image));
         }
 
-        Cache::put($imagePath, $images, 1440);
+        Cache::put($imagePath, $images, 43200);
         return $images;
     }
 

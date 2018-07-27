@@ -73,7 +73,7 @@ trait HasSingleFile
             $url = asset(Storage::cloud()->url($files[0]));
         }
         // Store an empty string to note the field is empty.
-        cache::put($path, $url ?? '', 1440);
+        cache::put($path, $url ?? '', 43200);
         return $url;
     }
 }
