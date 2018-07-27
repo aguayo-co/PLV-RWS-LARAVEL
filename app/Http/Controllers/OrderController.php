@@ -237,7 +237,7 @@ class OrderController extends Controller
             return;
         }
 
-        $activePayment = $order->activePayment;
+        $activePayment = $order->active_payment;
         $activePayment->status = Payment::STATUS_PROCESSING;
         $activePayment->transfer_receipt = $transferReceipt;
         $activePayment->save();
