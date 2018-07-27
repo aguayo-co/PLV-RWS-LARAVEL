@@ -6,9 +6,11 @@ use Illuminate\Database\Eloquent\Collection;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class ReportController extends BaseController
 {
@@ -22,8 +24,20 @@ class ReportController extends BaseController
         $this->middleware('role:admin');
     }
 
+    protected function validate(Request $request)
+    {
+        Validator::make($request->all(), [
+            'groupBy' => 'required|in:day,week,month,year',
+            'tz' => 'required|timezone',
+            'from' => 'required|date',
+            'until' => 'required|date',
+        ])->validate();
+    }
+
     public function show(Request $request)
     {
+        $this->validate($request);
+
         switch ($request->groupBy) {
             case 'day':
                 $this->dateGroupByFormat = '%Y-%m-%d';
@@ -40,9 +54,6 @@ class ReportController extends BaseController
             case 'year':
                 $this->dateGroupByFormat = '%Y';
                 break;
-
-            default:
-                abort(Response::HTTP_BAD_REQUEST, __('Missing or invalid groupBy.'));
         }
 
         $subQuery = DB::table('orders')
@@ -60,7 +71,9 @@ class ReportController extends BaseController
             ->groupBy('orders.id');
 
         $query = DB::table('orders')
-            ->select(DB::raw("DATE_FORMAT(orders.updated_at, '{$this->dateGroupByFormat}') as date_range"))
+            // We have to group using the request timezone to avoid splitting days in 2.
+            // We still return data in UTC times.
+            ->select(DB::raw("DATE_FORMAT(CONVERT_TZ(orders.updated_at, 'UTC', '{$request->tz}'), '{$this->dateGroupByFormat}') as date_range"))
             ->addSelect(DB::raw('MIN(orders.updated_at) as since'))
             ->addSelect(DB::raw('MAX(orders.updated_at) as until'))
             ->addSelect(DB::raw('SUM(products_total - orders.applied_coupon->"$.discount") as cashIn'))
@@ -73,7 +86,7 @@ class ReportController extends BaseController
         }
 
         if ($request->until) {
-            $query = $query->where('orders.updated_at', '<=', $request->until);
+            $query = $query->where('orders.updated_at', '<', $request->until);
         }
 
         $result = $query->get();
