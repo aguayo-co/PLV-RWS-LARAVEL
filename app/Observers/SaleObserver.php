@@ -137,7 +137,7 @@ class SaleObserver
         $sale = $this->sale;
 
         // Only return credits if payment was successful.
-        if (!$sale->order->payment || !$sale->order->payment->status === Payment::STATUS_SUCCESS) {
+        if (!$sale->order->active_payment || !$sale->order->active_payment->status === Payment::STATUS_SUCCESS) {
             return;
         }
 

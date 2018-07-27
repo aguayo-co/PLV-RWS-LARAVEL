@@ -127,7 +127,7 @@ class Sale extends Model
     {
         return $this->products->sum(function ($product) {
             return round($product->price * $product->commission / 100);
-        });
+        }) - $this->coupon_discount;
     }
 
     /**

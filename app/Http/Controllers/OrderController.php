@@ -330,10 +330,12 @@ class OrderController extends Controller
                     $sale->user->makeVisible(['email', 'phone']);
                 }
                 $sale->append([
+                    'coupon_discount',
                     'shipping_cost',
                     'allow_chilexpress',
                     'is_chilexpress',
                     'total',
+                    'commission',
                 ]);
             });
 
