@@ -187,12 +187,10 @@ class Sale extends Model
 
     public function getReturnedCommissionAttribute()
     {
-        $discountPerProduct = $this->discount_per_product;
         return $this->products->whereIn('id', $this->returned_products_ids)
-            ->sum(function ($product) use ($discountPerProduct) {
-                $discount = data_get($discountPerProduct, $product->id . '.discount', 0);
-                return round($product->price * $product->commission / 100 - $discount);
-            });
+            ->sum(function ($product) {
+                return round($product->price * $product->commission / 100);
+            }) - $this->returned_discount;
     }
 
     /**
