@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Database\Eloquent\Collection;
 
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ReportController extends BaseController
 {
@@ -23,22 +24,25 @@ class ReportController extends BaseController
 
     public function show(Request $request)
     {
-        switch ($request->groupby) {
+        switch ($request->groupBy) {
             case 'day':
                 $this->dateGroupByFormat = '%Y-%m-%d';
                 break;
 
             case 'week':
-                $this->dateGroupByFormat = 'Semana %u: %Y-%m';
+                $this->dateGroupByFormat = '%u (%Y)';
                 break;
 
             case 'month':
                 $this->dateGroupByFormat = '%Y-%m';
                 break;
 
-            default:
+            case 'year':
                 $this->dateGroupByFormat = '%Y';
                 break;
+
+            default:
+                abort(Response::HTTP_BAD_REQUEST, __('Missing or invalid groupBy.'));
         }
 
         $subQuery = DB::table('orders')
@@ -57,13 +61,15 @@ class ReportController extends BaseController
 
         $query = DB::table('orders')
             ->select(DB::raw("DATE_FORMAT(orders.updated_at, '{$this->dateGroupByFormat}') as date_range"))
+            ->addSelect(DB::raw('MIN(orders.updated_at) as since'))
+            ->addSelect(DB::raw('MAX(orders.updated_at) as until'))
             ->addSelect(DB::raw('SUM(products_total - orders.applied_coupon->"$.discount") as cashIn'))
             ->addSelect(DB::raw('CAST(SUM(grossRevenue) AS SIGNED) as grossRevenue'))
             ->joinSub($subQuery, 'totaled_orders', 'totaled_orders.id', '=', 'orders.id')
             ->groupBy('date_range');
 
-        if ($request->since) {
-            $query = $query->where('orders.updated_at', '>=', $request->since);
+        if ($request->from) {
+            $query = $query->where('orders.updated_at', '>=', $request->from);
         }
 
         if ($request->until) {
@@ -73,12 +79,13 @@ class ReportController extends BaseController
         $result = $query->get();
 
         $rows = [
+            'groupBy' => $request->groupBy,
             'ranges' => [],
             'cashIn' => [],
             'grossRevenue' => [],
         ];
         foreach ($result as $range) {
-            $rows['ranges'][] = $range->date_range;
+            $rows['ranges'][$range->date_range] = [new Carbon($range->since), new Carbon($range->until)];
             $rows['cashIn'][$range->date_range] = $range->cashIn;
             $rows['grossRevenue'][$range->date_range] = $range->grossRevenue;
         }
