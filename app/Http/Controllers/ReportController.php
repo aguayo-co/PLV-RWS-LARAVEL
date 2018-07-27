@@ -28,9 +28,11 @@ class ReportController extends BaseController
     {
         Validator::make($request->all(), [
             'groupBy' => 'required|in:day,week,month,year',
+            // Timezone to use when group data.
             'tz' => 'required|timezone',
-            'from' => 'required|date',
-            'until' => 'required|date',
+            // Dates should come in UTC.
+            'from' => 'required|date_format:Y-m-d H:i:s',
+            'until' => 'required|date_format:Y-m-d H:i:s',
         ])->validate();
     }
 
