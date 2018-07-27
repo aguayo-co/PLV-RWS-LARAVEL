@@ -1,7 +1,5 @@
 <?php
 
-$emailPrefix = env('SMTP_PREFIX', '');
-
 return [
 
     /*
@@ -31,7 +29,7 @@ return [
     |
     */
 
-    'host' => env($emailPrefix . 'SMTP_SERVER'),
+    'host' => env('MAIL_HOST', 'smtp.mailgun.org'),
 
     /*
     |--------------------------------------------------------------------------
@@ -44,7 +42,7 @@ return [
     |
     */
 
-    'port' => env($emailPrefix . 'SMTP_PORT', 587),
+    'port' => env('MAIL_PORT', 587),
 
     /*
     |--------------------------------------------------------------------------
@@ -58,8 +56,8 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'laravel@prilov'),
-        'name' => env('MAIL_FROM_NAME', 'Laravel'),
+        'address' => env('MAIL_FROM_ADDRESS', 'no-reply@prilov.com'),
+        'name' => env('MAIL_FROM_NAME', 'Prilov'),
     ],
 
     /*
@@ -73,7 +71,7 @@ return [
     |
     */
 
-    'encryption' => env($emailPrefix . 'SMTP_ENCRYPTION', 'tls'),
+    'encryption' => env('MAIL_ENCRYPTION', 'tls'),
 
     /*
     |--------------------------------------------------------------------------
@@ -86,9 +84,9 @@ return [
     |
     */
 
-    'username' => env($emailPrefix . 'SMTP_LOGIN'),
+    'username' => env('MAIL_USERNAME'),
 
-    'password' => env($emailPrefix . 'SMTP_PASSWORD'),
+    'password' => env('MAIL_PASSWORD'),
 
     /*
     |--------------------------------------------------------------------------
