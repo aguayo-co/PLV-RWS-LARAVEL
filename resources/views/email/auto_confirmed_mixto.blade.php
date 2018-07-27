@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:300,500,600,700|Roboto+Condensed:400,700|Roboto:100,400'">
-  <title>Comprobante de transferencia por ChileExpress</title>
+  <title>Médio de pago automático - confirmación ChileExpress</title>
 
   <style>
     @font-face {
@@ -317,45 +317,37 @@
                     <tr class="row" style="width:100%;">
                       <td class="cell spacing txt highlight uppercase" align="center" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;color:#f65a66;text-transform:auppercase;">Tu compra ya fue confirmada.</td>
                     </tr>
+                    <tr class="row" style="width:100%;">
+                      <td class="cell spacing_table" align="center" style="padding-top:30px;padding-bottom:40px;padding-right:0;padding-left:0;">
+                        <!-- Resumen de compra -->
+                        @include('email.template_receipt', ['order' => $order])
+                        <!-- end Resumen de compra -->
+                      </td>
+                    </tr>
+                    <!-- aqui van las tablas -->
                   </table>
-                </td>
-              </tr>
-              <tr class="row" style="width:100%;">
-                <td align="center">
-                  <!-- Método de envío -->
-                  <table class="table__medium" width="500" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
-                    <thead>
-                      <th class="bb_light head-table_second" style="padding-bottom:6px;font-size:16px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#EFEFEF;">MÉTODO ENVÍO</th>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td class="txt-table_second" align="center" style="padding-top:12px;padding-bottom:30px;padding-right:0;padding-left:0;font-size:16px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">
-                          <img src="{{ env('APP_FRONT_URL') }}static/img/mailing/ico-shipping.jpg" alt="a la espera de envio" width="30" class="v-align_middle" style="display:inline-block;vertical-align:middle;">
-                          <span class="v-align_middle" style="display:inline-block;vertical-align:middle;">&nbsp;A la espera de envío</span>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  <!-- end Método de envío -->
                 </td>
               </tr>
               <tr class="row" style="width:100%;">
                 <td align="center">
                   <table class="table__pre-footer" width="500" cellpadding="0" cellspacing="0" border="0">
                     <tbody>
-                      <tr>
-                        <td class="table-prefooter__cell table-prefooter__spacing-cell" align="center" style="padding-top:10px;padding-bottom:10px;padding-right:0;padding-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">
-                          Los productos que compraste con envío por Chilexpress, serán enviados por la vendedora.
+                      <tr class="row" style="width:100%;">
+                        <td class="cell" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;">
+                          <a href="{{ env('APP_FRONT_URL') }}user/tus-compras" class="btn btn_solid" style="display:block;width:70%;max-width:410px;padding-top:18px;padding-bottom:18px;padding-right:6px;padding-left:6px;margin-top:0;margin-bottom:20px;margin-right:auto;margin-left:auto;border-width:2px;border-style:solid;border-color:#000000;text-decoration:none;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;text-align:center;background-color:#000000;color:#ffffff;">Ir a Tus Compras</a>
                         </td>
                       </tr>
                       <tr>
                         <td class="table-prefooter__cell table-prefooter__spacing-cell" align="center" style="padding-top:10px;padding-bottom:10px;padding-right:0;padding-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">
-                          Para los productos en los que elegiste acordar el envío con la vendedora, debes contactarla para confirmar el lugar de la entrega o método de envío ;)
-                        </td>
-                      </tr>
-                      <tr>
-                        <td class="table-prefooter__cell table-prefooter__spacing-cell" align="center" style="padding-top:10px;padding-bottom:10px;padding-right:0;padding-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">
-                          ¡Ojalá te encante tu nueva joyita!
+                          Los productos que compraste con envío por Chilexpress, serán enviados por la vendedora y luego te enviaremos el número de seguimiento.
+                          <br>
+                          <br>
+                          Para los productos en los que elegiste acordar el envío, te recomendamos contactar a la vendedora para confirmar el lugar de la entrega o método de envío ;)
+                          <br>
+                          <br>
+                          Las vendedoras también recibieron un mail de confirmación con tus datos.
+                          <br>
+                          <br>¡Ojalá te encanten tus nuevas joyitas!
                         </td>
                       </tr>
                       <tr class="row" style="width:100%;">

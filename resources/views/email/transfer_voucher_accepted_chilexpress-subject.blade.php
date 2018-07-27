@@ -1,1 +1,1 @@
-Bacán! Tu compra ya fue confirmada
+Bacán! Tu compra de {{ $order->products[0]->title }} @if (count($order->products) > 1) y {{ count($order->products) - 1 }} @if (count($order->products) > 2) productos @else producto @endif más @endif ya fue confirmada
