@@ -41,18 +41,25 @@ class ReportController extends BaseController
                 break;
         }
 
-        $query = DB::table('orders')
+        $subQuery = DB::table('orders')
             ->join('sales', 'orders.id', '=', 'sales.order_id')
             ->join('product_sale', 'sales.id', '=', 'product_sale.sale_id')
             ->join('products', 'product_sale.product_id', '=', 'products.id')
             ->where('orders.status', 30)
-            ->select(DB::raw("DATE_FORMAT(orders.updated_at, '{$this->dateGroupByFormat}') as date_range"))
+            ->select(DB::raw('orders.id as id'))
             // Cash In = Toda la plata que entra - envío - comisión plataforma
-            ->addSelect(DB::raw('SUM(product_sale.price) - SUM(orders.applied_coupon->"$.discount") as cashIn'))
+            ->addSelect(DB::raw('SUM(product_sale.price) as products_total'))
             // Gross Revenue: Total de comisiones con las que se queda Prilov.
             // Es decir la plata que efectivamente le quedó a Prilov
             // quitando cualquier descuento que esté asumiendo Prilov.
             ->addSelect(DB::raw('CAST(SUM(products.price * products.commission / 100) AS SIGNED) as grossRevenue'))
+            ->groupBy('orders.id');
+
+        $query = DB::table('orders')
+            ->select(DB::raw("DATE_FORMAT(orders.updated_at, '{$this->dateGroupByFormat}') as date_range"))
+            ->addSelect(DB::raw('SUM(products_total - orders.applied_coupon->"$.discount") as cashIn'))
+            ->addSelect(DB::raw('CAST(SUM(grossRevenue) AS SIGNED) as grossRevenue'))
+            ->joinSub($subQuery, 'totaled_orders', 'totaled_orders.id', '=', 'orders.id')
             ->groupBy('date_range');
 
         if ($request->since) {
