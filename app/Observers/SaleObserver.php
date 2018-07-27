@@ -137,7 +137,7 @@ class SaleObserver
         $sale = $this->sale;
 
         // Only return credits if payment was successful.
-        if (!$sale->order->payment || !$sale->order->payment->status === Payment::STATUS_SUCCESS) {
+        if (!$sale->order->active_payment || !$sale->order->active_payment->status === Payment::STATUS_SUCCESS) {
             return;
         }
 
@@ -179,7 +179,7 @@ class SaleObserver
 
         CreditsTransaction::create([
             'user_id' => $sale->user_id,
-            'amount' => $sale->total - $sale->commission,
+            'amount' => $sale->total - ($sale->commission + $sale->coupon_discount),
             'commission' => $sale->commission,
             'sale_id' => $sale->id,
             'extra' => ['reason' => __('prilov.credits.reasons.orderCompleted')]
@@ -191,7 +191,7 @@ class SaleObserver
         $sale = $this->sale;
         $returnedProductsIds = $sale->returned_products_ids->implode(', ');
         $reason = __('prilov.credits.reasons.orderPartial', ['products' => $returnedProductsIds]);
-        $amount = $sale->total - $sale->commission - $sale->returned_total;
+        $amount = $sale->total - ($sale->commission + $sale->coupon_discount) - $sale->returned_total;
 
         CreditsTransaction::create([
             'user_id' => $sale->user_id,

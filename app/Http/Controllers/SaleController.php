@@ -169,10 +169,12 @@ class SaleController extends Controller
             }
 
             $sale->append([
+                'coupon_discount',
                 'shipping_cost',
                 'allow_chilexpress',
                 'is_chilexpress',
                 'total',
+                'commission',
             ]);
 
             // Optional information.

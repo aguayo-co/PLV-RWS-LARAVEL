@@ -127,7 +127,7 @@ class Sale extends Model
     {
         return $this->products->sum(function ($product) {
             return round($product->price * $product->commission / 100);
-        });
+        }) - $this->coupon_discount;
     }
 
     /**
@@ -187,9 +187,10 @@ class Sale extends Model
 
     public function getReturnedCommissionAttribute()
     {
-        return $this->products->whereIn('id', $this->returned_products_ids)->sum(function ($product) {
-            return round($product->price * $product->commission / 100);
-        });
+        return $this->products->whereIn('id', $this->returned_products_ids)
+            ->sum(function ($product) {
+                return round($product->price * $product->commission / 100);
+            }) - $this->returned_discount;
     }
 
     /**

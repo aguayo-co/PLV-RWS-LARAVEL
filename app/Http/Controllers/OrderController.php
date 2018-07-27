@@ -237,7 +237,7 @@ class OrderController extends Controller
             return;
         }
 
-        $activePayment = $order->activePayment;
+        $activePayment = $order->active_payment;
         $activePayment->status = Payment::STATUS_PROCESSING;
         $activePayment->transfer_receipt = $transferReceipt;
         $activePayment->save();
@@ -330,10 +330,12 @@ class OrderController extends Controller
                     $sale->user->makeVisible(['email', 'phone']);
                 }
                 $sale->append([
+                    'coupon_discount',
                     'shipping_cost',
                     'allow_chilexpress',
                     'is_chilexpress',
                     'total',
+                    'commission',
                 ]);
             });
 
