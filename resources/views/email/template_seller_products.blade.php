@@ -49,6 +49,16 @@
             </tr>
           </tbody>
           @endif
+          <tbody>
+            <tr>
+              <td align="left" class="sub-cell" style="padding-top:6px;font-size:12px;color:#9B9B9B;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Ganancia en este producto</td>
+              @if ($product->sale_price !== $product->price)
+              <td align="right" class="sub-cell" style="padding-top:6px;font-size:12px;color:#7ed321;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">${{ number_format((int) ($product->sale_price - ($product->price * $product->commission / 100)), 0, ',', '.') }}</td>
+              @else
+              <td align="right" class="sub-cell" style="padding-top:6px;font-size:12px;color:#7ed321;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">${{ number_format((int) ($product->price - ($product->price * $product->commission / 100)), 0, ',', '.') }}</td>
+              @endif
+            </tr>
+          </tbody>
         </table>
       </td>
     </tr>
