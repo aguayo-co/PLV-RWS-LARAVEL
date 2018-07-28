@@ -1,3 +1,6 @@
+@php
+  $buyer = $sale->order->user;
+@endphp
 <!DOCTYPE html>
 <html lang="es">
 
@@ -320,6 +323,13 @@
                     <tr class="row" style="width:100%;">
                       <td class="cell spacing txt" align="center" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Ya confirmamos el pago por parte de la compradora.</td>
                     </tr>
+                    <tr class="row" style="width:100%;">
+                      <td class="cell spacing_table" align="center" style="padding-top:30px;padding-bottom:40px;padding-right:0;padding-left:0;">
+                        <!-- Resumen de compra -->
+                        @include('email.template_seller_products', ['sale' => $sale])
+                        <!-- end Resumen de compra -->
+                      </td>
+                    </tr>
                   </table>
                 </td>
               </tr>
@@ -328,13 +338,13 @@
                   <!-- Método de envío -->
                   <table class="table__medium" width="500" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
                     <thead>
-                      <th class="bb_light head-table_second" style="padding-bottom:6px;font-size:16px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#EFEFEF;">MÉTODO ENVÍO</th>
+                      <th class="bb_light head-table_second" style="padding-bottom:6px;font-size:16px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#EFEFEF;">MÉTODO DE ENVÍO</th>
                     </thead>
                     <tbody>
                       <tr>
                         <td class="txt-table_second" align="center" style="padding-top:12px;padding-bottom:30px;padding-right:0;padding-left:0;font-size:16px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">
                           <img src="{{ env('APP_FRONT_URL') }}static/img/mailing/ico-shipping.jpg" alt="a la espera de envio" width="30" class="v-align_middle" style="display:inline-block;vertical-align:middle;">
-                          <span class="v-align_middle" style="display:inline-block;vertical-align:middle;">&nbsp;A la espera de envío</span>
+                          <span class="v-align_middle" style="display:inline-block;vertical-align:middle;">Acuerdo envío con compradora</span>
                         </td>
                       </tr>
                     </tbody>
@@ -344,16 +354,43 @@
               </tr>
               <tr class="row" style="width:100%;">
                 <td align="center">
+                  <!-- Vendedora -->
+                  <table class="table__medium" width="500" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
+                    <thead>
+                      <th class="bb_light head-table_second" style="padding-bottom:6px;font-size:16px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#EFEFEF;">COMPRADORA</th>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="txt-table_second txt-table_second-grey" align="center" style="padding-top:12px;padding-bottom:30px;padding-right:0;padding-left:0;font-size:16px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;font-weight:bold;color:#707070;">
+                          <img src="{{ $buyer->picture }}" alt="a la espera de envio" width="40" class="v-align_middle" style="display:inline-block;vertical-align:middle;border: 3px solid #f65a66;width: 45px;height: 45px;border-radius: 100px;margin-right: 10px;">
+                          <span class="v-align_middle" style="display:inline-block;vertical-align:middle;">{{ $buyer->first_name }} {{ $buyer->last_name }}<br><span style="font-size: 11px;">Teléfono: {{$sale->user->phone}}</span></span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <!-- end Vendedora -->
+                </td>
+              </tr>
+              <tr class="row" style="width:100%;">
+                <td align="center">
                   <table class="table__pre-footer" width="500" cellpadding="0" cellspacing="0" border="0">
                     <tbody>
                       <tr>
                         <td class="table-prefooter__cell table-prefooter__spacing-cell" align="center" style="padding-top:10px;padding-bottom:10px;padding-right:0;padding-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">
-                          La compradora eligió la opción de coordinar la entrega o envío directamente contigo.
+                          La compradora eligió la opción de coordinar la entrega o envío directamente contigo.<br>Te recomendamos enviar o entregar la prenda antes de 48 horas y cambiar el estado de tu venta desde tu perfil cuando lo hagas.
+                        </td>
+                      </tr>
+                      <tr class="row" style="width:100%;">
+                        <td class="cell" style="padding-right:0;padding-left:0;padding-top:20px;padding-bottom:0;">
+                          <a href="{{ env('APP_FRONT_URL') }}user/privado/{{ $buyer->id }}" class="btn btn_solid" style="display:block;width:70%;max-width:410px;padding-top:18px;padding-bottom:18px;padding-right:6px;padding-left:6px;margin-top:0;margin-bottom:20px;margin-right:auto;margin-left:auto;border-width:2px;border-style:solid;border-color:#000000;text-decoration:none;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;text-align:center;background-color:#000000;color:#ffffff;">Enviar privado a la compradora</a>
                         </td>
                       </tr>
                       <tr>
                         <td class="table-prefooter__cell table-prefooter__spacing-cell" align="center" style="padding-top:10px;padding-bottom:10px;padding-right:0;padding-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">
-                          Algo que debes saber: Una vez que el producto sea enviado o entregado directamente, debes ingresar a "Tus ventas" y seleccionar "Marcar como enviado" en tu producto, así podremos seguir con el proceso de venta. Cuando ella lo reciba, lo marcará como "Recibido" y tus créditos serán generados.
+                          Algo que debes saber: Una vez que el producto sea enviado o entregado directamente, debes ingresar a "Tus ventas" y seleccionar "Marcar como enviado" en tu producto, así podremos seguir con el proceso de venta.
+                          <br>
+                          <br>
+                          Cuando ella lo reciba, lo marcará como "Recibido" y tus créditos serán generados. 
                         </td>
                       </tr>
                       <tr class="row" style="width:100%;">
