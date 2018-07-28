@@ -44,13 +44,13 @@ class ProcessDeliveredSales extends Command
                 $dateBefore = now()->subDays(config('prilov.sales.days_delivered_to_completed'));
 
                 $deliveredStatus = Sale::STATUS_DELIVERED;
-                $deliveredJsonPath = "`status_history`->'$.\"{$deliveredStatus}\".\"date\".\"date\"'";
+                $deliveredJsonPath = "`status_history`->'$.\"{$deliveredStatus}\".date'";
                 $deliveredDate = DB::raw("CAST(JSON_UNQUOTE({$deliveredJsonPath}) as DATETIME)");
 
                 // Order might have not been marked as Delivered, in which case we use
                 // Received as a backup.
                 $receivedStatus = Sale::STATUS_RECEIVED;
-                $receivedJsonPath = "`status_history`->'$.\"{$receivedStatus}\".\"date\".\"date\"'";
+                $receivedJsonPath = "`status_history`->'$.\"{$receivedStatus}\".date'";
                 $receivedDate = DB::raw("CAST(JSON_UNQUOTE({$receivedJsonPath}) as DATETIME)");
 
                 $query->where($deliveredDate, '<', $dateBefore)->orWhere($receivedDate, '<', $dateBefore);
