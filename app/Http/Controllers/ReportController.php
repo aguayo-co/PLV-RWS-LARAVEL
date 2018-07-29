@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Database\Eloquent\Collection;
-
+use App\Order;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -58,11 +56,13 @@ class ReportController extends BaseController
                 break;
         }
 
+        $payedStatus = Order::STATUS_PAYED;
+
         $subQuery = DB::table('orders')
             ->join('sales', 'orders.id', '=', 'sales.order_id')
             ->join('product_sale', 'sales.id', '=', 'product_sale.sale_id')
             ->join('products', 'product_sale.product_id', '=', 'products.id')
-            ->where('orders.status', 30)
+            ->where('orders.status', $payedStatus)
             ->select(DB::raw('orders.id as id'))
             // Cash In = Toda la plata que entra - envío - comisión plataforma
             ->addSelect(DB::raw('SUM(product_sale.price) as products_total'))
@@ -72,10 +72,14 @@ class ReportController extends BaseController
             ->addSelect(DB::raw('CAST(SUM(products.price * products.commission / 100) AS SIGNED) as grossRevenue'))
             ->groupBy('orders.id');
 
+        $payedJsonPath = "`status_history`->'$.\"{$payedStatus}\".date'";
+        $payedDate = "CAST(JSON_UNQUOTE({$payedJsonPath}) as DATETIME)";
+        $formatedDate = "DATE_FORMAT(CONVERT_TZ({$payedDate}, 'UTC', '{$request->tz}'), '{$this->dateGroupByFormat}')";
         $query = DB::table('orders')
-            // We have to group using the request timezone to avoid splitting days in 2.
+            // We have to group using the request timezone to avoid splitting days in 2
+            // For the requesting user.
             // We still return data in UTC times.
-            ->select(DB::raw("DATE_FORMAT(CONVERT_TZ(orders.updated_at, 'UTC', '{$request->tz}'), '{$this->dateGroupByFormat}') as date_range"))
+            ->select(DB::raw("{$formatedDate} as date_range"))
             ->addSelect(DB::raw('MIN(orders.updated_at) as since'))
             ->addSelect(DB::raw('MAX(orders.updated_at) as until'))
             ->addSelect(DB::raw('SUM(products_total - orders.applied_coupon->"$.discount") as cashIn'))
