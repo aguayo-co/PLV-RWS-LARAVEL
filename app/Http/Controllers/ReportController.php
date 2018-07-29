@@ -77,11 +77,12 @@ class ReportController extends BaseController
 
         $payedJsonPath = "`status_history`->'$.\"{$payedStatus}\".date'";
         $payedDate = "CAST(JSON_UNQUOTE({$payedJsonPath}) as DATETIME)";
+        $formatedDate = "DATE_FORMAT(CONVERT_TZ({$payedDate}, 'UTC', '{$request->tz}'), '{$this->dateGroupByFormat}')";
         $query = DB::table('orders')
             // We have to group using the request timezone to avoid splitting days in 2
             // For the requesting user.
             // We still return data in UTC times.
-            ->select(DB::raw("DATE_FORMAT(CONVERT_TZ({$payedDate}, 'UTC', '{$request->tz}'), '{$this->dateGroupByFormat}') as date_range"))
+            ->select(DB::raw("{$formatedDate} as date_range"))
             ->addSelect(DB::raw('MIN(orders.updated_at) as since'))
             ->addSelect(DB::raw('MAX(orders.updated_at) as until'))
             ->addSelect(DB::raw('SUM(products_total - orders.applied_coupon->"$.discount") as cashIn'))
