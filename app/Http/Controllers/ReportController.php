@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Order;
+use App\Sale;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
@@ -56,25 +57,54 @@ class ReportController extends BaseController
                 break;
         }
 
-        $payedStatus = Order::STATUS_PAYED;
+        $orderPayedStatus = Order::STATUS_PAYED;
+        $saleCanceledStatus = Sale::STATUS_CANCELED;
 
-        $subQuery = DB::table('orders')
+        // Payment date.
+        $payedJsonPath = "orders.status_history->'$.\"{$orderPayedStatus}\".date'";
+        $payedDate = "CAST(JSON_UNQUOTE({$payedJsonPath}) as DATETIME)";
+        $formatedDate = "DATE_FORMAT(CONVERT_TZ({$payedDate}, 'UTC', '{$request->tz}'), '{$this->dateGroupByFormat}')";
+
+        // Commission.
+        $commissionFormula = 'CAST(products.price * products.commission / 100 as SIGNED)';
+        $commissionCondition = "IF(sales.status < {$saleCanceledStatus}, {$commissionFormula}, 0)";
+
+        // First query, to aggregate by sales.
+        // We calculate values aggregated by sales.
+        $subQuerySales = DB::table('orders')
             ->join('sales', 'orders.id', '=', 'sales.order_id')
             ->join('product_sale', 'sales.id', '=', 'product_sale.sale_id')
             ->join('products', 'product_sale.product_id', '=', 'products.id')
-            ->where('orders.status', $payedStatus)
+            ->where('orders.status', $orderPayedStatus)
             ->select(DB::raw('orders.id as id'))
-            // Cash In = Toda la plata que entra - envío - comisión plataforma
-            ->addSelect(DB::raw('SUM(product_sale.price) as products_total'))
+            ->addSelect(DB::raw('SUM(product_sale.price) as productsTotal'))
+            ->addSelect(DB::raw('IFNULL(sales.shipment_details->"$.cost", 0) as shippingCost'))
             // Gross Revenue: Total de comisiones con las que se queda Prilov.
             // Es decir la plata que efectivamente le quedó a Prilov
-            // quitando cualquier descuento que esté asumiendo Prilov.
-            ->addSelect(DB::raw('CAST(SUM(products.price * products.commission / 100) AS SIGNED) as grossRevenue'))
+            // quitando cualquier descuento que esté asumiendo Prilov o cancelaciones.
+            ->addSelect(DB::raw("SUM({$commissionCondition}) as grossRevenue"))
+            ->groupBy('sales.id');
+
+        if ($request->from) {
+            $subQuerySales = $subQuerySales->whereRaw("{$payedDate} >= ?", $request->from);
+        }
+
+        if ($request->until) {
+            $subQuerySales = $subQuerySales->whereRaw("{$payedDate} < ?", $request->until);
+        }
+
+        // Second query, to aggregate by orders.
+        $subQueryOrders = DB::table('orders')
+            ->joinSub($subQuerySales, 'totaledSales', 'totaledSales.id', '=', 'orders.id')
+            ->select(DB::raw('orders.id as id'))
+            ->addSelect(DB::raw('SUM(productsTotal - shippingCost) as salesTotal'))
+            ->addSelect(DB::raw('SUM(grossRevenue) as grossRevenue'))
             ->groupBy('orders.id');
 
-        $payedJsonPath = "`status_history`->'$.\"{$payedStatus}\".date'";
-        $payedDate = "CAST(JSON_UNQUOTE({$payedJsonPath}) as DATETIME)";
-        $formatedDate = "DATE_FORMAT(CONVERT_TZ({$payedDate}, 'UTC', '{$request->tz}'), '{$this->dateGroupByFormat}')";
+        // Third query uses aggregated fields from sub-queries and adds values from orders.
+        // 3 queries are needed because there is no way to have DISTINCT values on a column
+        // by the table id.
+        // If we could SUM a column when DISTINCT on ID, one query would suffice.
         $query = DB::table('orders')
             // We have to group using the request timezone to avoid splitting days in 2
             // For the requesting user.
@@ -82,18 +112,10 @@ class ReportController extends BaseController
             ->select(DB::raw("{$formatedDate} as date_range"))
             ->addSelect(DB::raw("MIN({$payedDate}) as since"))
             ->addSelect(DB::raw("MAX({$payedDate}) as until"))
-            ->addSelect(DB::raw('SUM(products_total - orders.applied_coupon->"$.discount") as cashIn'))
-            ->addSelect(DB::raw('CAST(SUM(grossRevenue) AS SIGNED) as grossRevenue'))
-            ->joinSub($subQuery, 'totaled_orders', 'totaled_orders.id', '=', 'orders.id')
+            ->addSelect(DB::raw('SUM(salesTotal - orders.applied_coupon->"$.discount") as cashIn'))
+            ->addSelect(DB::raw('CAST(SUM(grossRevenue) as SIGNED) as grossRevenue'))
+            ->joinSub($subQueryOrders, 'totaledOrders', 'totaledOrders.id', '=', 'orders.id')
             ->groupBy('date_range');
-
-        if ($request->from) {
-            $query = $query->whereRaw("{$payedDate} >= ?", $request->from);
-        }
-
-        if ($request->until) {
-            $query = $query->whereRaw("{$payedDate} < ?", $request->until);
-        }
 
         $result = $query->get();
 
