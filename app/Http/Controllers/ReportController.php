@@ -80,19 +80,19 @@ class ReportController extends BaseController
             // For the requesting user.
             // We still return data in UTC times.
             ->select(DB::raw("{$formatedDate} as date_range"))
-            ->addSelect(DB::raw('MIN(orders.updated_at) as since'))
-            ->addSelect(DB::raw('MAX(orders.updated_at) as until'))
+            ->addSelect(DB::raw("MIN({$payedDate}) as since"))
+            ->addSelect(DB::raw("MAX({$payedDate}) as until"))
             ->addSelect(DB::raw('SUM(products_total - orders.applied_coupon->"$.discount") as cashIn'))
             ->addSelect(DB::raw('CAST(SUM(grossRevenue) AS SIGNED) as grossRevenue'))
             ->joinSub($subQuery, 'totaled_orders', 'totaled_orders.id', '=', 'orders.id')
             ->groupBy('date_range');
 
         if ($request->from) {
-            $query = $query->where('orders.updated_at', '>=', $request->from);
+            $query = $query->whereRaw("{$payedDate} >= ?", $request->from);
         }
 
         if ($request->until) {
-            $query = $query->where('orders.updated_at', '<', $request->until);
+            $query = $query->whereRaw("{$payedDate} < ?", $request->until);
         }
 
         $result = $query->get();
