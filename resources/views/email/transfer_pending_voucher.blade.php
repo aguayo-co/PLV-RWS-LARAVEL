@@ -219,9 +219,9 @@
                       <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Para finalizar el proceso de compra, debes subir el comprobante de transferencia bancaria en nuestra plataforma. Recuerda que tienes {{ config('prilov.payments.minutes_until_canceled') }} minutos para subirlo antes que el sistema cancele la compra.</td>
                     </tr>
                     <tr class="row" style="width:100%;">
-                      <td class="cell spacing txt" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', arial;line-height:1.4;">
-                        <a href="{{ env('APP_FRONT_URL') }}user/tus-compras" class="link nav__link" style="display:inline-block;margin-top:5px;margin-bottom:5px;margin-right:5px;margin-left:5px;text-align:center;color:#000000;border-bottom-width:2px;border-bottom-style:solid;border-bottom-color:#f65a66;text-decoration:none;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;padding-top:30px;">Subir comprobante</a>
-                      </td>
+                        <td class="cell" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;">
+                          <a href="{{ env('APP_FRONT_URL') }}user/tus-compras" class="btn btn_solid" style="display:block;width:70%;max-width:410px;padding-top:18px;padding-bottom:18px;padding-right:6px;padding-left:6px;margin-top:0;margin-bottom:20px;margin-right:auto;margin-left:auto;border-width:2px;border-style:solid;border-color:#000000;text-decoration:none;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;text-align:center;background-color:#000000;color:#ffffff;margin-top:50px;">Subir comprobante</a>
+                        </td>
                     </tr>
                     <tr class="row" style="width:100%;">
                       <td class="cell spacing txt highlight" align="center" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;color:#f65a66;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Kisses!</td>

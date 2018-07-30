@@ -317,6 +317,13 @@
                     <tr class="row" style="width:100%;">
                       <td class="cell spacing txt highlight uppercase" align="center" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;color:#f65a66;text-transform:auppercase;">Tu compra ya fue confirmada.</td>
                     </tr>
+                    <tr class="row" style="width:100%;">
+                      <td class="cell spacing_table" align="center" style="padding-top:30px;padding-bottom:40px;padding-right:0;padding-left:0;">
+                        <!-- Resumen de compra -->
+                        @include('email.template_receipt', ['order' => $order])
+                        <!-- end Resumen de compra -->
+                      </td>
+                    </tr>
                     <!-- aqui van las tablas -->
                   </table>
                 </td>
@@ -325,9 +332,19 @@
                 <td align="center">
                   <table class="table__pre-footer" width="500" cellpadding="0" cellspacing="0" border="0">
                     <tbody>
+                      <tr class="row" style="width:100%;">
+                        <td class="cell" style="padding-right:0;padding-left:0;padding-top:0;padding-bottom:0;">
+                          <a href="{{ env('APP_FRONT_URL') }}user/tus-compras" class="btn btn_solid" style="display:block;width:70%;max-width:410px;padding-top:18px;padding-bottom:18px;padding-right:6px;padding-left:6px;margin-top:0;margin-bottom:20px;margin-right:auto;margin-left:auto;border-width:2px;border-style:solid;border-color:#000000;text-decoration:none;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;text-align:center;background-color:#000000;color:#ffffff;">Ir a Tus Compras</a>
+                        </td>
+                      </tr>
                       <tr>
                         <td class="table-prefooter__cell table-prefooter__spacing-cell" align="center" style="padding-top:10px;padding-bottom:10px;padding-right:0;padding-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">
-                          Ahora solo tienes que esperar que la vendedora haga el envío y cuando lo realice, te enviaremos el número de seguimiento de Chilexpress.
+                          Ahora solo tienes que esperar a que
+                          @if (count($order->sales) > 1 )
+                          las vendedoras hagan el envío y cuando lo realicen, te enviaremos los números de seguimiento de Chilexpress.
+                          @else
+                          la vendedora haga el envío y cuando lo realice, te enviaremos el número de seguimiento de Chilexpress.
+                          @endif
                           <br>
                           <br> ¡Ojalá te encante tu nueva joyita!
                         </td>

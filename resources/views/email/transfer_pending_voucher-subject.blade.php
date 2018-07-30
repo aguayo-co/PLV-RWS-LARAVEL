@@ -1,1 +1,1 @@
-¡Estás a un solo paso de completar tu compra!
+¡Estás a un solo paso de que {{ $order->products[0]->title }} @if (count($order->products) > 1) y {{ count($order->products) - 1 }} @if (count($order->products) > 2) productos @else producto @endif más sean tuyos! @else sea tuyo! @endif
