@@ -362,8 +362,8 @@
                     <tbody>
                       <tr>
                         <td class="txt-table_second txt-table_second-grey" align="center" style="padding-top:12px;padding-bottom:30px;padding-right:0;padding-left:0;font-size:16px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;font-weight:bold;color:#707070;">
-                          <img src="{{ $buyer->picture }}" alt="a la espera de envio" width="40" class="v-align_middle" style="display:inline-block;vertical-align:middle;border: 3px solid #f65a66;width: 45px;height: 45px;border-radius: 100px;margin-right: 10px;">
-                          <span class="v-align_middle" style="display:inline-block;vertical-align:middle;">{{ $buyer->first_name }} {{ $buyer->last_name }}<br><span style="font-size: 11px;">Teléfono: {{$sale->user->phone}}</span></span>
+                          <a href="{{ env('APP_FRONT_URL') }}closet/{{ $buyer->id }}" style="color:#707070; text-decoration: none;"><img src="{{ $buyer->picture }}" alt="" width="40" class="v-align_middle" style="display:inline-block;vertical-align:middle;border: 3px solid #f65a66;width: 45px;height: 45px;border-radius: 100px;margin-right: 10px;"></a>
+                          <a href="{{ env('APP_FRONT_URL') }}closet/{{ $buyer->id }}" style="color:#707070; text-decoration: none;"><span class="v-align_middle" style="display:inline-block;vertical-align:middle;">{{ $buyer->first_name }} {{ $buyer->last_name }}<br><span style="font-size: 11px;">Teléfono: {{ $buyer->phone }}</span></span></a>
                         </td>
                       </tr>
                     </tbody>
