@@ -34,6 +34,10 @@ class OrderController extends Controller
 
     public static $allowedWhereIn = ['id', 'user_id'];
     public static $allowedWhereBetween = ['status'];
+    public static $allowedOrderBy = ['id', 'created_at', 'updated_at', 'status_history->20->date'];
+    public static $orderByAliases = [
+        'payment_date' => 'status_history->20->date',
+    ];
 
     /**
      * Create a new controller instance.
