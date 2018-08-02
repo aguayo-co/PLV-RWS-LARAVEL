@@ -20,7 +20,8 @@ class Banner extends Model
     protected $fillable = [
         'name', 'title', 'subtitle', 'button_text', 'url', 'image',
     ];
-
+    protected $hidden = ['cloudFiles'];
+    protected $with = ['cloudFiles'];
     protected $appends = ['image'];
 
     public function getRouteKeyName()

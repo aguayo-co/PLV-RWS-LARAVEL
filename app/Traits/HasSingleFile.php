@@ -2,12 +2,17 @@
 
 namespace App\Traits;
 
-use Illuminate\Support\Facades\Cache;
+use App\CloudFile;
 use Illuminate\Support\Facades\Storage;
 
 trait HasSingleFile
 {
     use SaveLater;
+
+    public function cloudFiles()
+    {
+        return $this->morphMany('App\CloudFile', 'model');
+    }
 
     public function getBasePathFor($attribute)
     {
@@ -28,13 +33,14 @@ trait HasSingleFile
         }
 
         $path = $this->getBasePathFor($attribute);
-        Cache::forget($path);
-
+        $url = null;
         Storage::cloud()->deleteDirectory($path);
         if ($file) {
             $filename = uniqid() . '.' . $file->extension();
             Storage::cloud()->putFileAs($path, $file, $filename);
+            $url = asset(Storage::cloud()->url($path . $filename));
         }
+        $this->cloudFiles()->updateOrCreate(['attribute' => $attribute], ['urls' => $url]);
         # Timestamps might not get updated if this was the only attribute that
         # changed in the model. Force timestamp update.
         $this->updateTimestamps();
@@ -47,13 +53,14 @@ trait HasSingleFile
         }
 
         $path = $this->getBasePathFor($attribute);
-        Cache::forget($path);
-
+        $url = null;
         Storage::cloud()->deleteDirectory($path);
         if ($content) {
             $filename = uniqid() . '.' . $ext;
             Storage::cloud()->put($path . $filename, $content);
+            $url = asset(Storage::cloud()->url($path . $filename));
         }
+        $this->cloudFiles()->updateOrCreate(['attribute' => $attribute], ['urls' => $url]);
         # Timestamps might not get updated if this was the only attribute that
         # changed in the model. Force timestamp update.
         $this->updateTimestamps();
@@ -61,19 +68,18 @@ trait HasSingleFile
 
     protected function getFileUrl($attribute)
     {
-        $path = $this->getBasePathFor($attribute);
-        $url = Cache::get($path);
-        if ($url !== null) {
-            // If empty string, return null. No value.
-            return $url ?: null;
+        $cloudFiles = $this->cloudFiles->firstWhere('attribute', $attribute);
+        if ($cloudFiles) {
+            return data_get($cloudFiles, 'urls');
         }
 
+        $path = $this->getBasePathFor($attribute);
+        $url = null;
         $files = Storage::cloud()->files($path);
         if ($files) {
             $url = asset(Storage::cloud()->url($files[0]));
         }
-        // Store an empty string to note the field is empty.
-        cache::put($path, $url ?? '', 43200);
+        $this->cloudFiles()->updateOrCreate(['attribute' => $attribute], ['urls' => $url]);
         return $url;
     }
 }

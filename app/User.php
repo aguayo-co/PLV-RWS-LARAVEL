@@ -53,8 +53,9 @@ class User extends Authenticatable
         'email',
         'phone',
         'password',
+        'cloudFiles',
     ];
-
+    protected $with = ['cloudFiles'];
     protected $appends = [
         'cover',
         'picture',

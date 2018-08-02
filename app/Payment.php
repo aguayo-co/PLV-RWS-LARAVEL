@@ -20,7 +20,8 @@ class Payment extends Model
     const STATUS_CANCELED = 99;
 
     protected $fillable = ['order_id', 'status'];
-    protected $hidden = ['request'];
+    protected $hidden = ['request', 'cloudFiles'];
+    protected $with = ['cloudFiles'];
     protected $appends = ['request_data', 'transfer_receipt', 'cancel_by'];
 
     public function __construct(array $attributes = array())

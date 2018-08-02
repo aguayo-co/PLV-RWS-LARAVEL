@@ -65,8 +65,9 @@ class Product extends Model
      * @var array
      */
     protected $hidden = [
-        'admin_notes', 'status_history'
+        'admin_notes', 'status_history', 'cloudFiles'
     ];
+    protected $with = ['cloudFiles'];
     protected $appends = ['images', 'image_instagram', 'sale_price'];
 
     // Editable means it has been approved, but not sold.
@@ -174,18 +175,18 @@ class Product extends Model
 
     protected function getImagesAttribute()
     {
-        $imagePath = $this->image_path;
-        $images = Cache::get($imagePath);
-        if ($images !== null) {
-            return $images;
+        $cloudFiles = $this->cloudFiles->firstWhere('attribute', 'images');
+        if ($cloudFiles !== null) {
+            return data_get($cloudFiles, 'urls');
         }
 
+        $imagePath = $this->image_path;
         $images = [];
         foreach (Storage::cloud()->files($imagePath) as $image) {
             $images[] = asset(Storage::cloud()->url($image));
         }
 
-        Cache::put($imagePath, $images, 43200);
+        $this->cloudFiles()->updateOrCreate(['attribute' => 'images'], ['urls' => $images]);
         return $images;
     }
 
@@ -195,14 +196,16 @@ class Product extends Model
             return;
         }
 
-        Cache::forget($this->image_path);
-
         foreach ($images as $index => $image) {
             # Use Intervention Image to process the image
             $processedImage = Image::make($image)->encode('jpg', 80);
             $processedImage->stream();
             $filename = $index . '-' . uniqid() . '.jpg';
             Storage::cloud()->put($this->image_path . $filename, $processedImage->__toString());
+        }
+        $cloudFiles = $this->cloudFiles->firstWhere('attribute', 'images');
+        if ($cloudFiles) {
+            return $cloudFiles->delete();
         }
         # Timestamps might not get updated if this was the only attribute that
         # changed in the model. Force timestamp update.
@@ -211,13 +214,14 @@ class Product extends Model
 
     protected function setImagesRemoveAttribute(array $images)
     {
-        $imagePath = $this->image_path;
-        Cache::forget($imagePath);
-
         foreach ($images as $image) {
             if ($image && Storage::cloud()->exists($this->image_path . $image)) {
                 Storage::cloud()->delete($this->image_path . $image);
             }
+        }
+        $cloudFiles = $this->cloudFiles->firstWhere('attribute', 'images');
+        if ($cloudFiles) {
+            return $cloudFiles->delete();
         }
     }
 

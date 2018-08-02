@@ -30,6 +30,8 @@ class Slider extends Model
         'priority'
     ];
 
+    protected $hidden = ['cloudFiles'];
+    protected $with = ['cloudFiles'];
     protected $appends = ['image', 'image_mobile'];
 
     public function getRouteKeyName()

@@ -34,6 +34,8 @@ class Sale extends Model
     const STATUS_CANCELED = 99;
 
     protected $fillable = ['shipment_details', 'status'];
+    protected $hidden = ['cloudFiles'];
+    protected $with = ['cloudFiles'];
     protected $appends = ['shipping_label', 'shipping_cost'];
 
     /**
