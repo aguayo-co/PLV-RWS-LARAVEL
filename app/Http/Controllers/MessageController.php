@@ -50,8 +50,8 @@ class MessageController extends Controller
         // Remove 'thread_id' from $data.
         array_forget($data, 'thread_id');
         if (!$message) {
-            $user = request()->route('thread');
-            $data['thread_id'] = $user->id;
+            $thread = request()->route('thread');
+            $data['thread_id'] = $thread->id;
         }
 
         return $data;
