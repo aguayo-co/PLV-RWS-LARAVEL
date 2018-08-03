@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Traits\MessagesFilter;
+use App\Message;
+use App\Notifications\NewMessage;
+use App\Participant;
 use App\Thread;
 use App\User;
-use App\Message;
-use App\Participant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -35,7 +36,7 @@ class MessageController extends Controller
                 $this->bodyFilterRule()
             ],
             'recipients' => 'array',
-            'recipients.*' => 'integer|exists:users,id',
+            'recipients.*' => 'integer|exists:users,id|not_in:' . auth()->id(),
         ];
     }
 
@@ -79,6 +80,10 @@ class MessageController extends Controller
         // Recipients
         if ($request->recipients) {
             $thread->addParticipant($request->recipients);
+            $recipients = User::whereIn('id', $request->recipients)->get();
+            foreach ($recipients as $recipient) {
+                $recipient->notify(new NewMessage(['thread' => $thread]));
+            }
         }
 
         return parent::postStore($request, $message);
