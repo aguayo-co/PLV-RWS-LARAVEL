@@ -22,7 +22,13 @@ class SaleController extends Controller
 
     public static $allowedWhereIn = ['id', 'user_id'];
     public static $allowedWhereBetween = ['status'];
-    public static $allowedWhereHas = ['buyer_id' => 'order,user_id'];
+    public static $allowedWhereHas = [
+        'buyer_id' => 'order,user_id',
+        'buyer_email' => 'order.user,email',
+        'user_email' => 'user,email',
+        'product_id' => 'products',
+        'product_title' => 'products,title',
+    ];
     public static $allowedOrderBy = ['id', 'created_at', 'updated_at', 'status_history->20->date'];
     public static $orderByAliases = [
         'payment_date' => 'status_history->20->date',
