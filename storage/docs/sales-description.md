@@ -69,3 +69,17 @@ Aparte de los criterios de filtrado globales, las ventas se pueden filtrar por l
 |filtro|tipo|
 |------|----|
 |status|Entre|
+|buyer_id|ContenidoEn|
+|buyer_email|ContenidoEn|
+|user_id|ContenidoEn|
+|user_email|ContenidoEn|
+|product_id|ContenidoEn|
+|product_title|ContenidoEn|
+
+##### Ordenamiento
+
+Aparte de los criterios globales, los sliders se pueden ordenar por los siguientes criterios:
+
+|valor|parámetro de url|ejemplo|
+|-----|----------------|-------|
+|Fecha de pago|payment_date|`?orderby=-payment_date`|
