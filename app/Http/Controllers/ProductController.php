@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Product\ProductSearch;
 use App\Notifications\NewProduct;
 use App\Notifications\ProductApproved;
 use App\Notifications\ProductDeleted;
@@ -18,6 +19,8 @@ use Illuminate\Validation\Rule;
 
 class ProductController extends Controller
 {
+    use ProductSearch;
+
     protected $modelClass = Product::class;
 
     public static $allowedOrderBy = ['id', 'created_at', 'updated_at', 'price', 'commission'];
@@ -31,11 +34,13 @@ class ProductController extends Controller
         'size_id',
         'user_id',
     ];
-    public static $allowedWhereHas = ['color_ids' => 'colors', 'campaign_ids' => 'campaigns'];
+    public static $allowedWhereHas = [
+        'color_ids' => 'colors',
+        'campaign_ids' => 'campaigns',
+        'users_emails' => 'user,email'
+    ];
     public static $allowedWhereBetween = ['price', 'status'];
     public static $allowedWhereLike = ['slug'];
-
-    public static $searchIn = ['title', 'description'];
 
     /**
      * Create a new controller instance.
