@@ -15,7 +15,7 @@ Un producto puede tener los siguientes estados:
 ##### Búsqueda
 
 Los productos aceptan búsquedas de texto `?q=`, y se realizan en los campos:
- - Producto: `title` y `description`
+ - Producto: `title`
  - Usuario: `first_name` y `last_name`
  - Marca: `name`
  - Categoría: `name`

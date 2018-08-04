@@ -30,7 +30,6 @@ trait ProductSearch
 
             'titleExact' => 'products.title = ?',
             'title' => 'MATCH (products.title) AGAINST(? IN BOOLEAN MODE)',
-            'titleDesc' => 'MATCH (products.title,products.description) AGAINST(? IN BOOLEAN MODE)',
         ];
 
         // Make sure we load all products columns.
@@ -47,7 +46,6 @@ trait ProductSearch
         $query = $query->selectRaw($matches['category'] . ' as categoryScore', [$search]);
         $query = $query->selectRaw($matches['brand'] . ' as brandScore', [$search]);
         $query = $query->selectRaw($matches['title'] . ' as titleScore', [$search]);
-        $query = $query->selectRaw($matches['titleDesc'] . 'as titleDescScore', [$search]);
 
         $query = $query->where(function ($query) use ($matches, $search) {
             $query = $query->whereRaw($matches['titleExact'], $search);
@@ -58,10 +56,9 @@ trait ProductSearch
 
             $query = $query->orWhereRaw($matches['owner'], $search);
             $query = $query->orWhereRaw($matches['title'], $search);
-            $query = $query->orWhereRaw($matches['titleDesc'], $search);
         });
         $query = $query->orderByRaw('(ownerExactScore + titleExactScore) DESC');
-        $searchScore = '(brandScore * 2 + categoryScore * 2 + titleScore * 2 + ownerScore + titleDescScore)';
+        $searchScore = '(brandScore + categoryScore + titleScore + ownerScore)';
         $query = $query->orderByRaw("{$searchScore} DESC");
 
         return $query;
