@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Traits\MessagesFilter;
+use App\Message;
+use App\Notifications\NewMessage;
+use App\Participant;
 use App\Thread;
 use App\User;
-use App\Message;
-use App\Participant;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -175,6 +176,10 @@ class ThreadController extends Controller
         // Recipients
         if ($request->recipients) {
             $thread->addParticipant($request->recipients);
+            $recipients = User::whereIn('id', $request->recipients)->get();
+            foreach ($recipients as $recipient) {
+                $recipient->notify(new NewMessage(['thread' => $thread]));
+            }
         }
 
         return parent::postStore($request, $thread);
