@@ -1,1 +1,1 @@
-Nuevo mensaje recibido
+@if ($thread->private) {{ $thread->messages->last()->user->first_name }} {{ $thread->messages->last()->user->last_name }} te ha enviado un nuevo mensaje privado @else {{ $thread->product->title }}: {{ $thread->messages->last()->user->first_name }} {{ $thread->messages->last()->user->last_name }} ha dejado un nuevo comentario @endif
