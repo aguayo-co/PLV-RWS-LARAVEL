@@ -15,6 +15,7 @@ use App\Sale;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
 
 /**
@@ -49,6 +50,20 @@ class OrderController extends Controller
         parent::__construct();
 
         $this->middleware('owner_or_admin')->only('show');
+        $this->middleware(self::class . '::validateCanBeDeleted')->only(['delete']);
+    }
+
+    /**
+     * Middleware that validates permissions to delete a order.
+     */
+    public static function validateCanBeDeleted($request, $next)
+    {
+        $order = $request->route()->parameters['order'];
+        if ($order->status < Order::STATUS_PAYMENT) {
+            return $next($request);
+        }
+
+        abort(Response::HTTP_FORBIDDEN, 'Order can not be deleted.');
     }
 
     /**

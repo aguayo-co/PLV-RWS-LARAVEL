@@ -38,6 +38,20 @@ class SaleController extends Controller
     {
         parent::__construct();
         $this->middleware('owner_or_admin')->only('show');
+        $this->middleware(self::class . '::validateCanBeDeleted')->only(['delete']);
+    }
+
+    /**
+     * Middleware that validates permissions to delete a sale.
+     */
+    public static function validateCanBeDeleted($request, $next)
+    {
+        $sale = $request->route()->parameters['sale'];
+        if ($sale->status < Sale::STATUS_PAYMENT) {
+            return $next($request);
+        }
+
+        abort(Response::HTTP_FORBIDDEN, 'Sale can not be deleted.');
     }
 
     /**

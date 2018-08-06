@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class ProductController extends Controller
@@ -52,7 +53,7 @@ class ProductController extends Controller
         parent::__construct();
         $this->middleware('role:seller|admin')->only(['store']);
         $this->middleware(self::class . '::validateIsPublished')->only(['show']);
-        $this->middleware(self::class . '::validateCanBeDeleted')->only(['ownerDelete']);
+        $this->middleware(self::class . '::validateCanBeDeleted')->only(['delete', 'ownerDelete']);
     }
 
     /**
@@ -88,7 +89,6 @@ class ProductController extends Controller
 
         abort(Response::HTTP_FORBIDDEN, 'Product can not be deleted.');
     }
-
 
     protected function alterValidateData($data, Model $product = null)
     {
@@ -335,24 +335,50 @@ class ProductController extends Controller
         });
     }
 
+    /**
+     * Product deleted by the owner.
+     */
     public function ownerDelete(Request $request, Model $product)
     {
         $product->ownerDelete = true;
-        return parent::ownerDelete($request, $product);
+        $response = parent::ownerDelete($request, $product);
+        $product->user->notify(new ProductDeleted(['product' => $product]));
+        return $response;
     }
 
+    /**
+     * Delete the given product when not sold, and its sales if needed.
+     */
     public function delete(Request $request, Model $product)
     {
-        $deleted = parent::delete($request, $product);
-        switch ($product->ownerDelete) {
-            case true:
-                $product->user->notify(new ProductDeleted(['product' => $product]));
-                break;
+        $response = null;
+        $sales = $product->sales->filter(function ($sale) {
+            return $sale->products->count() === 1;
+        });
+        $threads = $product->threads()->withTrashed()->get();
+        // Delete the product and the sales that had only one (this) product.
+        DB::transaction(function () use ($request, $product, $response, $sales, $threads) {
+            // Delete threads and associated data.
+            // We do not need to trigger events, do mass deletion.
+            foreach ($threads as $thread) {
+                $thread->participants()->withTrashed()->forceDelete();
+                $thread->messages()->withTrashed()->forceDelete();
+            }
+            $product->threads()->withTrashed()->forceDelete();
 
-            default:
-                $product->user->notify(new ProductDeletedAdmin(['product' => $product]));
-                break;
+            // Remove product from sales,
+            // and delete sales that only had this product.
+            $product->sales()->sync([]);
+            foreach ($sales as $sale) {
+                $sale->delete();
+            }
+            $product = $product->fresh();
+            $response = parent::delete($request, $product);
+        });
+
+        if (!$product->ownerDelete) {
+            $product->user->notify(new ProductDeletedAdmin(['product' => $product]));
         }
-        return $deleted;
+        return $response;
     }
 }
