@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Sale;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
 class ProcessChilexpressTracking extends Command
@@ -59,12 +60,13 @@ class ProcessChilexpressTracking extends Command
             $this->error('Could not login to FTP server.');
             return;
         }
+        ftp_pasv($this->connection, true);
 
         $files = $this->getTrackingFilesList();
         foreach ($files as $file) {
             $salesEvents = $this->getEvents($file);
             $this->updateSales($salesEvents);
-            $trackings = $this->archiveFile($file);
+            $this->archiveFile($file);
         }
     }
 
@@ -73,7 +75,8 @@ class ProcessChilexpressTracking extends Command
      */
     protected function getTrackingFilesList()
     {
-        $fileList = ftp_nlist($this->connection, 'files');
+        $path = App::environment('production') ? 'files' : 'test-files';
+        $fileList = ftp_nlist($this->connection, $path);
         $files = [];
         foreach ($fileList as $file) {
             $matched = preg_match('/files\/PRILOV_[0-9]{12}\.csv$/', $file);
@@ -93,14 +96,14 @@ class ProcessChilexpressTracking extends Command
         ftp_fget($this->connection, $tempFile, $file, FTP_ASCII);
         fseek($tempFile, 0);
 
-        $salesEvents = [];
+        $salesEvents = collect();
 
         while (($data = fgetcsv($tempFile, 0, ";")) !== false) {
             $matches = collect();
             $refBase = config('prilov.chilexpress.referencia_base');
-            $pattern = '/' . $refBase . '([0-9]+)-([0-9]+)/';
+            $pattern = '/' . $refBase . '[0-9]+-(?P<saleId>[0-9]+)/';
             if (preg_match($pattern, $data[1], $matches)) {
-                $saleId = $matches[2];
+                $saleId = $matches['saleId'];
                 if (!$salesEvents->has($saleId)) {
                     $salesEvents->put($saleId, collect());
                 }
@@ -117,7 +120,9 @@ class ProcessChilexpressTracking extends Command
      */
     protected function updateSales($salesEvents)
     {
-        $sales = Sale::whereIn('id', $salesEvents->keys());
+        $sales = Sale::whereIn('id', $salesEvents->keys())
+            ->whereBetween('status', [Sale::STATUS_PAYED, Sale::STATUS_SHIPPED])->get();
+
         foreach ($sales as $sale) {
             $this->updateSale($sale, $salesEvents->get($sale->id));
         }
@@ -169,5 +174,8 @@ class ProcessChilexpressTracking extends Command
      */
     protected function archiveFile($file)
     {
+        $archivePath = App::environment('production') ? 'archived/' : 'test-archived/';
+        $fileParts = explode('/', $file);
+        ftp_rename($this->connection, $file, $archivePath . end($fileParts));
     }
 }
