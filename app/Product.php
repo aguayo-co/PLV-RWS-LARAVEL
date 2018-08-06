@@ -130,6 +130,11 @@ class Product extends Model
         return $this->belongsToMany('App\Sale')->withPivot('sale_return_id', 'price');
     }
 
+    public function threads()
+    {
+        return $this->hasMany('App\Thread');
+    }
+
     protected function setTitleAttribute($title)
     {
         $this->attributes['title'] = $title;
