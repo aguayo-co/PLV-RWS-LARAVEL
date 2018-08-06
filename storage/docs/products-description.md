@@ -43,7 +43,8 @@ Aparte de los criterios de filtrado globales, los productos se pueden filtrar po
 |color_ids|ContenidoEn|
 |condition_id|ContenidoEn|
 |size_id|ContenidoEn|
-|user_id|ContenidoEn|
+|users_emails|ContenidoEn|
+|users_groups_ids|ContenidoEn|
 
 ##### Agregar imágenes
 

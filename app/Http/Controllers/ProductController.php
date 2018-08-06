@@ -38,7 +38,8 @@ class ProductController extends Controller
     public static $allowedWhereHas = [
         'color_ids' => 'colors',
         'campaign_ids' => 'campaigns',
-        'users_emails' => 'user,email'
+        'users_emails' => 'user,email',
+        'users_groups_ids' => 'user.groups',
     ];
     public static $allowedWhereBetween = ['price', 'status'];
     public static $allowedWhereLike = ['slug'];
@@ -239,9 +240,11 @@ class ProductController extends Controller
             return;
         }
 
+        // If not admin, filter hidden products.
         return function ($query) use ($user) {
             $query = $query->where(function ($query) use ($user) {
                 $query = $query->where('status', '>=', Product::STATUS_APPROVED);
+                // But, allow products owned by the user.
                 if ($user) {
                     $query = $query->orWhere('user_id', $user->id);
                 }
