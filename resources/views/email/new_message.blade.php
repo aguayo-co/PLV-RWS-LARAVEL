@@ -320,7 +320,7 @@
                       </td>
                     </tr>
                     <tr class="row" style="width:100%;">
-                      <td class="cell spacing txt highlight uppercase" align="center" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;color:#f65a66;text-transform:auppercase;">@if ($private) ¡Tienes un nuevo mensaje privado! @else ¡ {{ $sender->first_name }} escribió un comentario en tu producto! @endif</td>
+                      <td class="cell spacing txt highlight uppercase" align="center" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;color:#f65a66;text-transform:auppercase;">@if ($private) ¡Tienes un nuevo mensaje privado! @else ¡ {{ $sender->first_name }} escribió un comentario en este producto! @endif</td>
                     </tr>
                     @if (!$private)
                     <tr class="row" style="width:100%;">
