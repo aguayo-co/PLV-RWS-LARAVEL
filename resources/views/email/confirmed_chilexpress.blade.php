@@ -382,17 +382,17 @@
                       </tr>
                       <tr class="row" style="width:100%;">
                         <td class="cell" style="padding-right:0;padding-left:0;padding-top:20px;padding-bottom:0;">
-                          <a href="{{ $sale->shipping_label }}" class="btn btn_solid" style="display:block;width:70%;max-width:410px;padding-top:18px;padding-bottom:18px;padding-right:6px;padding-left:6px;margin-top:0;margin-bottom:20px;margin-right:auto;margin-left:auto;border-width:2px;border-style:solid;border-color:#000000;text-decoration:none;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;text-align:center;background-color:#000000;color:#ffffff;">Imprimir etiqueta</a>
+                          <a href="{{ env('APP_FRONT_URL') }}user/tus-ventas" class="btn btn_solid" style="display:block;width:70%;max-width:410px;padding-top:18px;padding-bottom:18px;padding-right:6px;padding-left:6px;margin-top:0;margin-bottom:20px;margin-right:auto;margin-left:auto;border-width:2px;border-style:solid;border-color:#000000;text-decoration:none;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;text-align:center;background-color:#000000;color:#ffffff;">Imprimir etiqueta</a>
                         </td>
                       </tr>
                       <tr>
                         <td class="table-prefooter__cell table-prefooter__spacing-cell" align="center" style="padding-top:10px;padding-bottom:10px;padding-right:0;padding-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">
-                          Debes dirigirte a cualquier sucursal de Chilexpress y entregar el paquete con la etiqueta puesta. Recuerda enviar el producto lo más pronto posible. 
+                          Debes dirigirte a cualquier sucursal de Chilexpress y entregar el paquete con la etiqueta puesta. Recuerda enviar el producto lo más pronto posible.
                         </td>
                       </tr>
                       <tr>
                         <td class="table-prefooter__cell table-prefooter__spacing-cell" align="center" style="padding-top:10px;padding-bottom:10px;padding-right:0;padding-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">
-                          Algo que debes saber: Una vez que entregues el producto en Chilexpress, automáticamente se marcará como enviado, así podremos seguir con el proceso de venta. Cuando la compradora lo reciba, se marcará automáticamente como "Recibido" y tus créditos serán generados. 
+                          Algo que debes saber: Una vez que entregues el producto en Chilexpress, automáticamente se marcará como enviado, así podremos seguir con el proceso de venta. Cuando la compradora lo reciba, se marcará automáticamente como "Recibido" y tus créditos serán generados.
                         </td>
                       </tr>
                       <tr class="row" style="width:100%;">
