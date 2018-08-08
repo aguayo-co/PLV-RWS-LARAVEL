@@ -43,7 +43,7 @@ class Transfer implements PaymentGateway
             return;
         }
 
-        $order->notify(new TransferVoucherAcceptedMixto(['order' => $order]));
+        $order->user->notify(new TransferVoucherAcceptedMixto(['order' => $order]));
     }
 
     public function sendRejectedNotification()
