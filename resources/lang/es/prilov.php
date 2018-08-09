@@ -20,7 +20,11 @@ return [
             'purchased' => 'Compra de créditos.',
         ],
     ],
+    'coupons' => [
+        'firstPurchaseOnly' => 'Cupón sólo permitido en primera compra.',
+        'notApplicable' => 'Este cupón no aplica para ninguno de los productos de la orden.',
+    ],
     'products' => [
-        'notAvailable' => 'Alguno de los productos ya no está disponible.'
+        'notAvailable' => 'Alguno de los productos ya no está disponible.',
     ]
 ];
