@@ -50,6 +50,7 @@ class CacheHeaders
             case 'api.campaign.get':
             case 'api.categories':
             case 'api.category.get':
+            case 'api.config':
             case 'api.subcategory.get':
             case 'api.colors':
             case 'api.color.get':

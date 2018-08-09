@@ -30,6 +30,8 @@ Route::name('api.')->group(function () {
     Route::get('users', 'Auth\UserController@index')->name('users');
     Route::get('users/{user_scoped}', 'Auth\UserController@show')->name('user.get')->where('user_scoped', ID_REGEX);
 
+    Route::get('/configs', 'ConfigController@index')->name('config');
+
     Route::get('regions', 'AddressController@regions')->name('regions');
 
     create_crud_routes('Banner', SLUG_REGEX);
