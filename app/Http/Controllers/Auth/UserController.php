@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\User\UserSearch;
 use App\Notifications\AccountClosed;
-use App\Notifications\EmailChanged;
 use App\Notifications\BankAccountChanged;
+use App\Notifications\EmailChanged;
 use App\Notifications\Welcome;
 use App\Product;
 use App\User;
@@ -19,6 +20,7 @@ use Laravel\Passport\Token;
 
 class UserController extends Controller
 {
+    use UserSearch;
     use UserVisibility;
     protected $modelClass = User::class;
 

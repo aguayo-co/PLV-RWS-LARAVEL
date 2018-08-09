@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 trait ProductSearch
 {
     // Perform search for products.
-    // Search in titles, titles + description, and owner.
     protected function doSearch(Request $request, Builder $query, $controllerClass)
     {
         $search = $request->query('q') ?: null;
