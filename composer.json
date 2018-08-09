@@ -5,6 +5,7 @@
     "license": "MIT",
     "type": "project",
     "require": {
+        "ext-ftp": "*",
         "ext-gd": "*",
         "ext-soap": "*",
         "php": ">=7.1.3",
