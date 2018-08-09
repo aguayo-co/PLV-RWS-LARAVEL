@@ -29,10 +29,10 @@ class CacheHeaders
             //     $options['max_age'] = '300';
             //     break;
 
-            // // Products cache
-            // case 'api.products':
-            //     $options['max_age'] = '1800';
-            //     break;
+            // Products cache
+            case 'api.products':
+                $options['max_age'] = '300';
+                break;
 
             // Long cache
             case 'api.users':
