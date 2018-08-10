@@ -25,7 +25,9 @@ class SaleController extends Controller
     public static $allowedWhereHas = [
         'buyer_id' => 'order,user_id',
         'buyer_email' => 'order.user,email',
+        'buyer_full_name' => 'order.user,full_name',
         'user_email' => 'user,email',
+        'user_full_name' => 'user,full_name',
         'product_id' => 'products',
         'product_title' => 'products,title',
     ];

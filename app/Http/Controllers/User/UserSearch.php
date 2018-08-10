@@ -16,36 +16,15 @@ trait UserSearch
             return $query;
         }
 
-        $matches = [
-            'nameLike' => 'CONCAT_WS(" ", users.first_name, users.last_name) = ?',
-            'name' => 'MATCH (users.first_name,users.last_name) AGAINST(? IN BOOLEAN MODE)',
-        ];
-
-        // Make sure we load all products columns.
-        if (!$query->getQuery()->columns) {
-            $query->addSelect('users.*');
-        }
-
-        $wordCount = count(explode(' ', $search));
-
-        if ($wordCount > 1) {
-            // Exact title or owner go first.
-            $query = $query->selectRaw('IF(' . $matches['nameLike'] . ', 1, 0) as nameLikeScore', [$search]);
-        }
+        $match = 'MATCH (users.first_name,users.last_name) AGAINST(? IN BOOLEAN MODE)';
 
         // Then just do FullText search.
-        $query = $query->selectRaw($matches['name'] . ' as nameScore', [$search]);
+        $query = $query->whereRaw($match, [$search]);
 
-        $query = $query->where(function ($query) use ($matches, $search, $wordCount) {
-            $query = $query->whereRaw($matches['name'], $search);
-            if ($wordCount > 1) {
-                $query = $query->orWhereRaw($matches['nameLike'], $search);
-            }
-        });
-        if ($wordCount > 1) {
-            $query = $query->orderByRaw('nameLikeScore DESC');
+        if (count(explode(' ', $search)) > 1) {
+            $query = $query->orderByRaw('IF(full_name = ?, 1, 0) DESC', [$search]);
         }
-        $query = $query->orderByRaw("nameScore DESC");
+        $query = $query->orderByRaw("{$match} DESC", [$search]);
 
         return $query;
     }

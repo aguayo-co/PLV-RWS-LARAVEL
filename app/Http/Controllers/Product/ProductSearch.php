@@ -21,8 +21,8 @@ trait ProductSearch
         $query = $query->join('brands', 'products.brand_id', '=', 'brands.id');
 
         $matches = [
-            'ownerExact' => 'CONCAT_WS(" ", users.first_name, users.last_name) = ?',
-            'owner' => 'MATCH (users.first_name,users.last_name) AGAINST(? IN BOOLEAN MODE)',
+            'ownerExact' => 'full_name = ?',
+            'owner' => 'MATCH (users.full_name) AGAINST(? IN BOOLEAN MODE)',
 
             'category' => 'MATCH (categories.name) AGAINST(? IN BOOLEAN MODE)',
             'brand' => 'MATCH (brands.name) AGAINST(? IN BOOLEAN MODE)',
