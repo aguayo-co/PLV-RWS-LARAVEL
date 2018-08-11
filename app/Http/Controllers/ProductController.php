@@ -235,13 +235,22 @@ class ProductController extends Controller
      */
     protected function alterIndexQuery()
     {
-        $user = auth()->user();
-        if ($user && $user->hasRole('admin')) {
-            return;
-        }
+        return function ($query) {
+            $orderBy = explode(',', request()->query('orderby'));
 
-        // If not admin, filter hidden products.
-        return function ($query) use ($user) {
+            if (in_array('image_instagram_date', $orderBy)) {
+                $query = $query->orderByImageInstagramDate('asc');
+            }
+            if (in_array('-image_instagram_date', $orderBy)) {
+                $query = $query->orderByImageInstagramDate('desc');
+            }
+
+            $user = auth()->user();
+            if ($user && $user->hasRole('admin')) {
+                return $query;
+            }
+
+            // If not admin, filter hidden products.
             $query = $query->where(function ($query) use ($user) {
                 $query = $query->where('status', '>=', Product::STATUS_APPROVED);
                 // But, allow products owned by the user.

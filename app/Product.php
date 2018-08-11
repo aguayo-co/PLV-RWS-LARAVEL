@@ -8,7 +8,7 @@ use App\Traits\HasStatuses;
 use App\Traits\HasStatusHistory;
 use App\Traits\ProductPrice;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 
@@ -242,4 +242,16 @@ class Product extends Model
     #                                   #
     # End Images methods.               #
     #                                   #
+
+    public function scopeOrderByImageInstagramDate($query, $direction = 'asc')
+    {
+        if (!$query->getQuery()->columns) {
+            $query->addSelect('products.*');
+        }
+        $subQuery = DB::table('cloud_files')->select('model_id', 'updated_at')
+            ->where('model_type', static::class);
+        return $query
+            ->leftJoinSub($subQuery, 'images_instagram', 'images_instagram.model_id', '=', 'products.id')
+            ->orderBy('images_instagram.updated_at', $direction);
+    }
 }
