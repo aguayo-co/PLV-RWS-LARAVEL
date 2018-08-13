@@ -101,7 +101,7 @@ class ThreadController extends Controller
                 $this->bodyFilterRule()
             ],
             'recipients' => $requiredRecipients . 'array',
-            'recipients.*' => 'integer|exists:users,id|not_in:' . auth()->id(),
+            'recipients.*' => 'integer|exists:users,id,deleted_at,NULL|not_in:' . auth()->id(),
         ];
     }
 
@@ -187,7 +187,7 @@ class ThreadController extends Controller
 
     protected function setVisibility(Collection $collection)
     {
-        $collection->load('messages', 'participants.user');
+        $collection->load('messages', 'participants.user', 'trashedParticipants.user');
         $this->setUnreadForCurrentUser($collection);
     }
 

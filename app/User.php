@@ -6,6 +6,7 @@ use App\Traits\DateSerializeFormat;
 use App\Traits\HasSingleFile;
 use App\Traits\UserScopes;
 use Cmgmyr\Messenger\Traits\Messagable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
@@ -15,13 +16,14 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use UserScopes;
+    use DateSerializeFormat;
+    use HasApiTokens;
+    use HasRoles;
+    use HasSingleFile;
     use Messagable;
     use Notifiable;
-    use HasRoles;
-    use HasApiTokens;
-    use HasSingleFile;
-    use DateSerializeFormat;
+    use SoftDeletes;
+    use UserScopes;
 
     /**
      * The attributes that are mass assignable.
@@ -61,6 +63,8 @@ class User extends Authenticatable
         'cover',
         'picture',
     ];
+
+    protected $dates = ['deleted_at'];
 
     public static function boot()
     {

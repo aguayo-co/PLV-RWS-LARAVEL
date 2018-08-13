@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Product\UserDelete;
 use App\Http\Controllers\User\UserSearch;
 use App\Notifications\AccountClosed;
 use App\Notifications\BankAccountChanged;
@@ -11,15 +12,16 @@ use App\Notifications\Welcome;
 use App\Product;
 use App\User;
 use Illuminate\Auth\Events\Registered;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Laravel\Passport\Token;
 
 class UserController extends Controller
 {
+    use UserDelete;
     use UserSearch;
     use UserVisibility;
     protected $modelClass = User::class;
@@ -236,9 +238,17 @@ class UserController extends Controller
 
     public function delete(Request $request, Model $user)
     {
-        $deleted = parent::delete($request, $user);
+        $response = null;
+
+        DB::transaction(function () use ($request, $user, $response) {
+            $this->usersCleanup(collect([$user]));
+            $response = parent::delete($request, $user);
+        });
+
+        // We still have the old email in this object.
         $user->notify(new AccountClosed);
-        return $deleted;
+
+        return $response;
     }
 
     public function index(Request $request)

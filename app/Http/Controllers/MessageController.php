@@ -36,7 +36,7 @@ class MessageController extends Controller
                 $this->bodyFilterRule()
             ],
             'recipients' => 'array',
-            'recipients.*' => 'integer|exists:users,id|not_in:' . auth()->id(),
+            'recipients.*' => 'integer|exists:users,id,deleted_at,NULL|not_in:' . auth()->id(),
         ];
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Product\ProductDelete;
 use App\Http\Controllers\Product\ProductSearch;
 use App\Notifications\NewProduct;
 use App\Notifications\ProductApproved;
@@ -20,6 +21,7 @@ use Illuminate\Validation\Rule;
 
 class ProductController extends Controller
 {
+    use ProductDelete;
     use ProductSearch;
 
     protected $modelClass = Product::class;
@@ -364,27 +366,8 @@ class ProductController extends Controller
     public function delete(Request $request, Model $product)
     {
         $response = null;
-        $sales = $product->sales->filter(function ($sale) {
-            return $sale->products->count() === 1;
-        });
-        $threads = $product->threads()->withTrashed()->get();
-        // Delete the product and the sales that had only one (this) product.
-        DB::transaction(function () use ($request, $product, $response, $sales, $threads) {
-            // Delete threads and associated data.
-            // We do not need to trigger events, do mass deletion.
-            foreach ($threads as $thread) {
-                $thread->participants()->withTrashed()->forceDelete();
-                $thread->messages()->withTrashed()->forceDelete();
-            }
-            $product->threads()->withTrashed()->forceDelete();
-
-            // Remove product from sales,
-            // and delete sales that only had this product.
-            $product->sales()->sync([]);
-            foreach ($sales as $sale) {
-                $sale->delete();
-            }
-            $product = $product->fresh();
+        DB::transaction(function () use ($request, $product, $response) {
+            $this->productsCleanup([$product]);
             $response = parent::delete($request, $product);
         });
 
