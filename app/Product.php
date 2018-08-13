@@ -248,8 +248,10 @@ class Product extends Model
         if (!$query->getQuery()->columns) {
             $query->addSelect('products.*');
         }
-        $subQuery = DB::table('cloud_files')->select('model_id', 'updated_at')
-            ->where('model_type', static::class);
+        $subQuery = DB::table('cloud_files')
+            ->select('model_id', 'updated_at')
+            ->where('model_type', static::class)
+            ->where('attribute', 'image_instagram');
         return $query
             ->leftJoinSub($subQuery, 'images_instagram', 'images_instagram.model_id', '=', 'products.id')
             ->orderBy('images_instagram.updated_at', $direction);
