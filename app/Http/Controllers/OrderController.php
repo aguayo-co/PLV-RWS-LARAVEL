@@ -288,6 +288,12 @@ class OrderController extends Controller
             $order->save();
         }
 
+        $phone = $request->phone;
+        if ($phone) {
+            $order->user->phone = $phone;
+            $order->user->save();
+        }
+
         return parent::postUpdate($request, $order);
     }
 
