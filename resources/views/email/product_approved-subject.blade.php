@@ -1,1 +1,1 @@
-Yees! ¡Tu producto {{ $product->title }} fue aprobado para ser publicado en Prilov.com!
+Tu producto {{ $product->title }} fue aprobado para ser publicado en Prilov.com

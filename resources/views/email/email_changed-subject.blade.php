@@ -1,1 +1,1 @@
-Yees! Cambiaste tu correo
+Cambiaste tu correo

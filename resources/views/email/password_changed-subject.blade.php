@@ -1,1 +1,1 @@
-Yees! Tu nueva contraseña está lista
+Tu nueva contraseña está lista
