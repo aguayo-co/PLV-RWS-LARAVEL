@@ -29,7 +29,7 @@ class CreateFullNameTriggerForUsersTable extends Migration
                 SET NEW.full_name = TRIM(CONCAT_WS(" ", NEW.first_name, NEW.last_name))
         ');
 
-        DB::unprepared('UPDATE users SET full_name = TRIM(CONCAT_WS(" ", users.first_name, users.last_name))');
+        DB::statement('UPDATE users SET full_name = TRIM(CONCAT_WS(" ", users.first_name, users.last_name))');
 
         DB::statement('ALTER TABLE users DROP INDEX search;');
         DB::statement('ALTER TABLE users ADD FULLTEXT search(full_name)');
