@@ -15,11 +15,11 @@ class RatingArchive extends Model
 
     public function seller()
     {
-        return $this->belongsTo('App\User', 'seller_id');
+        return $this->belongsTo('App\User', 'seller_id')->withTrashed();
     }
 
     public function buyer()
     {
-        return $this->belongsTo('App\User', 'buyer_id');
+        return $this->belongsTo('App\User', 'buyer_id')->withTrashed();
     }
 }
