@@ -14,7 +14,11 @@ Un producto puede tener los siguientes estados:
 
 ##### Búsqueda
 
-Los productos aceptan búsquedas de texto `?q=`, y se realizan en los campos `title` y `description`.
+Los productos aceptan búsquedas de texto `?q=`, y se realizan en los campos:
+ - Producto: `title`
+ - Usuario: `first_name` y `last_name`
+ - Marca: `name`
+ - Categoría: `name`
 
 ##### Ordenamiento
 
@@ -39,7 +43,8 @@ Aparte de los criterios de filtrado globales, los productos se pueden filtrar po
 |color_ids|ContenidoEn|
 |condition_id|ContenidoEn|
 |size_id|ContenidoEn|
-|user_id|ContenidoEn|
+|users_emails|ContenidoEn|
+|users_groups_ids|ContenidoEn|
 
 ##### Agregar imágenes
 

@@ -22,7 +22,15 @@ class SaleController extends Controller
 
     public static $allowedWhereIn = ['id', 'user_id'];
     public static $allowedWhereBetween = ['status'];
-    public static $allowedWhereHas = ['buyer_id' => 'order,user_id'];
+    public static $allowedWhereHas = [
+        'buyer_id' => 'order,user_id',
+        'buyer_email' => 'order.user,email',
+        'buyer_full_name' => 'order.user,full_name',
+        'user_email' => 'user,email',
+        'user_full_name' => 'user,full_name',
+        'product_id' => 'products',
+        'product_title' => 'products,title',
+    ];
     public static $allowedOrderBy = ['id', 'created_at', 'updated_at', 'status_history->20->date'];
     public static $orderByAliases = [
         'payment_date' => 'status_history->20->date',
@@ -32,6 +40,20 @@ class SaleController extends Controller
     {
         parent::__construct();
         $this->middleware('owner_or_admin')->only('show');
+        $this->middleware(self::class . '::validateCanBeDeleted')->only(['delete']);
+    }
+
+    /**
+     * Middleware that validates permissions to delete a sale.
+     */
+    public static function validateCanBeDeleted($request, $next)
+    {
+        $sale = $request->route()->parameters['sale'];
+        if ($sale->status < Sale::STATUS_PAYMENT) {
+            return $next($request);
+        }
+
+        abort(Response::HTTP_FORBIDDEN, 'Sale can not be deleted.');
     }
 
     /**

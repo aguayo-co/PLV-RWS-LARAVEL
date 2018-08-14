@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Product\ProductSearch;
 use App\Notifications\NewProduct;
 use App\Notifications\ProductApproved;
 use App\Notifications\ProductDeleted;
@@ -14,10 +15,13 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class ProductController extends Controller
 {
+    use ProductSearch;
+
     protected $modelClass = Product::class;
 
     public static $allowedOrderBy = ['id', 'created_at', 'updated_at', 'price', 'commission'];
@@ -31,11 +35,14 @@ class ProductController extends Controller
         'size_id',
         'user_id',
     ];
-    public static $allowedWhereHas = ['color_ids' => 'colors', 'campaign_ids' => 'campaigns'];
+    public static $allowedWhereHas = [
+        'color_ids' => 'colors',
+        'campaign_ids' => 'campaigns',
+        'users_emails' => 'user,email',
+        'users_groups_ids' => 'user.groups',
+    ];
     public static $allowedWhereBetween = ['price', 'status'];
     public static $allowedWhereLike = ['slug'];
-
-    public static $searchIn = ['title', 'description'];
 
     /**
      * Create a new controller instance.
@@ -47,7 +54,7 @@ class ProductController extends Controller
         parent::__construct();
         $this->middleware('role:seller|admin')->only(['store']);
         $this->middleware(self::class . '::validateIsPublished')->only(['show']);
-        $this->middleware(self::class . '::validateCanBeDeleted')->only(['ownerDelete']);
+        $this->middleware(self::class . '::validateCanBeDeleted')->only(['delete', 'ownerDelete']);
     }
 
     /**
@@ -83,7 +90,6 @@ class ProductController extends Controller
 
         abort(Response::HTTP_FORBIDDEN, 'Product can not be deleted.');
     }
-
 
     protected function alterValidateData($data, Model $product = null)
     {
@@ -229,14 +235,25 @@ class ProductController extends Controller
      */
     protected function alterIndexQuery()
     {
-        $user = auth()->user();
-        if ($user && $user->hasRole('admin')) {
-            return;
-        }
+        return function ($query) {
+            $orderBy = explode(',', request()->query('orderby'));
 
-        return function ($query) use ($user) {
+            if (in_array('image_instagram_date', $orderBy)) {
+                $query = $query->orderByImageInstagramDate('asc');
+            }
+            if (in_array('-image_instagram_date', $orderBy)) {
+                $query = $query->orderByImageInstagramDate('desc');
+            }
+
+            $user = auth()->user();
+            if ($user && $user->hasRole('admin')) {
+                return $query;
+            }
+
+            // If not admin, filter hidden products.
             $query = $query->where(function ($query) use ($user) {
                 $query = $query->where('status', '>=', Product::STATUS_APPROVED);
+                // But, allow products owned by the user.
                 if ($user) {
                     $query = $query->orWhere('user_id', $user->id);
                 }
@@ -330,24 +347,50 @@ class ProductController extends Controller
         });
     }
 
+    /**
+     * Product deleted by the owner.
+     */
     public function ownerDelete(Request $request, Model $product)
     {
         $product->ownerDelete = true;
-        return parent::ownerDelete($request, $product);
+        $response = parent::ownerDelete($request, $product);
+        $product->user->notify(new ProductDeleted(['product' => $product]));
+        return $response;
     }
 
+    /**
+     * Delete the given product when not sold, and its sales if needed.
+     */
     public function delete(Request $request, Model $product)
     {
-        $deleted = parent::delete($request, $product);
-        switch ($product->ownerDelete) {
-            case true:
-                $product->user->notify(new ProductDeleted(['product' => $product]));
-                break;
+        $response = null;
+        $sales = $product->sales->filter(function ($sale) {
+            return $sale->products->count() === 1;
+        });
+        $threads = $product->threads()->withTrashed()->get();
+        // Delete the product and the sales that had only one (this) product.
+        DB::transaction(function () use ($request, $product, $response, $sales, $threads) {
+            // Delete threads and associated data.
+            // We do not need to trigger events, do mass deletion.
+            foreach ($threads as $thread) {
+                $thread->participants()->withTrashed()->forceDelete();
+                $thread->messages()->withTrashed()->forceDelete();
+            }
+            $product->threads()->withTrashed()->forceDelete();
 
-            default:
-                $product->user->notify(new ProductDeletedAdmin(['product' => $product]));
-                break;
+            // Remove product from sales,
+            // and delete sales that only had this product.
+            $product->sales()->sync([]);
+            foreach ($sales as $sale) {
+                $sale->delete();
+            }
+            $product = $product->fresh();
+            $response = parent::delete($request, $product);
+        });
+
+        if (!$product->ownerDelete) {
+            $product->user->notify(new ProductDeletedAdmin(['product' => $product]));
         }
-        return $deleted;
+        return $response;
     }
 }

@@ -191,12 +191,13 @@ class SaleObserver
         $sale = $this->sale;
         $returnedProductsIds = $sale->returned_products_ids->implode(', ');
         $reason = __('prilov.credits.reasons.orderPartial', ['products' => $returnedProductsIds]);
-        $amount = $sale->total - ($sale->commission + $sale->coupon_discount) - $sale->returned_total;
+        $commission = $sale->commission - $sale->returned_commission;
+        $amount = $sale->total - $sale->returned_total - ($commission + $sale->coupon_discount);
 
         CreditsTransaction::create([
             'user_id' => $sale->user_id,
             'amount' => $amount,
-            'commission' => $sale->commission,
+            'commission' => $commission,
             'sale_id' => $sale->id,
             'extra' => ['reason' => $reason]
         ]);

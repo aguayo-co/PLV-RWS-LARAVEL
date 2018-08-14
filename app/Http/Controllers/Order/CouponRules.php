@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Order;
 
 use App\Coupon;
+use App\Order;
 
 trait CouponRules
 {
@@ -11,6 +12,7 @@ trait CouponRules
         return [
             $this->getCouponActive($order),
             $this->getCouponIsFirstPurchase($order),
+            $this->getCouponIsApplicable($order),
         ];
     }
 
@@ -47,11 +49,34 @@ trait CouponRules
                 return;
             }
 
-            if ($order->user->orders->count() === 1) {
+            $userOrdersCount = $order->user->orders()
+                ->where('status', '>=', Order::STATUS_PAYMENT)
+                ->where('status', '<', Order::STATUS_CANCELED)
+                ->count();
+            if (!$userOrdersCount) {
                 return;
             }
 
-            return $fail(__('Cupón sólo permitido en primera compra.'));
+            return $fail(__('prilov.coupons.firstPurchaseOnly'));
+        };
+    }
+
+    /**
+     * Rule that validates that a coupon gives a discount.
+     * If the discount value in the order is 0, the coupon does not apply to
+     * any of the productos in the order. Reject.
+     */
+    protected function getCouponIsApplicable($order)
+    {
+        return function ($attribute, $value, $fail) use ($order) {
+            $coupon = Coupon::where('code', $value)->first();
+            $testOrder = $order->fresh();
+            $testOrder->coupon_id = $coupon->id;
+            if ($testOrder->coupon_discount > 0) {
+                return;
+            }
+
+            return $fail(__('prilov.coupons.notApplicable'));
         };
     }
 }

@@ -93,6 +93,7 @@ class SaleReturnObserver
         CreditsTransaction::create([
             'user_id' => $sale->user_id,
             'amount' => $sale->returned_total - $sale->returned_commission,
+            'commission' => $sale->returned_commission,
             'sale_id' => $sale->id,
             'extra' => ['reason' => __('prilov.credits.reasons.returnCanceled')]
         ]);

@@ -20,16 +20,20 @@ trait CanSearch
      */
     protected function doSearch(Request $request, Builder $query, $controllerClass)
     {
-        $table = $query->getQuery()->from . '.';
-
-        $columns = $table . implode(',' . $table, $controllerClass::$searchIn);
+        if (!$controllerClass::$searchIn) {
+            return $query;
+        }
 
         $search = $request->query('q') ?: null;
-
-        if ($search && $columns) {
-            $query = $query->whereRaw('MATCH (' . $columns . ') AGAINST(? IN BOOLEAN MODE)', $search);
-            $query = $query->orderByRaw('MATCH (' . $columns . ') AGAINST(? IN BOOLEAN MODE) DESC', $search);
+        if (!$search) {
+            return $query;
         }
+
+        $table = $query->getQuery()->from . '.';
+        $columns = $table . implode(',' . $table, $controllerClass::$searchIn);
+
+        $query = $query->whereRaw('MATCH (' . $columns . ') AGAINST(? IN BOOLEAN MODE)', $search);
+        $query = $query->orderByRaw('MATCH (' . $columns . ') AGAINST(? IN BOOLEAN MODE) DESC', $search);
         return $query;
     }
 }

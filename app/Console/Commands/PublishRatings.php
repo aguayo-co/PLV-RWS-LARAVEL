@@ -43,7 +43,7 @@ class PublishRatings extends Command
         $ratings = Rating::where('status', Rating::STATUS_UNPUBLISHED)->whereHas('sale', function ($query) {
             $updatedBefore = now()->subDays(config('prilov.sales.days_to_publish_ratings'));
             $query->where('status', '>=', Sale::STATUS_COMPLETED)->where('updated_at', '<', $updatedBefore);
-        });
+        })->get();
 
         // We want to fire events.
         foreach ($ratings as $rating) {
