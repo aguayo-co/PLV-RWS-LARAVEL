@@ -48,10 +48,10 @@ class UserController extends Controller
     protected function validationRules(array $data, ?Model $user)
     {
         $required = !$user ? 'required|' : '';
-        $ignore = $user ? ',' . $user->id : '';
+        $ignore = $user ? $user->id : 'NULL';
         return [
             # Por requerimiento de front, el error de correo existente debe ser enviado por aparte.
-            'exists' => 'unique:users,email' . $ignore,
+            'exists' => 'unique:users,email,' . $ignore . ',id,deleted_at,NULL',
             'email' => $required . 'string|email',
             'password' => $required . 'string|min:6',
             'first_name' => $required . 'string',
@@ -230,6 +230,8 @@ class UserController extends Controller
 
         $user = User::WithPurchasedProductsCount()
             ->withCredits()->findOrFail($user->id);
+
+        auth()->setUser($user);
 
         $user->notify(new Welcome);
         $user->api_token = $user->createToken('PrilovRegister')->accessToken;
