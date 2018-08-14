@@ -16,7 +16,7 @@ trait UserSearch
             return $query;
         }
 
-        $match = 'MATCH (users.first_name,users.last_name) AGAINST(? IN BOOLEAN MODE)';
+        $match = 'MATCH (users.full_name) AGAINST(? IN BOOLEAN MODE)';
 
         // Then just do FullText search.
         $query = $query->whereRaw($match, [$search]);
