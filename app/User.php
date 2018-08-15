@@ -143,7 +143,7 @@ class User extends Authenticatable
 
     public function favorites()
     {
-        return $this->belongsToMany('App\Product', 'favorites');
+        return $this->belongsToMany('App\Product', 'favorites')->setEagerLoads([]);
     }
 
     protected function setGroupIdsAttribute(?array $groupIds)
@@ -226,16 +226,26 @@ class User extends Authenticatable
         return $this->favorites->pluck('id');
     }
 
+    public function productsPublished()
+    {
+        return $this->products()->setEagerLoads([])->where('status', '>=', Product::STATUS_APPROVED)
+            ->where('status', '<=', Product::STATUS_AVAILABLE);
+    }
+
     protected function getPublishedProductsCountAttribute()
     {
-        return $this->products->where('status', '>=', Product::STATUS_APPROVED)
-            ->where('status', '<=', Product::STATUS_AVAILABLE)->count();
+        return $this->productsPublished->count();
+    }
+
+    public function productsSold()
+    {
+        return $this->products()->setEagerLoads([])->where('status', '>=', Product::STATUS_PAYMENT)
+            ->where('status', '<=', Product::STATUS_SOLD_RETURNED);
     }
 
     protected function getSoldProductsCountAttribute()
     {
-        return $this->products->where('status', '>=', Product::STATUS_PAYMENT)
-            ->where('status', '<=', Product::STATUS_SOLD_RETURNED)->count();
+        return $this->productsSold->count();
     }
     #                                   #
     # End Products Information methods. #
@@ -265,28 +275,52 @@ class User extends Authenticatable
         return $this->hasMany('App\RatingArchive', 'seller_id');
     }
 
+    public function ratingsNegative()
+    {
+        return $this->ratings()->where('ratings.status', Rating::STATUS_PUBLISHED)
+        ->where('buyer_rating', -1);
+    }
+
+    public function ratingArchivesNegative()
+    {
+        return $this->ratingArchives()->where('buyer_rating', -1);
+    }
+
+    public function ratingsNeutral()
+    {
+        return $this->ratings()->where('ratings.status', Rating::STATUS_PUBLISHED)
+        ->where('buyer_rating', 0);
+    }
+
+    public function ratingArchivesNeutral()
+    {
+        return $this->ratingArchives()->where('buyer_rating', 0);
+    }
+
+    public function ratingsPositive()
+    {
+        return $this->ratings()->where('ratings.status', Rating::STATUS_PUBLISHED)
+        ->where('buyer_rating', 1);
+    }
+
+    public function ratingArchivesPositive()
+    {
+        return $this->ratingArchives()->where('buyer_rating', 1);
+    }
+
     protected function getRatingsNegativeCountAttribute()
     {
-        $new = $this->ratings->whereStrict('status', Rating::STATUS_PUBLISHED)
-            ->whereStrict('buyer_rating', -1)->count();
-        $archive = $this->ratingArchives->whereStrict('buyer_rating', -1)->count();
-        return $new + $archive;
+        return $this->ratingsNegative->count() + $this->ratingArchivesNegative->count();
     }
 
     protected function getRatingsNeutralCountAttribute()
     {
-        $new = $this->ratings->whereStrict('status', Rating::STATUS_PUBLISHED)
-            ->whereStrict('buyer_rating', 0)->count();
-        $archive = $this->ratingArchives->whereStrict('buyer_rating', 0)->count();
-        return $new + $archive;
+        return $this->ratingsNeutral->count() + $this->ratingArchivesNeutral->count();
     }
 
     protected function getRatingsPositiveCountAttribute()
     {
-        $new = $this->ratings->whereStrict('status', Rating::STATUS_PUBLISHED)
-            ->whereStrict('buyer_rating', 1)->count();
-        $archive = $this->ratingArchives->whereStrict('buyer_rating', 1)->count();
-        return $new + $archive;
+        return $this->ratingsPositive->count() + $this->ratingArchivesPositive->count();
     }
     #                                 #
     # End Ratings methods.            #
@@ -317,12 +351,12 @@ class User extends Authenticatable
 
     public function followers()
     {
-        return $this->belongsToMany(User::class, 'follower_followee', 'followee_id', 'follower_id');
+        return $this->belongsToMany(User::class, 'follower_followee', 'followee_id', 'follower_id')->setEagerLoads([]);
     }
 
     public function following()
     {
-        return $this->belongsToMany(User::class, 'follower_followee', 'follower_id', 'followee_id');
+        return $this->belongsToMany(User::class, 'follower_followee', 'follower_id', 'followee_id')->setEagerLoads([]);
     }
     #                                 #
     # End Following-Follower methods. #
