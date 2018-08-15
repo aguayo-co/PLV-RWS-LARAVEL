@@ -113,11 +113,16 @@ class UserController extends Controller
                 $query = $query->OrderedByLatestProduct('desc');
             }
 
-            $withProducts = array_get(request()->query('filter'), 'with_products');
-            if ($withProducts) {
+            $filters = request()->query('filter');
+            if (array_get($filters, 'with_products')) {
                 $query = $query->whereHas('products', function ($subQuery) {
                     $subQuery->whereBetween('status', [Product::STATUS_APPROVED, Product::STATUS_AVAILABLE]);
                 });
+            }
+
+            $user = auth()->user();
+            if (array_get($filters, 'with_trashed') && $user && $user->hasRole('admin')) {
+                $query = $query->withTrashed();
             }
 
             return $query->withPurchasedProductsCount()
