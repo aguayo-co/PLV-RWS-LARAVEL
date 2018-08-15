@@ -1,1 +1,1 @@
-Cool ¡Ya eres una Prilover!
+Cool. Ya eres una Prilover

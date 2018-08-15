@@ -320,7 +320,7 @@
                       </td>
                     </tr>
                     <tr class="row" style="width:100%;">
-                      <td class="cell spacing txt highlight uppercase" align="center" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;color:#f65a66;text-transform:auppercase;">@if ($private) ¡Tienes un nuevo mensaje privado! @else ¡{{ $sender->first_name }} escribió un comentario en tu producto! @endif</td>
+                      <td class="cell spacing txt highlight uppercase" align="center" style="padding-top:22px;padding-bottom:0;padding-right:20px;padding-left:20px;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;font-size:18px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;color:#f65a66;text-transform:auppercase;">@if ($private) ¡Tienes un nuevo mensaje privado! @else ¡ {{ $sender->first_name }} escribió un comentario en este producto! @endif</td>
                     </tr>
                     @if (!$private)
                     <tr class="row" style="width:100%;">
@@ -364,7 +364,7 @@
                     <tbody>
                       <tr class="row" style="width:100%;">
                         <td class="cell" style="padding-right:0;padding-left:0;padding-top:20px;padding-bottom:0;">
-                          <a href="{{ env('APP_FRONT_URL') }}user/notificaciones/{{ $thread->id }}" class="btn btn_solid" style="display:block;width:70%;max-width:410px;padding-top:18px;padding-bottom:18px;padding-right:6px;padding-left:6px;margin-top:0;margin-bottom:20px;margin-right:auto;margin-left:auto;border-width:2px;border-style:solid;border-color:#000000;text-decoration:none;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;text-align:center;background-color:#000000;color:#ffffff;">@if ($private) Responder privado a la Prilover @else Responder comentario @endif</a>
+                          <a href="{{ env('APP_FRONT_URL') }}user/notificaciones/{{ $thread->id }}" class="btn btn_solid" style="display:block;width:70%;max-width:410px;padding-top:18px;padding-bottom:18px;padding-right:6px;padding-left:6px;margin-top:0;margin-bottom:20px;margin-right:auto;margin-left:auto;border-width:2px;border-style:solid;border-color:#000000;text-decoration:none;font-size:14px;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;text-align:center;background-color:#000000;color:#ffffff;">@if ($private) Responder mensaje @else Responder comentario @endif</a>
                         </td>
                       </tr>
                       <tr class="row" style="width:100%;">
