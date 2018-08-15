@@ -329,12 +329,12 @@ class ProductController extends Controller
             $collection->loadMissing([
                 'user.followers:id',
                 'user.following:id',
-                'user.ratingsNegative:id',
-                'user.ratingArchivesNegative:id',
-                'user.ratingsNeutral:id',
-                'user.ratingArchivesNeutral:id',
-                'user.ratingsPositive:id',
-                'user.ratingArchivesPositive:id',
+                'user.ratingsNegative:sale_id',
+                'user.ratingArchivesNegative:id,seller_id',
+                'user.ratingsNeutral:sale_id',
+                'user.ratingArchivesNeutral:id,seller_id',
+                'user.ratingsPositive:sale_id',
+                'user.ratingArchivesPositive:id,seller_id',
                 'user.shippingMethods',
             ]);
 
