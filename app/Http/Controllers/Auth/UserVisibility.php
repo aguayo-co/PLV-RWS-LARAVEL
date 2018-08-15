@@ -27,12 +27,12 @@ trait UserVisibility
             'groups:id',
             'productsPublished:id,user_id,status',
             'productsSold:id,user_id,status',
-            'ratingsNegative',
-            'ratingArchivesNegative',
-            'ratingsNeutral',
-            'ratingArchivesNeutral',
-            'ratingsPositive',
-            'ratingArchivesPositive',
+            'ratingsNegative:id',
+            'ratingArchivesNegative:id',
+            'ratingsNeutral:id',
+            'ratingArchivesNeutral:id',
+            'ratingsPositive:id',
+            'ratingArchivesPositive:id',
             'shippingMethods:id',
         ]);
         $collection->makeHidden([
