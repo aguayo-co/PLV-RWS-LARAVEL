@@ -278,7 +278,7 @@ class User extends Authenticatable
     public function ratingsNegative()
     {
         return $this->ratings()->where('ratings.status', Rating::STATUS_PUBLISHED)
-        ->where('buyer_rating', -1);
+            ->where('buyer_rating', -1);
     }
 
     public function ratingArchivesNegative()
@@ -289,7 +289,7 @@ class User extends Authenticatable
     public function ratingsNeutral()
     {
         return $this->ratings()->where('ratings.status', Rating::STATUS_PUBLISHED)
-        ->where('buyer_rating', 0);
+            ->where('buyer_rating', 0);
     }
 
     public function ratingArchivesNeutral()
@@ -300,7 +300,7 @@ class User extends Authenticatable
     public function ratingsPositive()
     {
         return $this->ratings()->where('ratings.status', Rating::STATUS_PUBLISHED)
-        ->where('buyer_rating', 1);
+            ->where('buyer_rating', 1);
     }
 
     public function ratingArchivesPositive()
