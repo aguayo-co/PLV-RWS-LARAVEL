@@ -27,7 +27,7 @@ trait UserVisibility
             'groups:id',
             'productsPublished:id,user_id,status',
             'productsSold:id,user_id,status',
-            'ratingsNegative:id',
+            'ratingsNegative:sale_id',
             'ratingArchivesNegative:id,seller_id',
             'ratingsNeutral:sale_id',
             'ratingArchivesNeutral:id,seller_id',
