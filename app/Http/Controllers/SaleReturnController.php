@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\SaleReturn;
 use App\Sale;
+use App\SaleReturn;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -218,12 +219,29 @@ class SaleReturnController extends Controller
             $data['status'] = SaleReturn::STATUS_PENDING;
         }
 
-        if ($productsIds = array_get($data, 'products_ids')) {
+        $productsIds = array_get($data, 'products_ids');
+        if ($productsIds) {
             $saleId = $return ? $return->sale->id : array_get($data, 'sale_id');
             $data['products_ids'] = ['sale_id' => $saleId, 'products_ids' => $productsIds];
         }
 
         unset($data['sale_id']);
         return parent::alterFillData($data, $return);
+    }
+
+    protected function setVisibility(Collection $collection)
+    {
+        $collection->load([
+            'sales.order.user',
+            'sales.user',
+            'products',
+        ]);
+
+        $collection->each(function ($saleReturn) {
+            $saleReturn->append([
+                'sale',
+            ]);
+            $saleReturn->makeHidden(['sales']);
+        });
     }
 }
