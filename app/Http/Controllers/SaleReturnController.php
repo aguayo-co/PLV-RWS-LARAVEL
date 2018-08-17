@@ -43,8 +43,6 @@ class SaleReturnController extends Controller
         $validStatuses = [
             SaleReturn::STATUS_SHIPPED,
             SaleReturn::STATUS_DELIVERED,
-            SaleReturn::STATUS_RECEIVED,
-            SaleReturn::STATUS_ADMIN,
             SaleReturn::STATUS_COMPLETED,
             SaleReturn::STATUS_CANCELED,
         ];
@@ -168,11 +166,8 @@ class SaleReturnController extends Controller
                 return $fail(__('validation.in', ['values' => implode(', ', $buyerStatuses)]));
             }
 
-            // Seller can set three statuses.
-            // Validate we have one of those.
+            // Seller can set one status.
             $sellerStatuses = [
-                SaleReturn::STATUS_RECEIVED,
-                SaleReturn::STATUS_ADMIN,
                 SaleReturn::STATUS_COMPLETED,
             ];
             $seller = $return->sales->first()->user;
@@ -198,7 +193,7 @@ class SaleReturnController extends Controller
                 return $fail(__('Usuario no tiene permiso para modificar esta información.'));
             }
 
-            if (SaleReturn::STATUS_RECEIVED < $return->status) {
+            if (SaleReturn::STATUS_COMPLETED <= $return->status) {
                 return $fail(__('Información ya no se puede modificar.'));
             }
         };

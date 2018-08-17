@@ -40,11 +40,8 @@ class SaleReturnObserver
                 $this->sendDeliveredNotifications();
                 break;
 
-            case SaleReturn::STATUS_RECEIVED:
-                $this->sendReceivedNotifications();
-                break;
-
             case SaleReturn::STATUS_COMPLETED:
+                $this->sendReceivedNotifications();
                 $this->giveCreditsBackToBuyer();
                 break;
         }
