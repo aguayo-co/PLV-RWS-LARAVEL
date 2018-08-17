@@ -311,12 +311,7 @@ class ProductController extends Controller
 
             'size.parent',
 
-            'user.followers:id',
-            'user.following:id',
             'user.groups',
-            'user.shippingMethods',
-            'user.ratings',
-            'user.ratingArchives',
         ]);
 
         $loggedUser = auth()->user();
@@ -326,25 +321,44 @@ class ProductController extends Controller
         }
 
         $collection->each(function ($product) use ($collection, $loggedUser) {
-            if ($loggedUser && $loggedUser->hasRole('admin')) {
-                $product->user->makeVisible(['email', 'phone']);
-            }
-
             $product->append([
                 'color_ids', 'campaign_ids'
             ]);
-            $product->user->makeHidden([
-                'followers', 'following', 'ratings', 'ratingArchives'
-            ]);
-            $product->user->append([
-                'following_count',
-                'followers_count',
-                'ratings_negative_count',
-                'ratings_positive_count',
-                'ratings_neutral_count',
-                'shipping_method_ids',
-            ]);
         });
+        if ($collection->count() === 1) {
+            $collection->loadMissing([
+                'user.followers:id',
+                'user.following:id',
+                'user.ratingsNegative:sale_id',
+                'user.ratingArchivesNegative:id,seller_id',
+                'user.ratingsNeutral:sale_id',
+                'user.ratingArchivesNeutral:id,seller_id',
+                'user.ratingsPositive:sale_id',
+                'user.ratingArchivesPositive:id,seller_id',
+                'user.shippingMethods',
+            ]);
+
+            $collection->each(function ($product) use ($collection, $loggedUser) {
+                $product->user->makeHidden([
+                    'followers',
+                    'following',
+                    'ratingsPositive',
+                    'ratingArchivesPositive',
+                    'ratingsNeutral',
+                    'ratingArchivesNeutral',
+                    'ratingsNegative',
+                    'ratingArchivesNegative',
+                ]);
+                $product->user->append([
+                    'following_count',
+                    'followers_count',
+                    'shipping_method_ids',
+                    'ratings_negative_count',
+                    'ratings_positive_count',
+                    'ratings_neutral_count',
+                ]);
+            });
+        }
     }
 
     /**
