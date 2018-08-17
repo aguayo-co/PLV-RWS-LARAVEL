@@ -44,7 +44,7 @@
           @if ($product->sale_price !== $product->price)
           <tbody>
             <tr>
-              <td align="left" class="sub-cell" style="padding-top:6px;font-size:12px;color:#9B9B9B;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Campaña de descuento ({{ (int) ($product->sale_price * 100 / $product->price) }}%)</td>
+              <td align="left" class="sub-cell" style="padding-top:6px;font-size:12px;color:#9B9B9B;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">Campaña de descuento ({{ (int) (100 - ($product->sale_price * 100 / $product->price)) }}%)</td>
               <td align="right" class="sub-cell" style="padding-top:6px;font-size:12px;color:#f65a66;font-family:'Montserrat', Arial, Helvetica, sans-serif;line-height:1.4;">-${{ number_format((int)($product->price - $product->sale_price) , 0, ',', '.') }}</td>
             </tr>
           </tbody>
