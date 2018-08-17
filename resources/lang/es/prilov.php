@@ -26,5 +26,11 @@ return [
     ],
     'products' => [
         'notAvailable' => 'Alguno de los productos ya no está disponible.',
+    ],
+    'users' => [
+        'hasPendingSales' => 'La usuaria tiene ventas pendientes.',
+        'hasPendingOrders' => 'La usuaria tiene compras pendientes.',
+        'hasCredits' => 'La usuaria tiene saldo de créditos.',
+        'hasPendingTransfers' => 'La usuaria tiene transferencias pendientes.',
     ]
 ];

@@ -72,8 +72,8 @@ Route::name('api.')->group(function () {
         # Routes for user account and profile administration.
         Route::patch('users/{user}', 'Auth\UserController@update')
             ->name('user.update')->where('user', ID_REGEX);
-        Route::delete('users/{user}', 'Auth\UserController@delete')
-            ->name('user.delete')->where('user', ID_REGEX);
+        Route::delete('users/{user_scoped}', 'Auth\UserController@delete')
+            ->name('user.delete')->where('user_scoped', ID_REGEX);
 
         Route::get('users/{user}/addresses', 'AddressController@index')
             ->name('user.addresses.get')->where('user', ID_REGEX);

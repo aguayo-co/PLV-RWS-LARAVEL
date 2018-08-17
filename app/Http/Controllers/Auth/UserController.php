@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\CreditsTransaction;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Product\UserDelete;
 use App\Http\Controllers\User\UserSearch;
@@ -10,11 +11,13 @@ use App\Notifications\BankAccountChanged;
 use App\Notifications\EmailChanged;
 use App\Notifications\Welcome;
 use App\Product;
+use App\Sale;
 use App\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Laravel\Passport\Token;
@@ -34,6 +37,12 @@ class UserController extends Controller
     ];
 
     public static $searchIn = ['first_name', 'last_name'];
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->middleware(self::class . '::validateCanBeDeleted')->only(['delete', 'ownerDelete']);
+    }
 
     protected function alterValidateData($data, Model $user = null)
     {
@@ -89,6 +98,44 @@ class UserController extends Controller
             'exists.unique' => __('validation.email.exists'),
             'following_add.*.different' => __('validation.different.self'),
         ];
+    }
+
+    /**
+     * Middleware that validates a user can be deleted.
+     */
+    public static function validateCanBeDeleted($request, $next)
+    {
+        $user = $request->route()->parameters['user_scoped'];
+
+        // Can not delete user if has Sales that have not been completed or canceled.
+        $pendingSales = $user->sales()->where('status', '>=', Sale::STATUS_PAYMENT)
+            ->where('status', '<', Sale::STATUS_COMPLETED)->count();
+        if ($pendingSales) {
+            abort(Response::HTTP_FORBIDDEN, __('prilov.users.hasPendingSales'));
+        }
+
+        // Can not delete user if has Orders that have not been completed or canceled.
+        $pendingOrders = $user->orders()->whereHas('sales', function ($query) use ($user) {
+            $query->where('status', '>=', Sale::STATUS_PAYMENT)
+            ->where('status', '<', Sale::STATUS_COMPLETED);
+        })->count();
+        if ($pendingOrders) {
+            abort(Response::HTTP_FORBIDDEN, __('prilov.users.hasPendingOrders'));
+        }
+
+        // Can not delete user if has Credits (positive or negative).
+        if ($user->credits !== 0) {
+            abort(Response::HTTP_FORBIDDEN, __('prilov.users.hasCredits'));
+        }
+
+        // Can not delete user if has pending transfers.
+        $pendingTransfers = $user->creditsTransactions()
+            ->where('transfer_status', CreditsTransaction::STATUS_PENDING)->count();
+        if ($pendingTransfers) {
+            abort(Response::HTTP_FORBIDDEN, __('prilov.users.hasPendingTransfers'));
+        }
+
+        return $next($request);
     }
 
     /**
