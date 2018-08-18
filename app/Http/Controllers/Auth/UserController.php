@@ -124,7 +124,7 @@ class UserController extends Controller
         }
 
         // Can not delete user if has Credits (positive or negative).
-        if ($user->credits !== 0) {
+        if ($user->credits) {
             abort(Response::HTTP_FORBIDDEN, __('prilov.users.hasCredits'));
         }
 
