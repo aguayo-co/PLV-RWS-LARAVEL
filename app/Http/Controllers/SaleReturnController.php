@@ -14,6 +14,18 @@ class SaleReturnController extends Controller
     protected $modelClass = SaleReturn::class;
 
     public static $allowedWhereIn = ['id', 'sale_id'];
+    public static $allowedWhereBetween = ['status'];
+    public static $allowedWhereHas = [
+        'buyer_id' => 'sales.order,user_id',
+        'buyer_email' => 'sales.order.user,email',
+        'buyer_full_name' => 'sales.order.user,full_name',
+        'user_id' => 'sales,user_id',
+        'user_email' => 'sales.user,email',
+        'user_full_name' => 'sales.user,full_name',
+        'product_id' => 'products',
+        'product_title' => 'products,title',
+    ];
+    public static $allowedOrderBy = ['id', 'created_at'];
 
     public function __construct()
     {
@@ -233,6 +245,8 @@ class SaleReturnController extends Controller
         ]);
 
         $collection->each(function ($saleReturn) {
+            $saleReturn->sale->user->makeVisible(['email', 'phone']);
+            $saleReturn->sale->order->user->makeVisible(['email', 'phone']);
             $saleReturn->append([
                 'sale',
             ]);
