@@ -144,7 +144,7 @@ trait OrderControllerRules
                 return $fail(__('El pago no es de tipo Transferencia.'));
             }
             if ($payment->status === Payment::STATUS_SUCCESS) {
-                return $fail(__('El pago ya no acepta recibos.'));
+                return $fail(__('Tú pago ya se encuentra aprobado y no es necesario subir un recibo.'));
             }
         };
     }
