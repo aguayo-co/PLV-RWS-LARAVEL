@@ -9,6 +9,8 @@ use App\Product;
 use App\Sale;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Password;
+use Laravel\Passport\Token;
 
 trait UserDelete
 {
@@ -46,5 +48,12 @@ trait UserDelete
 
         // Remove from all Threads.
         Participant::whereIn('user_id', $usersIds)->delete();
+
+        foreach ($users as $user) {
+            // Delete password reste tokens.
+            Password::broker()->deleteToken($user);
+        }
+        // Delete access tokens.
+        Token::whereIn('user_id', $usersIds)->delete();
     }
 }
