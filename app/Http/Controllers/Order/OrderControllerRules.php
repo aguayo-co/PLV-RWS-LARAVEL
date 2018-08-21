@@ -72,7 +72,7 @@ trait OrderControllerRules
             // Sale validation done on a different Rule.
             if ($sale) {
                 if ($sale->status !== Sale::STATUS_SHOPPING_CART) {
-                    return $fail(__('No se puede modificar Orden que no está en ShoppingCart.'));
+                    return $fail(__('prilov.orders.frozenOfShoppingCart'));
                 }
             }
         };
@@ -86,7 +86,7 @@ trait OrderControllerRules
         return function ($attribute, $value, $fail) use ($order) {
             // If no Order found, skip.
             if ($order && $order->status !== Order::STATUS_SHOPPING_CART) {
-                return $fail(__('No se puede modificar Orden que no está en ShoppingCart.'));
+                return $fail(__('prilov.orders.frozenOfShoppingCart'));
             }
         };
     }
@@ -121,7 +121,7 @@ trait OrderControllerRules
             $sale = $order->sales->firstWhere('id', $saleId);
             // Order needs to be payed.
             if ($sale->status < Sale::STATUS_PAYED) {
-                return $fail(__('La orden no ha sido pagada.'));
+                return $fail(__('prilov.orders.notPayed'));
             }
             // Do not go back in status.
             if ($value < $sale->status) {
@@ -138,13 +138,13 @@ trait OrderControllerRules
         return function ($attribute, $value, $fail) use ($order) {
             $payment = $order->active_payment;
             if (!$payment) {
-                return $fail(__('No Existe un pago pendiente en la orden.'));
+                return $fail(__('prilov.orders.noPendingPayment'));
             }
             if ($payment->gateway !== 'Transfer') {
-                return $fail(__('El pago no es de tipo Transferencia.'));
+                return $fail(__('prilov.orders.paymentIsNotTransfer'));
             }
             if ($payment->status === Payment::STATUS_SUCCESS) {
-                return $fail(__('Tú pago ya se encuentra aprobado y no es necesario subir un recibo.'));
+                return $fail(__('prilov.orders.transferAlreadyApproved'));
             }
         };
     }
