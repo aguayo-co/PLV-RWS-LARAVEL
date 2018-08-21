@@ -50,7 +50,7 @@ trait UserDelete
         Participant::whereIn('user_id', $usersIds)->delete();
 
         foreach ($users as $user) {
-            // Delete password reste tokens.
+            // Delete password reset tokens.
             Password::broker()->deleteToken($user);
         }
         // Delete access tokens.
