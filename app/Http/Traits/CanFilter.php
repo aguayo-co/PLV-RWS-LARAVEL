@@ -10,8 +10,13 @@ use App\Http\Controllers\Controller;
 trait CanFilter
 {
     public static $allowedWhereIn = ['id'];
-    //  Examples:
-    // ['query_name' => 'relation[,column]', 'color_ids' => 'colors',  'sellers_ids' => 'sale,user_id']
+    // The allowedWhereHas filter by relations. Can be used to filter on a relation column (id by default),
+    // or to just check for the existence of the relation.
+    //
+    // Column filter examples:
+    // ['query_name' => 'relation[,column]', 'color_ids' => 'colors', 'sellers_ids' => 'sale,user_id']
+    // Existence filter examples:
+    // ['query_name' => 'relation,__has__', 'has_colors' => 'colors,__has__']
     public static $allowedWhereHas = [];
     public static $allowedWhereBetween = [];
     public static $allowedWhereDates = ['created_at', 'updated_at'];
@@ -145,7 +150,12 @@ trait CanFilter
         foreach ($this->getWhereHas($filters, $allowedWhereHas) as $relation => $in) {
             $relation = explode(',', $relation);
             # Check if we have a column to use instead of 'id'.
+            // Or if we should just perform a has() filter.
             $column = array_get($relation, 1, 'id');
+            if ($column == '__has__') {
+                $query = $query->has($relation[0]);
+                continue;
+            }
             $query = $query->whereHas($relation[0], function ($q) use ($column, $in) {
                 $q->whereIn($column, $in);
             });

@@ -59,6 +59,24 @@ class Sale extends Model
         return $this->belongsToMany('App\Product')->withPivot('sale_return_id', 'price');
     }
 
+    /**
+     * Get related SaleReturn models.
+     */
+    public function saleReturns()
+    {
+        return $this->belongsToMany('App\SaleReturn', 'product_sale')->withPivot('product_id');
+    }
+
+    /**
+     * Get recen SaleReturn models.
+     */
+    public function recentSaleReturns()
+    {
+        $daysOfFreshness = now()->subDays(config('prilov.sale_returns.days_of_freshness'));
+        return $this->saleReturns()
+            ->where('created_at', '>', $daysOfFreshness);
+    }
+
     public function getProductsIdsAttribute()
     {
         return $this->products->pluck('id');

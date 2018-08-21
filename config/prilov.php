@@ -8,6 +8,7 @@ return [
     ],
     'sale_returns' => [
         'days_created_to_canceled' => env('PRILOV_DAYS_CREATED_TO_CANCELED', 5),
+        'days_of_freshness' => env('PRILOV_SALE_RETURNS_DAYS_OF_FRESHNESS', 3),
     ],
     'payments' => [
         'minutes_until_canceled' => env('PRILOV_MINUTES_UNTIL_CANCELED', 60),
