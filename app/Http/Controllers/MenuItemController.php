@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 class MenuItemController extends AdminController
 {
     protected $modelClass = MenuItem::class;
+    public static $allowedWhereIn = ['menu_id'];
 
     protected function alterValidateData($data, Model $menuItem = null)
     {
