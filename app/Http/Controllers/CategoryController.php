@@ -39,7 +39,6 @@ class CategoryController extends AdminController
                 'unique_with:categories,parent_id' . $ignore,
             ],
             'parent_id' => [
-                'nullable',
                 'integer',
                 'different:id',
                 Rule::exists('categories', 'id')->where(function ($query) {
@@ -52,10 +51,14 @@ class CategoryController extends AdminController
         // Can't use ValidationMessages for this one.
         if ($category) {
             $rules['parent_id'][] = function ($attribute, $value, $fail) use ($category) {
-                if (count($category->children) && $value) {
+                if ($category->children()->count() && $value) {
                     return $fail(__('Esta categoría tiene hijos. No pude tener un padre.'));
                 }
             };
+
+            if (!$category->products()->count()) {
+                array_unshift($rules['parent_id'], 'nullable');
+            }
         };
 
         return $rules;
@@ -69,7 +72,10 @@ class CategoryController extends AdminController
     protected function alterIndexQuery()
     {
         return function ($query) {
-            $query = $query->with(['children']);
+            // Unless explicitly asked for a flat list, load children.
+            if (!request()->get('flat')) {
+                $query = $query->with(['children']);
+            }
             // Unless we have a filter
             if (!request()->query('filter')) {
                 $query = $query->whereNull('parent_id');
