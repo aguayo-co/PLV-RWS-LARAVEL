@@ -381,7 +381,7 @@ class ProductController extends Controller
     {
         $response = null;
         DB::transaction(function () use ($request, $product, $response) {
-            $this->productsCleanup([$product]);
+            $this->productsCleanup(collect([$product]));
             $response = parent::delete($request, $product);
         });
 
