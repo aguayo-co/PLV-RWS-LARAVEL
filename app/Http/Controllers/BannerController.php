@@ -10,6 +10,7 @@ class BannerController extends AdminController
 {
     protected $modelClass = Banner::class;
     public static $allowedWhereLike = ['slug'];
+    public static $defaultOrderBy = ['slug' => 'asc'];
 
     protected function alterValidateData($data, Model $banner = null)
     {
