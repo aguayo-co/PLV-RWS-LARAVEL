@@ -20,7 +20,7 @@ class SaleController extends Controller
 {
     protected $modelClass = Sale::class;
 
-    public static $allowedWhereIn = ['id', 'user_id'];
+    public static $allowedWhereIn = ['id', 'user_id', 'order_id'];
     public static $allowedWhereBetween = ['status'];
     public static $allowedWhereHas = [
         'buyer_id' => 'order,user_id',
