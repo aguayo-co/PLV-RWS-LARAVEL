@@ -35,10 +35,8 @@ class ReportController extends BaseController
         ])->validate();
     }
 
-    public function show(Request $request)
+    protected function setDateGroupByFormat(Request $request)
     {
-        $this->validate($request);
-
         switch ($request->groupBy) {
             case 'day':
                 $this->dateGroupByFormat = '%Y-%m-%d';
@@ -56,51 +54,73 @@ class ReportController extends BaseController
                 $this->dateGroupByFormat = '%Y';
                 break;
         }
+    }
 
-        $orderPaymentStatus = Order::STATUS_PAYMENT;
-        $orderPayedStatus = Order::STATUS_PAYED;
-        $saleCanceledStatus = Sale::STATUS_CANCELED;
+    protected function setVariables(Request $request)
+    {
+        $this->orderPaymentStatus = Order::STATUS_PAYMENT;
+        $this->orderPayedStatus = Order::STATUS_PAYED;
+        $this->saleCanceledStatus = Sale::STATUS_CANCELED;
 
         // Payment date.
-        $paymentJsonPath = "orders.status_history->'$.\"{$orderPaymentStatus}\".date'";
-        $paymentDate = "CAST(JSON_UNQUOTE({$paymentJsonPath}) as DATETIME)";
-        $formatedDate = "DATE_FORMAT(CONVERT_TZ({$paymentDate}, 'UTC', '{$request->tz}'), '{$this->dateGroupByFormat}')";
+        $this->paymentJsonPath = "orders.status_history->'$.\"{$this->orderPaymentStatus}\".date'";
+        $this->paymentDate = "CAST(JSON_UNQUOTE({$this->paymentJsonPath}) as DATETIME)";
+        $this->formatedDate = "DATE_FORMAT(CONVERT_TZ({$this->paymentDate}, 'UTC', '{$request->tz}'), '{$this->dateGroupByFormat}')";
 
         // Commission.
-        $commissionFormula = 'CAST(products.price * products.commission / 100 as SIGNED)';
-        $commissionCondition = "IF(sales.status < {$saleCanceledStatus}, {$commissionFormula}, 0)";
+        $this->commissionFormula = 'CAST(products.price * products.commission / 100 as SIGNED)';
+        $this->commissionCondition = "IF(sales.status < {$this->saleCanceledStatus}, {$this->commissionFormula}, 0)";
+    }
 
+    protected function setSubQuerySales(Request $request)
+    {
         // First query, to aggregate by sales.
         // We calculate values aggregated by sales.
         $subQuerySales = DB::table('orders')
             ->join('sales', 'orders.id', '=', 'sales.order_id')
             ->join('product_sale', 'sales.id', '=', 'product_sale.sale_id')
             ->join('products', 'product_sale.product_id', '=', 'products.id')
-            ->where('orders.status', $orderPayedStatus)
+            ->where('orders.status', $this->orderPayedStatus)
             ->select(DB::raw('orders.id as id'))
             ->addSelect(DB::raw('SUM(product_sale.price) as productsTotal'))
             ->addSelect(DB::raw('IFNULL(sales.shipment_details->"$.cost", 0) as shippingCost'))
             // Gross Revenue: Total de comisiones con las que se queda Prilov.
             // Es decir la plata que efectivamente le quedó a Prilov
             // quitando cualquier descuento que esté asumiendo Prilov o cancelaciones.
-            ->addSelect(DB::raw("SUM({$commissionCondition}) as grossRevenue"))
+            ->addSelect(DB::raw("SUM({$this->commissionCondition}) as grossRevenue"))
             ->groupBy('sales.id');
 
         if ($request->from) {
-            $subQuerySales = $subQuerySales->whereRaw("{$paymentDate} >= ?", $request->from);
+            $subQuerySales = $subQuerySales->whereRaw("{$this->paymentDate} >= ?", $request->from);
         }
 
         if ($request->until) {
-            $subQuerySales = $subQuerySales->whereRaw("{$paymentDate} < ?", $request->until);
+            $subQuerySales = $subQuerySales->whereRaw("{$this->paymentDate} < ?", $request->until);
         }
 
+        $this->subQuerySales = $subQuerySales;
+    }
+
+    protected function setSubQueryOrders(Request $request)
+    {
         // Second query, to aggregate by orders.
-        $subQueryOrders = DB::table('orders')
-            ->joinSub($subQuerySales, 'totaledSales', 'totaledSales.id', '=', 'orders.id')
+        $this->subQueryOrders = DB::table('orders')
+            ->joinSub($this->subQuerySales, 'totaledSales', 'totaledSales.id', '=', 'orders.id')
             ->select(DB::raw('orders.id as id'))
             ->addSelect(DB::raw('SUM(productsTotal - shippingCost) as salesTotal'))
             ->addSelect(DB::raw('SUM(grossRevenue) as grossRevenue'))
             ->groupBy('orders.id');
+    }
+
+    public function show(Request $request)
+    {
+        $this->validate($request);
+
+        $this->setDateGroupByFormat($request);
+        $this->setVariables($request);
+
+        $this->setSubQuerySales($request);
+        $this->setSubQueryOrders($request);
 
         // Third query uses aggregated fields from sub-queries and adds values from orders.
         // 3 queries are needed because there is no way to have DISTINCT values on a column
@@ -110,12 +130,12 @@ class ReportController extends BaseController
             // We have to group using the request timezone to avoid splitting days in 2
             // For the requesting user.
             // We still return data in UTC times.
-            ->select(DB::raw("{$formatedDate} as date_range"))
-            ->addSelect(DB::raw("MIN({$paymentDate}) as since"))
-            ->addSelect(DB::raw("MAX({$paymentDate}) as until"))
+            ->select(DB::raw("{$this->formatedDate} as date_range"))
+            ->addSelect(DB::raw("MIN({$this->paymentDate}) as since"))
+            ->addSelect(DB::raw("MAX({$this->paymentDate}) as until"))
             ->addSelect(DB::raw('SUM(salesTotal - orders.applied_coupon->"$.discount") as cashIn'))
             ->addSelect(DB::raw('CAST(SUM(grossRevenue) as SIGNED) as grossRevenue'))
-            ->joinSub($subQueryOrders, 'totaledOrders', 'totaledOrders.id', '=', 'orders.id')
+            ->joinSub($this->subQueryOrders, 'totaledOrders', 'totaledOrders.id', '=', 'orders.id')
             ->groupBy('date_range');
 
         $result = $query->get();
