@@ -12,7 +12,7 @@ class SliderController extends AdminController
 
     public static $allowedOrderBy = ['id', 'created_at', 'updated_at', 'priority'];
     public static $allowedWhereBetween = ['priority'];
-    public static $allowedWhereLike = ['slug'];
+    public static $allowedWhereLike = ['slug', 'name'];
 
     protected function alterValidateData($data, Model $slider = null)
     {
