@@ -62,6 +62,8 @@ class ReportController extends BaseController
         $this->orderPayedStatus = Order::STATUS_PAYED;
         $this->saleCanceledStatus = Sale::STATUS_CANCELED;
 
+        $this->appliedCouponJsonPath = "orders.applied_coupon->'$.discount'";
+
         // Payment date.
         $this->paymentJsonPath = "orders.status_history->'$.\"{$this->orderPaymentStatus}\".date'";
         $this->paymentDate = "CAST(JSON_UNQUOTE({$this->paymentJsonPath}) as DATETIME)";
@@ -82,7 +84,8 @@ class ReportController extends BaseController
             ->join('products', 'product_sale.product_id', '=', 'products.id')
             ->where('orders.status', $this->orderPayedStatus)
             ->select(DB::raw('orders.id as id'))
-            ->addSelect(DB::raw('SUM(product_sale.price) as productsTotal'))
+            ->addSelect(DB::raw('SUM(products.price) as productsTotal'))
+            ->addSelect(DB::raw('SUM(product_sale.price) as productsSalePriceTotal'))
             ->addSelect(DB::raw('IFNULL(sales.shipment_details->"$.cost", 0) as shippingCost'))
             // Gross Revenue: Total de comisiones con las que se queda Prilov.
             // Es decir la plata que efectivamente le quedó a Prilov
@@ -107,7 +110,9 @@ class ReportController extends BaseController
         $this->subQueryOrders = DB::table('orders')
             ->joinSub($this->subQuerySales, 'totaledSales', 'totaledSales.id', '=', 'orders.id')
             ->select(DB::raw('orders.id as id'))
-            ->addSelect(DB::raw('SUM(productsTotal - shippingCost) as salesTotal'))
+            ->addSelect(DB::raw('SUM(productsTotal) as productsTotal'))
+            ->addSelect(DB::raw('SUM(productsSalePriceTotal) as productsSalePriceTotal'))
+            ->addSelect(DB::raw('SUM(shippingCost) as shippingCostsTotal'))
             ->addSelect(DB::raw('SUM(grossRevenue) as grossRevenue'))
             ->groupBy('orders.id');
     }
@@ -133,23 +138,40 @@ class ReportController extends BaseController
             ->select(DB::raw("{$this->formatedDate} as date_range"))
             ->addSelect(DB::raw("MIN({$this->paymentDate}) as since"))
             ->addSelect(DB::raw("MAX({$this->paymentDate}) as until"))
-            ->addSelect(DB::raw('SUM(salesTotal - orders.applied_coupon->"$.discount") as cashIn'))
-            ->addSelect(DB::raw('CAST(SUM(grossRevenue) as SIGNED) as grossRevenue'))
+            ->addSelect(DB::raw("SUM(productsSalePriceTotal - {$this->appliedCouponJsonPath}) as cashIn"))
+            ->addSelect(DB::raw('CAST(SUM(productsTotal) as SIGNED) as productsTotal'))
+            ->addSelect(DB::raw("CAST(SUM({$this->appliedCouponJsonPath}) as SIGNED) as discountPrilov"))
+            ->addSelect(DB::raw('CAST(SUM(productsTotal - productsSalePriceTotal) as SIGNED) as discountSeller'))
+            ->addSelect(DB::raw('CAST(SUM(shippingCostsTotal) as SIGNED) as shippingCostsTotal'))
+            ->addSelect(DB::raw("CAST(SUM(grossRevenue - {$this->appliedCouponJsonPath}) as SIGNED) as grossRevenue"))
             ->joinSub($this->subQueryOrders, 'totaledOrders', 'totaledOrders.id', '=', 'orders.id')
             ->groupBy('date_range');
 
         $result = $query->get();
 
+        $keys = [
+            'cashIn',
+            'productsTotal',
+            'discountPrilov',
+            'discountSeller',
+            'shippingCostsTotal',
+            'grossRevenue',
+        ];
+
         $rows = [
             'groupBy' => $request->groupBy,
             'ranges' => [],
-            'cashIn' => [],
-            'grossRevenue' => [],
         ];
+
+        foreach ($keys as $key) {
+            $rows[$key] = [];
+        }
+
         foreach ($result as $range) {
             $rows['ranges'][$range->date_range] = [new Carbon($range->since), new Carbon($range->until)];
-            $rows['cashIn'][$range->date_range] = $range->cashIn;
-            $rows['grossRevenue'][$range->date_range] = $range->grossRevenue;
+            foreach ($keys as $key) {
+                $rows[$key][$range->date_range] = $range->$key;
+            }
         }
         return $rows;
     }
