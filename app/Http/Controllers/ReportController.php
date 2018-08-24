@@ -75,25 +75,60 @@ class ReportController extends BaseController
         $this->commissionCondition = "IF(sales.status < {$this->saleCanceledStatus}, {$this->commissionFormula}, 0)";
     }
 
+    protected function getBaseSubQuery(Request $request)
+    {
+        return DB::table('orders')
+            ->where('orders.status', $this->orderPayedStatus)
+            ->whereRaw("{$this->paymentDate} >= ?", $request->from)
+            ->whereRaw("{$this->paymentDate} < ?", $request->until);
+    }
+
+    protected function getBaseSalesSubQuery(Request $request)
+    {
+        return $this->getBaseSubQuery($request)
+            ->join('sales', 'orders.id', '=', 'sales.order_id');
+    }
+
+    protected function getSubQuerySaleReturns(Request $request)
+    {
+        return $this->getBaseSalesSubQuery($request)
+            ->join('product_sale', 'sales.id', '=', 'product_sale.sale_id')
+            ->join('sale_returns', 'product_sale.sale_return_id', '=', 'sale_returns.id')
+            // Skip canceled and pending returns.
+            ->where('sale_returns.status', '>', SaleReturn::STATUS_PENDING)
+            ->where('sale_returns.status', '<', SaleReturn::STATUS_CANCELED)
+            ->select(DB::raw('sales.id as id'))
+            // Count how many valid returns we got.
+            ->addSelect(DB::raw("COUNT(sale_returns.id) as returnsCount"))
+            ->groupBy(['sales.id']);
+    }
+
+    protected function getSubQuerySaleCredits(Request $request)
+    {
+        return $this->getBaseSalesSubQuery($request)
+            ->join('credits_transactions', 'sales.id', '=', 'credits_transactions.sale_id')
+            ->whereRaw('credits_transactions.user_id = sales.user_id')
+            ->select(DB::raw('sales.id as id'))
+            ->addSelect(DB::raw("SUM(credits_transactions.amount) as creditsForSalesTotal"))
+            ->groupBy(['sales.id']);
+    }
+
     protected function getSubQuerySales(Request $request)
     {
+        $subQuerySaleReturns = $this->getSubQuerySaleReturns($request);
+        $subQuerySaleCredits = $this->getSubQuerySaleCredits($request);
+
         // First query, to aggregate by sales.
         // We calculate values aggregated by sales.
-        $subQuerySales = DB::table('orders')
-            ->join('sales', 'orders.id', '=', 'sales.order_id')
+        $subQuerySales = $this->getBaseSalesSubQuery($request)
             ->join('product_sale', 'sales.id', '=', 'product_sale.sale_id')
             ->join('products', 'product_sale.product_id', '=', 'products.id')
-            ->leftJoin('sale_returns', 'product_sale.sale_return_id', '=', 'sale_returns.id')
-            ->where('orders.status', $this->orderPayedStatus)
-            // Skip canceled and pending returns.
-            ->where(function ($query) {
-                $query->whereNull('sale_returns.status')
-                    ->orWhere(function ($query) {
-                        $query->where('sale_returns.status', '>', SaleReturn::STATUS_PENDING)
-                            ->where('sale_returns.status', '<', SaleReturn::STATUS_CANCELED);
-                    });
-            })
+            ->leftJoinSub($subQuerySaleReturns, 'totaledSaleReturns', 'totaledSaleReturns.id', '=', 'sales.id')
+            ->leftJoinSub($subQuerySaleCredits, 'totaledSaleCredits', 'totaledSaleCredits.id', '=', 'sales.id')
+
             ->select(DB::raw('orders.id as id'))
+            ->addSelect('returnsCount')
+            ->addSelect('creditsForSalesTotal')
             // Initial price of products.
             ->addSelect(DB::raw('SUM(products.price) as productsTotal'))
             // Price at which products were sold.
@@ -101,26 +136,33 @@ class ReportController extends BaseController
             ->addSelect(DB::raw('IFNULL(sales.shipment_details->"$.cost", 0) as shippingCost'))
             ->addSelect(DB::raw("SUM({$this->commissionCondition}) as grossRevenue"))
             ->addSelect(DB::raw("IF(sales.status = {$this->saleCanceledStatus}, 1, NULL) as payedAndCanceled"))
-            // Count how many valid returns we got.
-            ->addSelect(DB::raw("COUNT(DISTINCT sale_returns.id) as returnsCount"))
             ->addSelect(DB::raw("COUNT(DISTINCT products.id) as productsCount"))
             ->groupBy(['sales.id']);
 
-        $subQuerySales = $subQuerySales->whereRaw("{$this->paymentDate} >= ?", $request->from);
-        $subQuerySales = $subQuerySales->whereRaw("{$this->paymentDate} < ?", $request->until);
-
         return $subQuerySales;
+    }
+
+    protected function getSubQueryOrderCredits(Request $request)
+    {
+        return $this->getBaseSubQuery($request)
+            ->join('credits_transactions', 'orders.id', '=', 'credits_transactions.order_id')
+            ->whereRaw('credits_transactions.user_id = orders.user_id')
+            ->select(DB::raw('orders.id as id'))
+            ->addSelect(DB::raw("SUM(credits_transactions.amount) as creditsForOrdersTotal"))
+            ->groupBy(['orders.id']);
     }
 
     protected function getSubQueryOrders(Request $request)
     {
         $subQuerySales = $this->getSubQuerySales($request);
+        $subQueryOrderCredits = $this->getSubQueryOrderCredits($request);
 
-        // Second query:
-        // No new data here, just aggregate by orders what we got from first query.
+        // Second query aggregate by orders what we got from other queries.
         return DB::table('orders')
             ->joinSub($subQuerySales, 'totaledSales', 'totaledSales.id', '=', 'orders.id')
+            ->leftJoinSub($subQueryOrderCredits, 'totaledOrderCredits', 'totaledOrderCredits.id', '=', 'orders.id')
             ->select(DB::raw('orders.id as id'))
+            ->addSelect('creditsForOrdersTotal')
             ->addSelect(DB::raw('SUM(productsTotal) as productsTotal'))
             ->addSelect(DB::raw('SUM(productsSalePriceTotal) as productsSalePriceTotal'))
             ->addSelect(DB::raw('SUM(shippingCost) as shippingCostsTotal'))
@@ -129,6 +171,7 @@ class ReportController extends BaseController
             ->addSelect(DB::raw('SUM(returnsCount) as returnsCount'))
             ->addSelect(DB::raw('COUNT(totaledSales.id) as salesCount'))
             ->addSelect(DB::raw('SUM(productsCount) as productsCount'))
+            ->addSelect(DB::raw('SUM(creditsForSalesTotal) as creditsForSalesTotal'))
             ->groupBy('orders.id');
     }
 
@@ -160,6 +203,8 @@ class ReportController extends BaseController
             ->addSelect(DB::raw('CAST(SUM(returnsCount) as SIGNED) as returnsCount'))
             ->addSelect(DB::raw('CAST(SUM(salesCount) as SIGNED) as salesCount'))
             ->addSelect(DB::raw('CAST(SUM(productsCount) as SIGNED) as productsCount'))
+            ->addSelect(DB::raw('CAST(SUM(creditsForSalesTotal) as SIGNED) as creditsForSalesTotal'))
+            ->addSelect(DB::raw('CAST(SUM(creditsForOrdersTotal) as SIGNED) as creditsForOrdersTotal'))
 
             ->groupBy('date_range');
 
@@ -185,6 +230,8 @@ class ReportController extends BaseController
             'grossRevenue',
             'payedAndCanceledCount',
             'returnsCount',
+            'creditsForSalesTotal',
+            'creditsForOrdersTotal',
             'salesCount',
             'productsCount',
         ];
