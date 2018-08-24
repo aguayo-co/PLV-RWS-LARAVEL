@@ -26,6 +26,7 @@ return [
     ],
     'products' => [
         'notAvailable' => 'Alguno de los productos ya no está disponible.',
+        'alreadyReplicated' => 'Este producto ya fue replicado.',
     ],
     'orders' => [
         'noPendingPayment' => 'No Existe un pago pendiente en la orden.',

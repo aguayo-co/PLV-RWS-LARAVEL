@@ -17,7 +17,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class ProductController extends Controller
 {
@@ -57,6 +59,7 @@ class ProductController extends Controller
         $this->middleware('role:seller|admin')->only(['store']);
         $this->middleware(self::class . '::validateIsPublished')->only(['show']);
         $this->middleware(self::class . '::validateCanBeDeleted')->only(['delete', 'ownerDelete']);
+        $this->middleware('owner_or_admin')->only(['replicate']);
     }
 
     /**
@@ -302,6 +305,35 @@ class ProductController extends Controller
         return $product;
     }
 
+    /**
+     * Duplicate a product including the images, but excluding instagram_image.
+     */
+    public function replicate(Request $request, Model $oldProducts)
+    {
+        if (data_get($oldProducts, 'extra.replicated')) {
+            throw ValidationException::withMessages([
+                'extra' => [__('prilov.products.alreadyReplicated')],
+            ]);
+        }
+
+        $product = $oldProducts->replicate();
+        $product->color_ids = $oldProducts->color_ids->all();
+        $product->status = Product::STATUS_APPROVED;
+        $product->save();
+        foreach (Storage::cloud()->files($oldProducts->imagePath) as $image) {
+            $name = basename($image);
+            Storage::cloud()->copy($image, $product->imagePath . $name);
+        }
+
+        // Keep record that the product was replicated.
+        $extra = $oldProducts->extra ?: [];
+        $extra['replicated'] = $product->id;
+        $oldProducts->extra = $extra;
+        $oldProducts->save();
+
+        return $product;
+    }
+
     protected function setVisibility(Collection $collection)
     {
         $collection->load([
@@ -320,6 +352,10 @@ class ProductController extends Controller
         if ($loggedUser && $loggedUser->hasRole('admin')) {
             // Show admin notes only to admin
             $collection->makeVisible(['admin_notes']);
+        }
+
+        if (!$loggedUser || !$loggedUser->hasRole('admin')) {
+            $collection->makeHidden(['extra']);
         }
 
         $collection->each(function ($product) use ($collection, $loggedUser) {
