@@ -37,6 +37,9 @@ class Sale extends Model
     protected $hidden = ['cloudFiles'];
     protected $with = ['cloudFiles'];
     protected $appends = ['shipping_label', 'shipping_cost'];
+    protected $casts = [
+        'shipment_details' => 'array',
+    ];
 
     /**
      * Get the user that sells this.
@@ -233,21 +236,13 @@ class Sale extends Model
         return $this->belongsTo('App\ShippingMethod');
     }
 
-    #                                 #
-    # Start Shipment Details methods. #
-    #                                 #
-    public function setShipmentDetailsAttribute($value)
-    {
-        $this->attributes['shipment_details'] = json_encode($value);
-    }
-
+    /**
+     * Always return an array for easier usage when no value in DB.
+     */
     public function getShipmentDetailsAttribute($value)
     {
         return json_decode($value, true) ?: [];
     }
-    #                                 #
-    # End Shipment Details methods.   #
-    #                                 #
 
     #                                 #
     # Start Label image methods.      #

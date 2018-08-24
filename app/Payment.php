@@ -23,6 +23,10 @@ class Payment extends Model
     protected $hidden = ['request', 'cloudFiles'];
     protected $with = ['cloudFiles'];
     protected $appends = ['request_data', 'transfer_receipt', 'cancel_by'];
+    protected $casts = [
+        'attempts' => 'array',
+        'request' => 'array',
+    ];
 
     public function __construct(array $attributes = array())
     {
@@ -49,29 +53,9 @@ class Payment extends Model
         return $this->order->due;
     }
 
-    public function setRequestAttribute($value)
-    {
-        $this->attributes['request'] = json_encode($value);
-    }
-
-    public function getRequestAttribute($value)
-    {
-        return json_decode($value, true);
-    }
-
     public function getRequestDataAttribute($value)
     {
         return data_get($this, 'request.public_data');
-    }
-
-    public function setAttemptsAttribute($value)
-    {
-        $this->attributes['attempts'] = json_encode($value);
-    }
-
-    public function getAttemptsAttribute($value)
-    {
-        return json_decode($value, true);
     }
 
     protected function getTransferReceiptAttribute()

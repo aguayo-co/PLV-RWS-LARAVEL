@@ -21,6 +21,11 @@ class Order extends Model
     const STATUS_CANCELED = 99;
 
     protected $fillable = ['shipping_information', 'coupon_id'];
+    protected $casts = [
+        'applied_coupon' => 'array',
+        'shipping_information' => 'array',
+        'extra' => 'array',
+    ];
 
     /**
      * Get the user that buys this.
@@ -264,44 +269,5 @@ class Order extends Model
     public function getCouponCodeAttribute()
     {
         return $this->coupon ? $this->coupon->code : null;
-    }
-
-    /**
-     * Shipping information comes as an object or array,
-     * encode to json and store everything.
-     */
-    public function setShippingInformationAttribute($value)
-    {
-        $this->attributes['shipping_information'] = json_encode($value);
-    }
-
-    public function getShippingInformationAttribute($value)
-    {
-        return json_decode($value, true);
-    }
-
-    public function setAppliedCouponAttribute($value)
-    {
-        if ($value === null) {
-            $this->attributes['applied_coupon'] = null;
-            return;
-        }
-        $this->attributes['applied_coupon'] = json_encode($value);
-    }
-
-    public function getAppliedCouponAttribute($value)
-    {
-        return json_decode($value, true);
-    }
-
-
-    public function setExtraAttribute($value)
-    {
-        $this->attributes['extra'] = json_encode($value);
-    }
-
-    public function getExtraAttribute($value)
-    {
-        return json_decode($value, true);
     }
 }

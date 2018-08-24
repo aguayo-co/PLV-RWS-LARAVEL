@@ -66,6 +66,10 @@ class User extends Authenticatable
 
     protected $dates = ['deleted_at'];
 
+    protected $casts = [
+        'bank_account' => 'array',
+    ];
+
     public static function boot()
     {
         parent::boot();
@@ -197,16 +201,6 @@ class User extends Authenticatable
     protected function setPictureAttribute($picture)
     {
         $this->setFile('picture', $picture);
-    }
-
-    public function setBankAccountAttribute($value)
-    {
-        $this->attributes['bank_account'] = json_encode($value);
-    }
-
-    public function getBankAccountAttribute($value)
-    {
-        return json_decode($value, true);
     }
 
     public function getUnreadCountAttribute()
