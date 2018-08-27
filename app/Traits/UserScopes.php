@@ -6,10 +6,13 @@ use App\CreditsTransaction;
 use App\Order;
 use App\Product;
 use App\Sale;
+use App\Traits\CreditsTransactionsSum;
 use Illuminate\Support\Facades\DB;
 
 trait UserScopes
 {
+    use CreditsTransactionsSum;
+
     /**
      * Order users by their group_ids relation.
      * Always shows users with no groups at the end.
@@ -85,17 +88,11 @@ trait UserScopes
             $query->addSelect('users.*');
         }
 
-        return $query->leftJoin('credits_transactions', 'credits_transactions.user_id', '=', 'users.id')
-            ->leftJoin('orders as tr_orders', 'tr_orders.id', '=', 'credits_transactions.order_id')
-            ->where(function ($query) {
-                $query->whereNull('credits_transactions.transfer_status')
-                    ->orWhere('credits_transactions.transfer_status', '!=', CreditsTransaction::STATUS_REJECTED);
-            })
-            ->where(function ($query) {
-                $query->whereNull('credits_transactions.order_id')
-                    ->orWhere('tr_orders.status', '!=', Order::STATUS_SHOPPING_CART);
-            })
-            ->selectRaw('CAST(SUM(credits_transactions.amount) AS SIGNED) credits')
+        $query->leftJoin('credits_transactions', 'credits_transactions.user_id', '=', 'users.id');
+
+        $this->setActiveCreditsTransactionsConditions($query);
+
+        $query->selectRaw('CAST(SUM(credits_transactions.amount) AS SIGNED) credits')
             ->selectRaw('CAST(SUM(credits_transactions.commission) AS SIGNED) commissions')
             ->groupBy(['users.id']);
     }
