@@ -345,7 +345,7 @@ class ProductController extends Controller
 
             'size.parent',
 
-            'user.groups',
+            'user.groups:id',
         ]);
 
         $loggedUser = auth()->user();
@@ -363,6 +363,16 @@ class ProductController extends Controller
                 'color_ids', 'campaign_ids'
             ]);
         });
+
+        $collection->each(function ($product) use ($collection, $loggedUser) {
+            $product->user->makeHidden([
+                'groups',
+            ]);
+            $product->user->append([
+                'group_ids',
+            ]);
+        });
+
         if ($collection->count() === 1) {
             $collection->loadMissing([
                 'user.followers:id',
