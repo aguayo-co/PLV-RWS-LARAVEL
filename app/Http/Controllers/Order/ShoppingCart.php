@@ -25,16 +25,20 @@ trait ShoppingCart
 
     /**
      * Set an order that is in payment, back to shopping cart.
-     * Delete current shopping cart if any.
      */
     protected function backToShoppingCart($orderId)
     {
-        $order = Order::where('status', Order::STATUS_PAYMENT)->find($orderId);
+        $order = Order::whereIn('status', [Order::STATUS_SHOPPING_CART, Order::STATUS_PAYMENT])->find($orderId);
         if (!$order) {
             throw ValidationException::withMessages([
                 'order_id' => [__('validation.available', ['attribute' => 'order_id'])],
             ]);
         }
+
+        if ($order->status === Order::STATUS_SHOPPING_CART) {
+            return $order;
+        }
+
         DB::transaction(function () use ($order) {
             $order->applied_coupon = null;
             $order->status = Order::STATUS_SHOPPING_CART;
