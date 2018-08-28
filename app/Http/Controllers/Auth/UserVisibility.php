@@ -22,6 +22,7 @@ trait UserVisibility
 
         $collection->load([
             'favorites:id',
+            'favoriteAddress',
             'followers:id',
             'following:id',
             'groups:id',
@@ -37,6 +38,7 @@ trait UserVisibility
         ]);
         $collection->makeHidden([
             'favorites',
+            'favoriteAddress',
             'followers',
             'following',
             'groups',
@@ -53,6 +55,7 @@ trait UserVisibility
         $collection->each(function ($user) {
             $user->append([
                 'favorites_ids',
+                'location',
                 'followers_count',
                 'followers_ids',
                 'following_count',

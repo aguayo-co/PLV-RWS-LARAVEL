@@ -125,6 +125,11 @@ class User extends Authenticatable
         return $this->hasMany('App\Address');
     }
 
+    public function favoriteAddress()
+    {
+        return $this->belongsTo('App\Address');
+    }
+
     public function groups()
     {
         return $this->belongsToMany('App\Group');
@@ -206,6 +211,17 @@ class User extends Authenticatable
     public function getUnreadCountAttribute()
     {
         return $this->newThreadsCount();
+    }
+
+    public function getLocationAttribute()
+    {
+        if (!$this->favoriteAddress) {
+            return;
+        }
+        return [
+            'region' => $this->favoriteAddress->region,
+            'province' => $this->favoriteAddress->province,
+        ];
     }
 
     #                                     #
