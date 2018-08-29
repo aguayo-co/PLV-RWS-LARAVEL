@@ -51,8 +51,8 @@ class ResetPasswordController extends Controller
 
         $this->resetPassword($user, $request->password);
 
-        $user = User::WithPurchasedProductsCount()
-            ->withCredits()->findOrFail($user->id);
+        $user = User::withPrivateData()
+            ->withPublicCounts()->findOrFail($user->id);
 
         $user->api_token = $user->createToken('PrilovResetPassword')->accessToken;
 

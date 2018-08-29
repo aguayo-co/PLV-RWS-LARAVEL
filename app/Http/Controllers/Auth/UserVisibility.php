@@ -22,18 +22,12 @@ trait UserVisibility
 
         $collection->load([
             'favorites:id',
-            'favoriteAddress',
+            'favoriteAddress.geoname.admin1',
+            'favoriteAddress.geoname.admin2',
             'followers:id',
             'following:id',
             'groups:id',
             'productsPublished:id,user_id,status',
-            'productsSold:id,user_id,status',
-            'ratingsNegative:sale_id',
-            'ratingArchivesNegative:id,seller_id',
-            'ratingsNeutral:sale_id',
-            'ratingArchivesNeutral:id,seller_id',
-            'ratingsPositive:sale_id',
-            'ratingArchivesPositive:id,seller_id',
             'shippingMethods:id',
         ]);
         $collection->makeHidden([
@@ -43,30 +37,29 @@ trait UserVisibility
             'following',
             'groups',
             'productsPublished',
-            'productsSold',
-            'ratingsPositive',
-            'ratingArchivesPositive',
-            'ratingsNeutral',
-            'ratingArchivesNeutral',
-            'ratingsNegative',
-            'ratingArchivesNegative',
+            'ratings_positive_count',
+            'rating_archives_positive_count',
+            'ratings_buyer_positive_count',
+            'ratings_neutral_count',
+            'rating_archives_neutral_count',
+            'ratings_buyer_neutral_count',
+            'ratings_negative_count',
+            'rating_archives_negative_count',
+            'ratings_buyer_negative_count',
             'shippingMethods',
         ]);
         $collection->each(function ($user) {
             $user->append([
                 'favorites_ids',
                 'location',
-                'followers_count',
                 'followers_ids',
-                'following_count',
                 'following_ids',
                 'group_ids',
                 'published_products_count',
                 'shipping_method_ids',
-                'sold_products_count',
-                'ratings_negative_count',
-                'ratings_neutral_count',
-                'ratings_positive_count',
+                'ratings_negative_total_count',
+                'ratings_neutral_total_count',
+                'ratings_positive_total_count',
             ]);
         });
     }

@@ -168,12 +168,17 @@ class UserController extends Controller
             }
 
             $user = auth()->user();
-            if (array_get($filters, 'with_trashed') && $user && $user->hasRole('admin')) {
-                $query = $query->withTrashed();
+            if ($user && $user->hasRole('admin')) {
+                if (array_get($filters, 'with_trashed')) {
+                    $query = $query->withTrashed();
+                }
+
+                $query = $query->withPrivateData();
             }
 
-            return $query->withPurchasedProductsCount()
-                ->withCredits();
+            $query = $query->withPublicCounts();
+
+            return $query;
         };
     }
 
@@ -265,8 +270,8 @@ class UserController extends Controller
             $user->notify(new BankAccountChanged);
         }
 
-        $user = User::WithPurchasedProductsCount()
-                ->withCredits()->findOrFail($user->id);
+        $user = User::withPrivateData()
+            ->withPublicCounts()->findOrFail($user->id);
 
         // Last, set api_token so it gets sent with the response.
         if ($apiToken) {
@@ -280,8 +285,8 @@ class UserController extends Controller
     {
         event(new Registered($user));
 
-        $user = User::WithPurchasedProductsCount()
-            ->withCredits()->findOrFail($user->id);
+        $user = User::withPrivateData()
+            ->withPublicCounts()->findOrFail($user->id);
 
         auth()->setUser($user);
 

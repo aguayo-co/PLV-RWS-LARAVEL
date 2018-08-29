@@ -344,8 +344,6 @@ class ProductController extends Controller
             'condition',
 
             'size.parent',
-
-            'user.groups:id',
         ]);
 
         $loggedUser = auth()->user();
@@ -364,6 +362,18 @@ class ProductController extends Controller
             ]);
         });
 
+        $collection->load([
+            'user' => function ($query) use ($collection) {
+                $query->with('groups:id');
+                // Information that is only needed when 1 product is loaded.
+                // Multiple product results do not need this.
+                if (($collection->count() === 1)) {
+                    $query->withPublicCounts()
+                        ->with('shippingMethods');
+                }
+            },
+        ]);
+
         $collection->each(function ($product) use ($collection, $loggedUser) {
             $product->user->makeHidden([
                 'groups',
@@ -373,37 +383,27 @@ class ProductController extends Controller
             ]);
         });
 
+        // Information that is only needed when 1 product is loaded.
+        // Multiple product results do not need this.
         if ($collection->count() === 1) {
-            $collection->loadMissing([
-                'user.followers:id',
-                'user.following:id',
-                'user.ratingsNegative:sale_id',
-                'user.ratingArchivesNegative:id,seller_id',
-                'user.ratingsNeutral:sale_id',
-                'user.ratingArchivesNeutral:id,seller_id',
-                'user.ratingsPositive:sale_id',
-                'user.ratingArchivesPositive:id,seller_id',
-                'user.shippingMethods',
-            ]);
-
             $collection->each(function ($product) use ($collection, $loggedUser) {
                 $product->user->makeHidden([
-                    'followers',
-                    'following',
-                    'ratingsPositive',
-                    'ratingArchivesPositive',
-                    'ratingsNeutral',
-                    'ratingArchivesNeutral',
-                    'ratingsNegative',
-                    'ratingArchivesNegative',
-                ]);
-                $product->user->append([
-                    'following_count',
-                    'followers_count',
-                    'shipping_method_ids',
-                    'ratings_negative_count',
                     'ratings_positive_count',
+                    'rating_archives_positive_count',
+                    'ratings_buyer_positive_count',
                     'ratings_neutral_count',
+                    'rating_archives_neutral_count',
+                    'ratings_buyer_neutral_count',
+                    'ratings_negative_count',
+                    'rating_archives_negative_count',
+                    'ratings_buyer_negative_count',
+                ]);
+
+                $product->user->append([
+                    'shipping_method_ids',
+                    'ratings_negative_total_count',
+                    'ratings_neutral_total_count',
+                    'ratings_positive_total_count',
                 ]);
             });
         }

@@ -257,11 +257,6 @@ class User extends Authenticatable
         return $this->products()->setEagerLoads([])->where('status', '>=', Product::STATUS_PAYMENT)
             ->where('status', '<=', Product::STATUS_SOLD_RETURNED);
     }
-
-    protected function getSoldProductsCountAttribute()
-    {
-        return $this->productsSold->count();
-    }
     #                                   #
     # End Products Information methods. #
     #                                   #
@@ -323,19 +318,25 @@ class User extends Authenticatable
         return $this->ratingArchives()->where('buyer_rating', 1);
     }
 
-    protected function getRatingsNegativeCountAttribute()
+    protected function getRatingsNegativeTotalCountAttribute()
     {
-        return $this->ratingsNegative->count() + $this->ratingArchivesNegative->count();
+        return $this->ratings_negative_count
+            + $this->rating_archives_negative_count
+            + $this->ratings_buyer_negative_count;
     }
 
-    protected function getRatingsNeutralCountAttribute()
+    protected function getRatingsNeutralTotalCountAttribute()
     {
-        return $this->ratingsNeutral->count() + $this->ratingArchivesNeutral->count();
+        return $this->ratings_neutral_count
+        + $this->rating_archives_neutral_count
+        + $this->ratings_buyer_neutral_count;
     }
 
-    protected function getRatingsPositiveCountAttribute()
+    protected function getRatingsPositiveTotalCountAttribute()
     {
-        return $this->ratingsPositive->count() + $this->ratingArchivesPositive->count();
+        return $this->ratings_positive_count
+            + $this->rating_archives_positive_count
+            + $this->ratings_buyer_positive_count;
     }
     #                                 #
     # End Ratings methods.            #
@@ -344,16 +345,6 @@ class User extends Authenticatable
     #                                   #
     # Begin Following-Follower methods. #
     #                                   #
-    protected function getFollowersCountAttribute()
-    {
-        return $this->followers->count();
-    }
-
-    protected function getFollowingCountAttribute()
-    {
-        return $this->following->count();
-    }
-
     protected function getFollowersIdsAttribute()
     {
         return $this->followers->pluck('id');

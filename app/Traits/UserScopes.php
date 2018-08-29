@@ -79,6 +79,34 @@ trait UserScopes
     }
 
     /**
+     * Calculate number of products purchased by the user.
+     */
+    public function scopeWithRatingsBuyerCount($query)
+    {
+        if (!$query->getQuery()->columns) {
+            $query->addSelect('users.*');
+        }
+
+        $subQuery = DB::table('ratings')
+            ->join('sales', 'ratings.sale_id', '=', 'sales.id')
+            ->join('orders', 'sales.order_id', '=', 'orders.id')
+            ->whereNotNull('ratings.seller_rating')
+            ->select('orders.user_id as user_id')
+            ->selectRaw('CAST(SUM(IF(seller_rating = 1, 1, 0)) as UNSIGNED) as ratings_buyer_positive_count')
+            ->selectRaw('CAST(SUM(IF(seller_rating = 0, 1, 0)) as UNSIGNED) as ratings_buyer_neutral_count')
+            ->selectRaw('CAST(SUM(IF(seller_rating = -1, 1, 0)) as UNSIGNED) as ratings_buyer_negative_count')
+            ->groupBy(['orders.user_id']);
+        return $query->leftJoinSub(
+            $subQuery,
+            'br_sub',
+            'br_sub.user_id',
+            '=',
+            'users.id'
+        )
+        ->addSelect(['ratings_buyer_positive_count', 'ratings_buyer_neutral_count', 'ratings_buyer_negative_count']);
+    }
+
+    /**
      * Calculate available credits, including the ones being used
      * on the current shopping cart.
      */
@@ -95,5 +123,34 @@ trait UserScopes
         $query->selectRaw('CAST(SUM(credits_transactions.amount) AS SIGNED) credits')
             ->selectRaw('CAST(SUM(credits_transactions.commission) AS SIGNED) commissions')
             ->groupBy(['users.id']);
+    }
+
+    /**
+     * Include counts for ratings.
+     */
+    public function scopeWithPublicCounts($query)
+    {
+        $query->withCount([
+            'ratingsNegative',
+            'ratingsPositive',
+            'ratingsNeutral',
+            'ratingArchivesNegative',
+            'ratingArchivesPositive',
+            'ratingArchivesNeutral',
+            'followers',
+            'following',
+        ]);
+        $query->withRatingsBuyerCount();
+    }
+
+    /**
+     * Scope to apply a base group of scopes easily on multiple places.
+     * Useful to ensure the same scopes are applied.
+     */
+    public function scopeWithPrivateData($query)
+    {
+        $query->withPurchasedProductsCount()
+            ->withCount(['productsSold'])
+            ->withCredits();
     }
 }
