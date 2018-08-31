@@ -14,7 +14,7 @@ trait CreditsTransactionsReport
     protected function getInitialCredits(Request $request)
     {
         $query = DB::table('credits_transactions')
-            ->whereRaw("credits_transactions.created_at < ?", $request->from);
+            ->whereRaw('credits_transactions.created_at < ?', $request->from);
         $this->setActiveCreditsTransactionsConditions($query);
         return $query->sum('credits_transactions.amount');
     }

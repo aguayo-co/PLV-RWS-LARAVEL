@@ -89,7 +89,7 @@ trait OrdersReport
             ->addSelect(DB::raw('IFNULL(sales.shipment_details->"$.cost", 0) as shippingCost'))
             ->addSelect(DB::raw("SUM({$this->commissionCondition}) as grossRevenue"))
             ->addSelect(DB::raw("IF(sales.status = {$this->saleCanceledStatus}, 1, NULL) as payedAndCanceled"))
-            ->addSelect(DB::raw("COUNT(DISTINCT products.id) as productsCount"))
+            ->addSelect(DB::raw("COUNT(DISTINCT products.id) as soldProductsCount"))
             ->groupBy(['sales.id']);
 
         return $subQuerySales;
@@ -123,7 +123,7 @@ trait OrdersReport
             ->addSelect(DB::raw('SUM(payedAndCanceled) as payedAndCanceledCount'))
             ->addSelect(DB::raw('SUM(returnsCount) as returnsCount'))
             ->addSelect(DB::raw('COUNT(totaledSales.id) as salesCount'))
-            ->addSelect(DB::raw('SUM(productsCount) as productsCount'))
+            ->addSelect(DB::raw('SUM(soldProductsCount) as soldProductsCount'))
             ->addSelect(DB::raw('SUM(creditsForSalesTotal) as creditsForSalesTotal'))
             ->groupBy('orders.id');
     }
@@ -152,7 +152,7 @@ trait OrdersReport
             ->addSelect(DB::raw('CAST(SUM(payedAndCanceledCount) as SIGNED) as payedAndCanceledCount'))
             ->addSelect(DB::raw('CAST(SUM(returnsCount) as SIGNED) as returnsCount'))
             ->addSelect(DB::raw('CAST(SUM(salesCount) as SIGNED) as salesCount'))
-            ->addSelect(DB::raw('CAST(SUM(productsCount) as SIGNED) as productsCount'))
+            ->addSelect(DB::raw('CAST(SUM(soldProductsCount) as SIGNED) as soldProductsCount'))
             ->addSelect(DB::raw('CAST(SUM(creditsForSalesTotal) as SIGNED) as creditsForSalesTotal'))
             ->addSelect(DB::raw('CAST(SUM(creditsForOrdersTotal) as SIGNED) as creditsForOrdersTotal'));
 

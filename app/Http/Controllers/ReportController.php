@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Report\CreditsTransactionsReport;
 use App\Http\Controllers\Report\OrdersReport;
+use App\Http\Controllers\Report\ProductsReport;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Validator;
 
 class ReportController extends BaseController
 {
+    use ProductsReport;
     use AuthorizesRequests;
     use OrdersReport;
     use CreditsTransactionsReport;
@@ -88,7 +90,6 @@ class ReportController extends BaseController
         $this->setDateGroupByFormat($request);
 
         $ordersReport = $this->getOrdersReport($request);
-        $creditsReport = $this->getCreditsTransactionsReport($request);
 
         $ordersReportKeys = [
             'cashIn',
@@ -102,7 +103,7 @@ class ReportController extends BaseController
             'creditsForSalesTotal',
             'creditsForOrdersTotal',
             'salesCount',
-            'productsCount',
+            'soldProductsCount',
         ];
 
         $rows = [
@@ -122,6 +123,7 @@ class ReportController extends BaseController
         }
 
         $runningCredits = $this->getInitialCredits($request);
+        $creditsReport = $this->getCreditsTransactionsReport($request);
         foreach ($creditsReport as $range) {
             // Each query can have different initial and ending dates.
             // We use the larges range possible, which means the earliest date of each query
@@ -139,8 +141,35 @@ class ReportController extends BaseController
             $rows['creditsDebt'][$range->date_range] = $runningCredits;
         }
 
-        // Sort ranges, any other just let whoever consumes the API use 'ranges' as the
-        // guide.
+
+        $initialProductsData = $this->getInitialProductsData($request);
+        $runningProducts = $initialProductsData[0]->productsCount;
+        $runningPriceTotal = $initialProductsData[0]->productsPriceTotal;
+        $productsReport = $this->getProductsReport($request);
+        foreach ($productsReport as $range) {
+            // Each query can have different initial and ending dates.
+            // We use the larges range possible, which means the earliest date of each query
+            // for the since (initial) date, and the latest date of each query for the until (to) date.
+            $existingSinceDate = data_get($rows['ranges'], $range->date_range . '.0', new Carbon($range->since));
+            $existingUntilDate = data_get($rows['ranges'], $range->date_range . '.1', new Carbon($range->until));
+
+            // To do so we get the dates from the existing range data, if one exists, and compare it
+            // to the dates of this query's ranges.
+            $rows['ranges'][$range->date_range] = [
+                min(new Carbon($range->since), $existingSinceDate),
+                max(new Carbon($range->until), $existingUntilDate)
+            ];
+            $runningProducts += $range->newProductsCount;
+            $runningPriceTotal += $range->newProductsPriceTotal;
+            $rows['newProductsCount'][$range->date_range] = $range->newProductsCount;
+            $rows['newProductsAveragePrice'][$range->date_range] = (int) (
+                $range->newProductsPriceTotal / $range->newProductsCount
+            );
+            $rows['productsAveragePrice'][$range->date_range] = (int) ($runningPriceTotal / $runningProducts);
+        }
+
+        // Sort ranges. Api consumers can use this array as the starting point.
+        // Or can sort themselves.
         ksort($rows['ranges']);
 
         return $rows;
