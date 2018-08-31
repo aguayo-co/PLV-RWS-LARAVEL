@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Report\CreditsTransactionsReport;
+use App\Http\Controllers\Report\NewDataReport;
 use App\Http\Controllers\Report\OrdersReport;
 use App\Http\Controllers\Report\ProductsReport;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Validator;
 
 class ReportController extends BaseController
 {
+    use NewDataReport;
     use ProductsReport;
     use AuthorizesRequests;
     use OrdersReport;
@@ -47,7 +49,7 @@ class ReportController extends BaseController
                 break;
 
             case 'week':
-                $this->dateGroupByFormat = '%u (%Y)';
+                $this->dateGroupByFormat = '(%Y) %u ';
                 break;
 
             case 'month':
@@ -83,6 +85,29 @@ class ReportController extends BaseController
             ->groupBy('date_range');
     }
 
+    /**
+     * Set or update the global dates for each range.
+     *
+     * Each query can have different initial and ending dates.
+     * We use the largest range possible, which means the earliest date of each query
+     * for the since (initial) date, and the latest date of each query for the until (to) date.
+     *
+     * To do so we get the dates from the existing range data, if one exists, and compare it
+     * to the dates of this query's ranges.
+     */
+    protected function setRangeDates(&$rows, $range)
+    {
+        // Get dates for the range if ones exist already.
+        $existingSinceDate = data_get($rows['ranges'], $range->date_range . '.0', new Carbon($range->since));
+        $existingUntilDate = data_get($rows['ranges'], $range->date_range . '.1', new Carbon($range->until));
+
+        // Set the earliest and latest dates.
+        $rows['ranges'][$range->date_range] = [
+            min(new Carbon($range->since), $existingSinceDate),
+            max(new Carbon($range->until), $existingUntilDate)
+        ];
+    }
+
     public function show(Request $request)
     {
         $this->validate($request);
@@ -116,7 +141,8 @@ class ReportController extends BaseController
         }
 
         foreach ($ordersReport as $range) {
-            $rows['ranges'][$range->date_range] = [new Carbon($range->since), new Carbon($range->until)];
+            $this->setRangeDates($rows, $range);
+
             foreach ($ordersReportKeys as $key) {
                 $rows[$key][$range->date_range] = $range->$key;
             }
@@ -125,18 +151,8 @@ class ReportController extends BaseController
         $runningCredits = $this->getInitialCredits($request);
         $creditsReport = $this->getCreditsTransactionsReport($request);
         foreach ($creditsReport as $range) {
-            // Each query can have different initial and ending dates.
-            // We use the larges range possible, which means the earliest date of each query
-            // for the since (initial) date, and the latest date of each query for the until (to) date.
-            $existingSinceDate = data_get($rows['ranges'], $range->date_range . '.0', new Carbon($range->since));
-            $existingUntilDate = data_get($rows['ranges'], $range->date_range . '.1', new Carbon($range->until));
+            $this->setRangeDates($rows, $range);
 
-            // To do so we get the dates from the existing range data, if one exists, and compare it
-            // to the dates of this query's ranges.
-            $rows['ranges'][$range->date_range] = [
-                min(new Carbon($range->since), $existingSinceDate),
-                max(new Carbon($range->until), $existingUntilDate)
-            ];
             $runningCredits += $range->credits;
             $rows['creditsDebt'][$range->date_range] = $runningCredits;
         }
@@ -147,18 +163,8 @@ class ReportController extends BaseController
         $runningPriceTotal = $initialProductsData[0]->productsPriceTotal;
         $productsReport = $this->getProductsReport($request);
         foreach ($productsReport as $range) {
-            // Each query can have different initial and ending dates.
-            // We use the larges range possible, which means the earliest date of each query
-            // for the since (initial) date, and the latest date of each query for the until (to) date.
-            $existingSinceDate = data_get($rows['ranges'], $range->date_range . '.0', new Carbon($range->since));
-            $existingUntilDate = data_get($rows['ranges'], $range->date_range . '.1', new Carbon($range->until));
+            $this->setRangeDates($rows, $range);
 
-            // To do so we get the dates from the existing range data, if one exists, and compare it
-            // to the dates of this query's ranges.
-            $rows['ranges'][$range->date_range] = [
-                min(new Carbon($range->since), $existingSinceDate),
-                max(new Carbon($range->until), $existingUntilDate)
-            ];
             $runningProducts += $range->newProductsCount;
             $runningPriceTotal += $range->newProductsPriceTotal;
             $rows['newProductsCount'][$range->date_range] = $range->newProductsCount;
@@ -166,6 +172,15 @@ class ReportController extends BaseController
                 $range->newProductsPriceTotal / $range->newProductsCount
             );
             $rows['productsAveragePrice'][$range->date_range] = (int) ($runningPriceTotal / $runningProducts);
+        }
+
+        $newDataReport = $this->getNewDataReport($request);
+        foreach ($newDataReport as $key => $dataReport) {
+            foreach ($dataReport as $range) {
+                $this->setRangeDates($rows, $range);
+
+                $rows[$key][$range->date_range] = $range->count;
+            }
         }
 
         // Sort ranges. Api consumers can use this array as the starting point.
