@@ -30,7 +30,7 @@ trait NewDataReport
     {
         return $this->createQueryForNew($request, 'messages')
             ->join('threads', function ($join) use ($private) {
-                $join->on('threads.id', '=', 'messages.id')
+                $join->on('threads.id', '=', 'messages.thread_id')
                     ->where('threads.private', $private);
             });
     }
