@@ -57,9 +57,28 @@ class ProductController extends Controller
     {
         parent::__construct();
         $this->middleware('role:seller|admin')->only(['store']);
+        $this->middleware(self::class . '::validateCanChange')->only(['update']);
         $this->middleware(self::class . '::validateIsPublished')->only(['show']);
         $this->middleware(self::class . '::validateCanBeDeleted')->only(['delete', 'ownerDelete']);
         $this->middleware('owner_or_admin')->only(['replicate']);
+    }
+
+    /**
+     * Middleware that validates permissions to edit a product.
+     */
+    public static function validateCanChange($request, $next)
+    {
+        $loggedUser = auth()->user();
+        if ($loggedUser && $loggedUser->hasRole('admin')) {
+            return $next($request);
+        }
+
+        $product = $request->route()->parameters['product'];
+        if ($product->status < Product::STATUS_PAYMENT) {
+            return $next($request);
+        }
+
+        abort(Response::HTTP_FORBIDDEN, 'Product already sold.');
     }
 
     /**
