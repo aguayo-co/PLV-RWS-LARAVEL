@@ -383,7 +383,8 @@ class ProductController extends Controller
 
         $collection->load([
             'user' => function ($query) use ($collection) {
-                $query->with('groups:id');
+                // Needed to calculate sale_price, so load complete objects and not only ID.
+                $query->with('groups');
                 // Information that is only needed when 1 product is loaded.
                 // Multiple product results do not need this.
                 if (($collection->count() === 1)) {
