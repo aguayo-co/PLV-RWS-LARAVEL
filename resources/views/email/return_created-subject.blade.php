@@ -1,1 +1,1 @@
-Tu compradora quiere devolver un producto de una de tus ventas
+La compradora solicitó una devolución en una de tus ventas
