@@ -25,7 +25,6 @@ class SizeController extends Controller
         $rules = [
             'name' => $required . 'string|unique:sizes,name' . $ignore,
             'parent_id' => [
-                'nullable',
                 'integer',
                 'different:id',
                 Rule::exists('sizes', 'id')->where(function ($query) {
@@ -38,10 +37,14 @@ class SizeController extends Controller
         // Can't use ValidationMessages for this one.
         if ($size) {
             $rules['parent_id'][] = function ($attribute, $value, $fail) use ($size) {
-                if (count($size->children) && $value) {
+                if ($size->children()->count() && $value) {
                     return $fail(__('Esta talla tiene hijos. No pude tener un padre.'));
                 }
             };
+
+            if (!$size->products()->count()) {
+                array_unshift($rules['parent_id'], 'nullable');
+            }
         };
 
         return $rules;
@@ -55,7 +58,12 @@ class SizeController extends Controller
     protected function alterIndexQuery()
     {
         return function ($query) {
-            return $query->whereNull('parent_id')->with(['children']);
+            $query = $query->whereNull('parent_id');
+            // Unless explicitly asked for a flat list, load children.
+            if (!request()->get('flat')) {
+                $query = $query->with(['children']);
+            }
+            return $query;
         };
     }
 

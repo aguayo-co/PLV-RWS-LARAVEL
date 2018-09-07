@@ -2,24 +2,29 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\CreditsTransaction;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Product\UserDelete;
 use App\Http\Controllers\User\UserSearch;
 use App\Notifications\AccountClosed;
 use App\Notifications\BankAccountChanged;
 use App\Notifications\EmailChanged;
 use App\Notifications\Welcome;
 use App\Product;
+use App\Sale;
 use App\User;
 use Illuminate\Auth\Events\Registered;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Laravel\Passport\Token;
 
 class UserController extends Controller
 {
+    use UserDelete;
     use UserSearch;
     use UserVisibility;
     protected $modelClass = User::class;
@@ -32,6 +37,12 @@ class UserController extends Controller
     ];
 
     public static $searchIn = ['first_name', 'last_name'];
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->middleware(self::class . '::validateCanBeDeleted')->only(['delete', 'ownerDelete']);
+    }
 
     protected function alterValidateData($data, Model $user = null)
     {
@@ -46,10 +57,10 @@ class UserController extends Controller
     protected function validationRules(array $data, ?Model $user)
     {
         $required = !$user ? 'required|' : '';
-        $ignore = $user ? ',' . $user->id : '';
+        $ignore = $user ? $user->id : 'NULL';
         return [
             # Por requerimiento de front, el error de correo existente debe ser enviado por aparte.
-            'exists' => 'unique:users,email' . $ignore,
+            'exists' => 'unique:users,email,' . $ignore . ',id,deleted_at,NULL',
             'email' => $required . 'string|email',
             'password' => $required . 'string|min:6',
             'first_name' => $required . 'string',
@@ -90,6 +101,44 @@ class UserController extends Controller
     }
 
     /**
+     * Middleware that validates a user can be deleted.
+     */
+    public static function validateCanBeDeleted($request, $next)
+    {
+        $user = $request->route()->parameters['user_scoped'];
+
+        // Can not delete user if has Sales that have not been completed or canceled.
+        $pendingSales = $user->sales()->where('status', '>=', Sale::STATUS_PAYMENT)
+            ->where('status', '<', Sale::STATUS_COMPLETED)->count();
+        if ($pendingSales) {
+            abort(Response::HTTP_FORBIDDEN, __('prilov.users.hasPendingSales'));
+        }
+
+        // Can not delete user if has Orders that have not been completed or canceled.
+        $pendingOrders = $user->orders()->whereHas('sales', function ($query) use ($user) {
+            $query->where('status', '>=', Sale::STATUS_PAYMENT)
+            ->where('status', '<', Sale::STATUS_COMPLETED);
+        })->count();
+        if ($pendingOrders) {
+            abort(Response::HTTP_FORBIDDEN, __('prilov.users.hasPendingOrders'));
+        }
+
+        // Can not delete user if has Credits (positive or negative).
+        if ($user->credits) {
+            abort(Response::HTTP_FORBIDDEN, __('prilov.users.hasCredits'));
+        }
+
+        // Can not delete user if has pending transfers.
+        $pendingTransfers = $user->creditsTransactions()
+            ->where('transfer_status', CreditsTransaction::STATUS_PENDING)->count();
+        if ($pendingTransfers) {
+            abort(Response::HTTP_FORBIDDEN, __('prilov.users.hasPendingTransfers'));
+        }
+
+        return $next($request);
+    }
+
+    /**
      * Apply custom scopes.
      */
     protected function alterIndexQuery()
@@ -111,15 +160,25 @@ class UserController extends Controller
                 $query = $query->OrderedByLatestProduct('desc');
             }
 
-            $withProducts = array_get(request()->query('filter'), 'with_products');
-            if ($withProducts) {
+            $filters = request()->query('filter');
+            if (array_get($filters, 'with_products')) {
                 $query = $query->whereHas('products', function ($subQuery) {
                     $subQuery->whereBetween('status', [Product::STATUS_APPROVED, Product::STATUS_AVAILABLE]);
                 });
             }
 
-            return $query->withPurchasedProductsCount()
-                ->withCredits();
+            $user = auth()->user();
+            if ($user && $user->hasRole('admin')) {
+                if (array_get($filters, 'with_trashed')) {
+                    $query = $query->withTrashed();
+                }
+
+                $query = $query->withPrivateData();
+            }
+
+            $query = $query->withPublicCounts();
+
+            return $query;
         };
     }
 
@@ -211,8 +270,8 @@ class UserController extends Controller
             $user->notify(new BankAccountChanged);
         }
 
-        $user = User::WithPurchasedProductsCount()
-                ->withCredits()->findOrFail($user->id);
+        $user = User::withPrivateData()
+            ->withPublicCounts()->findOrFail($user->id);
 
         // Last, set api_token so it gets sent with the response.
         if ($apiToken) {
@@ -226,8 +285,10 @@ class UserController extends Controller
     {
         event(new Registered($user));
 
-        $user = User::WithPurchasedProductsCount()
-            ->withCredits()->findOrFail($user->id);
+        $user = User::withPrivateData()
+            ->withPublicCounts()->findOrFail($user->id);
+
+        auth()->setUser($user);
 
         $user->notify(new Welcome);
         $user->api_token = $user->createToken('PrilovRegister')->accessToken;
@@ -236,9 +297,17 @@ class UserController extends Controller
 
     public function delete(Request $request, Model $user)
     {
-        $deleted = parent::delete($request, $user);
+        $response = null;
+
+        DB::transaction(function () use ($request, $user, $response) {
+            $this->usersCleanup(collect([$user]));
+            $response = parent::delete($request, $user);
+        });
+
+        // We still have the old email in this object.
         $user->notify(new AccountClosed);
-        return $deleted;
+
+        return $response;
     }
 
     public function index(Request $request)

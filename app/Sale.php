@@ -37,13 +37,16 @@ class Sale extends Model
     protected $hidden = ['cloudFiles'];
     protected $with = ['cloudFiles'];
     protected $appends = ['shipping_label', 'shipping_cost'];
+    protected $casts = [
+        'shipment_details' => 'array',
+    ];
 
     /**
      * Get the user that sells this.
      */
     public function user()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo('App\User')->withTrashed();
     }
 
     public function order()
@@ -57,6 +60,24 @@ class Sale extends Model
     public function products()
     {
         return $this->belongsToMany('App\Product')->withPivot('sale_return_id', 'price');
+    }
+
+    /**
+     * Get related SaleReturn models.
+     */
+    public function saleReturns()
+    {
+        return $this->belongsToMany('App\SaleReturn', 'product_sale')->withPivot('product_id');
+    }
+
+    /**
+     * Get recen SaleReturn models.
+     */
+    public function recentSaleReturns()
+    {
+        $daysOfFreshness = now()->subDays(config('prilov.sale_returns.days_of_freshness'));
+        return $this->saleReturns()
+            ->where('created_at', '>', $daysOfFreshness);
     }
 
     public function getProductsIdsAttribute()
@@ -215,21 +236,13 @@ class Sale extends Model
         return $this->belongsTo('App\ShippingMethod');
     }
 
-    #                                 #
-    # Start Shipment Details methods. #
-    #                                 #
-    public function setShipmentDetailsAttribute($value)
-    {
-        $this->attributes['shipment_details'] = json_encode($value);
-    }
-
+    /**
+     * Always return an array for easier usage when no value in DB.
+     */
     public function getShipmentDetailsAttribute($value)
     {
         return json_decode($value, true) ?: [];
     }
-    #                                 #
-    # End Shipment Details methods.   #
-    #                                 #
 
     #                                 #
     # Start Label image methods.      #

@@ -19,12 +19,16 @@ class SaleReturn extends Model
     const STATUS_PENDING = 0;
     const STATUS_SHIPPED = 40;
     const STATUS_DELIVERED = 41;
-    const STATUS_RECEIVED = 49;
-    const STATUS_ADMIN = 50;
+    const STATUS_RECEIVED = 49; // Depreciado: 2018-08-17
+    const STATUS_ADMIN = 50; // Depreciado: 2018-08-17
     const STATUS_COMPLETED = 90;
     const STATUS_CANCELED = 99;
 
     protected $fillable = ['shipment_details', 'reason', 'status', 'products_ids'];
+
+    protected $casts = [
+        'shipment_details' => 'array',
+    ];
 
     protected $dispatchesEvents = [
         'saved' => SaleReturnSaved::class,
@@ -81,15 +85,5 @@ class SaleReturn extends Model
 
         $sale->products()->sync($productsIdsSync);
         $sale->load('products');
-    }
-
-    public function setShipmentDetailsAttribute($value)
-    {
-        $this->attributes['shipment_details'] = json_encode($value);
-    }
-
-    public function getShipmentDetailsAttribute($value)
-    {
-        return json_decode($value, true);
     }
 }

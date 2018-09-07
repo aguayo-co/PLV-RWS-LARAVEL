@@ -9,7 +9,8 @@ use Illuminate\Http\Request;
 class BannerController extends AdminController
 {
     protected $modelClass = Banner::class;
-    public static $allowedWhereLike = ['slug'];
+    public static $allowedWhereLike = ['slug', 'name'];
+    public static $defaultOrderBy = ['slug' => 'asc'];
 
     protected function alterValidateData($data, Model $banner = null)
     {

@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Traits\DateSerializeFormat;
+use Cmgmyr\Messenger\Models\Models;
 use Cmgmyr\Messenger\Models\Thread as BaseThread;
 
 class Thread extends BaseThread
@@ -25,6 +26,11 @@ class Thread extends BaseThread
             $owners->push(auth()->id());
         }
         return $owners->unique();
+    }
+
+    public function trashedParticipants()
+    {
+        return $this->participants()->onlyTrashed();
     }
 
     public function product()

@@ -69,6 +69,9 @@ class Product extends Model
     ];
     protected $with = ['cloudFiles'];
     protected $appends = ['images', 'image_instagram', 'sale_price'];
+    protected $casts = [
+        'extra' => 'array',
+    ];
 
     // Editable means it has been approved, but not sold.
     protected function getEditableAttribute()
@@ -87,7 +90,7 @@ class Product extends Model
      */
     public function user()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo('App\User')->withTrashed();
     }
 
     public function favoritedBy()

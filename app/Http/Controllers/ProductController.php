@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Product\ProductDelete;
 use App\Http\Controllers\Product\ProductSearch;
 use App\Notifications\NewProduct;
 use App\Notifications\ProductApproved;
@@ -16,10 +17,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class ProductController extends Controller
 {
+    use ProductDelete;
     use ProductSearch;
 
     protected $modelClass = Product::class;
@@ -53,8 +57,28 @@ class ProductController extends Controller
     {
         parent::__construct();
         $this->middleware('role:seller|admin')->only(['store']);
+        $this->middleware(self::class . '::validateCanChange')->only(['update']);
         $this->middleware(self::class . '::validateIsPublished')->only(['show']);
         $this->middleware(self::class . '::validateCanBeDeleted')->only(['delete', 'ownerDelete']);
+        $this->middleware('owner_or_admin')->only(['replicate']);
+    }
+
+    /**
+     * Middleware that validates permissions to edit a product.
+     */
+    public static function validateCanChange($request, $next)
+    {
+        $loggedUser = auth()->user();
+        if ($loggedUser && $loggedUser->hasRole('admin')) {
+            return $next($request);
+        }
+
+        $product = $request->route()->parameters['product'];
+        if ($product->status < Product::STATUS_PAYMENT) {
+            return $next($request);
+        }
+
+        abort(Response::HTTP_FORBIDDEN, 'Product already sold.');
     }
 
     /**
@@ -300,6 +324,35 @@ class ProductController extends Controller
         return $product;
     }
 
+    /**
+     * Duplicate a product including the images, but excluding instagram_image.
+     */
+    public function replicate(Request $request, Model $oldProducts)
+    {
+        if (data_get($oldProducts, 'extra.replicated')) {
+            throw ValidationException::withMessages([
+                'extra' => [__('prilov.products.alreadyReplicated')],
+            ]);
+        }
+
+        $product = $oldProducts->replicate();
+        $product->color_ids = $oldProducts->color_ids->all();
+        $product->status = Product::STATUS_APPROVED;
+        $product->save();
+        foreach (Storage::cloud()->files($oldProducts->imagePath) as $image) {
+            $name = basename($image);
+            Storage::cloud()->copy($image, $product->imagePath . $name);
+        }
+
+        // Keep record that the product was replicated.
+        $extra = $oldProducts->extra ?: [];
+        $extra['replicated'] = $product->id;
+        $oldProducts->extra = $extra;
+        $oldProducts->save();
+
+        return $product;
+    }
+
     protected function setVisibility(Collection $collection)
     {
         $collection->load([
@@ -310,8 +363,6 @@ class ProductController extends Controller
             'condition',
 
             'size.parent',
-
-            'user.groups',
         ]);
 
         $loggedUser = auth()->user();
@@ -320,42 +371,59 @@ class ProductController extends Controller
             $collection->makeVisible(['admin_notes']);
         }
 
+        if (!$loggedUser || !$loggedUser->hasRole('admin')) {
+            $collection->makeHidden(['extra']);
+        }
+
         $collection->each(function ($product) use ($collection, $loggedUser) {
             $product->append([
                 'color_ids', 'campaign_ids'
             ]);
         });
-        if ($collection->count() === 1) {
-            $collection->loadMissing([
-                'user.followers:id',
-                'user.following:id',
-                'user.ratingsNegative:sale_id',
-                'user.ratingArchivesNegative:id,seller_id',
-                'user.ratingsNeutral:sale_id',
-                'user.ratingArchivesNeutral:id,seller_id',
-                'user.ratingsPositive:sale_id',
-                'user.ratingArchivesPositive:id,seller_id',
-                'user.shippingMethods',
-            ]);
 
+        $collection->load([
+            'user' => function ($query) use ($collection) {
+                // Needed to calculate sale_price, so load complete objects and not only ID.
+                $query->with('groups');
+                // Information that is only needed when 1 product is loaded.
+                // Multiple product results do not need this.
+                if (($collection->count() === 1)) {
+                    $query->withPublicCounts()
+                        ->with('shippingMethods');
+                }
+            },
+        ]);
+
+        $collection->each(function ($product) use ($collection, $loggedUser) {
+            $product->user->makeHidden([
+                'groups',
+            ]);
+            $product->user->append([
+                'group_ids',
+            ]);
+        });
+
+        // Information that is only needed when 1 product is loaded.
+        // Multiple product results do not need this.
+        if ($collection->count() === 1) {
             $collection->each(function ($product) use ($collection, $loggedUser) {
                 $product->user->makeHidden([
-                    'followers',
-                    'following',
-                    'ratingsPositive',
-                    'ratingArchivesPositive',
-                    'ratingsNeutral',
-                    'ratingArchivesNeutral',
-                    'ratingsNegative',
-                    'ratingArchivesNegative',
-                ]);
-                $product->user->append([
-                    'following_count',
-                    'followers_count',
-                    'shipping_method_ids',
-                    'ratings_negative_count',
                     'ratings_positive_count',
+                    'rating_archives_positive_count',
+                    'ratings_buyer_positive_count',
                     'ratings_neutral_count',
+                    'rating_archives_neutral_count',
+                    'ratings_buyer_neutral_count',
+                    'ratings_negative_count',
+                    'rating_archives_negative_count',
+                    'ratings_buyer_negative_count',
+                ]);
+
+                $product->user->append([
+                    'shipping_method_ids',
+                    'ratings_negative_total_count',
+                    'ratings_neutral_total_count',
+                    'ratings_positive_total_count',
                 ]);
             });
         }
@@ -378,27 +446,8 @@ class ProductController extends Controller
     public function delete(Request $request, Model $product)
     {
         $response = null;
-        $sales = $product->sales->filter(function ($sale) {
-            return $sale->products->count() === 1;
-        });
-        $threads = $product->threads()->withTrashed()->get();
-        // Delete the product and the sales that had only one (this) product.
-        DB::transaction(function () use ($request, $product, $response, $sales, $threads) {
-            // Delete threads and associated data.
-            // We do not need to trigger events, do mass deletion.
-            foreach ($threads as $thread) {
-                $thread->participants()->withTrashed()->forceDelete();
-                $thread->messages()->withTrashed()->forceDelete();
-            }
-            $product->threads()->withTrashed()->forceDelete();
-
-            // Remove product from sales,
-            // and delete sales that only had this product.
-            $product->sales()->sync([]);
-            foreach ($sales as $sale) {
-                $sale->delete();
-            }
-            $product = $product->fresh();
+        DB::transaction(function () use ($request, $product, $response) {
+            $this->productsCleanup(collect([$product]));
             $response = parent::delete($request, $product);
         });
 

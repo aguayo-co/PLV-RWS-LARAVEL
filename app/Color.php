@@ -15,7 +15,7 @@ class Color extends Model
      * @var array
      */
     protected $fillable = [
-        'name',
+        'name', 'hex_code'
     ];
 
     public function getRouteKeyName()

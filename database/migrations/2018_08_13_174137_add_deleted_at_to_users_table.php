@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddAdminNotesToProducts extends Migration
+class AddDeletedAtToUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,8 @@ class AddAdminNotesToProducts extends Migration
      */
     public function up()
     {
-        //Adds column status_history to save changes of status on products
-        Schema::table('products', function ($table) {
-            $table->longText('admin_notes')->after('status_history')->nullable();
+        Schema::table('users', function (Blueprint $table) {
+            $table->softDeletes();
         });
     }
 
@@ -26,8 +25,8 @@ class AddAdminNotesToProducts extends Migration
      */
     public function down()
     {
-        Schema::table('products', function ($table) {
-            $table->dropColumn('admin_notes');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropSoftDeletes();
         });
     }
 }

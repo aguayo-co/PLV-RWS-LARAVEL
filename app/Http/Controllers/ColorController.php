@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class ColorController extends AdminController
 {
     protected $modelClass = Color::class;
-    public static $allowedWhereLike = ['slug'];
+    public static $allowedOrderBy = ['id', 'created_at', 'updated_at', 'name'];
+    public static $allowedWhereLike = ['slug', 'name'];
 
     protected function alterValidateData($data, Model $color = null)
     {

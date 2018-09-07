@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\SaleReturn;
 use App\Sale;
+use App\SaleReturn;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -13,6 +14,18 @@ class SaleReturnController extends Controller
     protected $modelClass = SaleReturn::class;
 
     public static $allowedWhereIn = ['id', 'sale_id'];
+    public static $allowedWhereBetween = ['status'];
+    public static $allowedWhereHas = [
+        'buyer_id' => 'sales.order,user_id',
+        'buyer_email' => 'sales.order.user,email',
+        'buyer_full_name' => 'sales.order.user,full_name',
+        'user_id' => 'sales,user_id',
+        'user_email' => 'sales.user,email',
+        'user_full_name' => 'sales.user,full_name',
+        'product_id' => 'products',
+        'product_title' => 'products,title',
+    ];
+    public static $allowedOrderBy = ['id', 'created_at'];
 
     public function __construct()
     {
@@ -42,8 +55,6 @@ class SaleReturnController extends Controller
         $validStatuses = [
             SaleReturn::STATUS_SHIPPED,
             SaleReturn::STATUS_DELIVERED,
-            SaleReturn::STATUS_RECEIVED,
-            SaleReturn::STATUS_ADMIN,
             SaleReturn::STATUS_COMPLETED,
             SaleReturn::STATUS_CANCELED,
         ];
@@ -167,11 +178,8 @@ class SaleReturnController extends Controller
                 return $fail(__('validation.in', ['values' => implode(', ', $buyerStatuses)]));
             }
 
-            // Seller can set three statuses.
-            // Validate we have one of those.
+            // Seller can set one status.
             $sellerStatuses = [
-                SaleReturn::STATUS_RECEIVED,
-                SaleReturn::STATUS_ADMIN,
                 SaleReturn::STATUS_COMPLETED,
             ];
             $seller = $return->sales->first()->user;
@@ -197,7 +205,7 @@ class SaleReturnController extends Controller
                 return $fail(__('Usuario no tiene permiso para modificar esta información.'));
             }
 
-            if (SaleReturn::STATUS_RECEIVED < $return->status) {
+            if (SaleReturn::STATUS_COMPLETED <= $return->status) {
                 return $fail(__('Información ya no se puede modificar.'));
             }
         };
@@ -218,12 +226,31 @@ class SaleReturnController extends Controller
             $data['status'] = SaleReturn::STATUS_PENDING;
         }
 
-        if ($productsIds = array_get($data, 'products_ids')) {
+        $productsIds = array_get($data, 'products_ids');
+        if ($productsIds) {
             $saleId = $return ? $return->sale->id : array_get($data, 'sale_id');
             $data['products_ids'] = ['sale_id' => $saleId, 'products_ids' => $productsIds];
         }
 
         unset($data['sale_id']);
         return parent::alterFillData($data, $return);
+    }
+
+    protected function setVisibility(Collection $collection)
+    {
+        $collection->load([
+            'sales.order.user',
+            'sales.user',
+            'products',
+        ]);
+
+        $collection->each(function ($saleReturn) {
+            $saleReturn->sale->user->makeVisible(['email', 'phone']);
+            $saleReturn->sale->order->user->makeVisible(['email', 'phone']);
+            $saleReturn->append([
+                'sale',
+            ]);
+            $saleReturn->makeHidden(['sales']);
+        });
     }
 }

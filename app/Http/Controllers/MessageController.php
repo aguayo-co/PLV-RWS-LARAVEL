@@ -36,7 +36,7 @@ class MessageController extends Controller
                 $this->bodyFilterRule()
             ],
             'recipients' => 'array',
-            'recipients.*' => 'integer|exists:users,id|not_in:' . auth()->id(),
+            'recipients.*' => 'integer|exists:users,id,deleted_at,NULL|not_in:' . auth()->id(),
         ];
     }
 
@@ -67,18 +67,24 @@ class MessageController extends Controller
     public function postStore(Request $request, Model $message)
     {
         $thread = $message->thread;
-        $thread->activateAllParticipants();
 
         // Add replier as a participant
-        $participant = Participant::firstOrCreate([
+        $participant = Participant::withTrashed()->firstOrCreate([
             'thread_id' => $thread->id,
             'user_id' => auth()->id(),
         ]);
         $participant->last_read = now();
-        $participant->save();
+        $participant->restore();
 
         // Recipients
         if ($request->recipients) {
+            $participants = $thread->participants()
+                ->whereIn('user_id', $request->recipients)
+                ->onlyTrashed()->get();
+            foreach ($participants as $participant) {
+                $participant->restore();
+            }
+
             $thread->addParticipant($request->recipients);
             $recipients = User::whereIn('id', $request->recipients)->get();
             foreach ($recipients as $recipient) {

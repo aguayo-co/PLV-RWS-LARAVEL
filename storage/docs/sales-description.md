@@ -69,6 +69,7 @@ Aparte de los criterios de filtrado globales, las ventas se pueden filtrar por l
 |filtro|tipo|
 |------|----|
 |status|Entre|
+|order_id|ContenidoEn|
 |buyer_id|ContenidoEn|
 |buyer_email|ContenidoEn|
 |user_id|ContenidoEn|

@@ -19,4 +19,14 @@ class Geoname extends Model
     {
         return $this->hasOne('App\ChilexpressGeodata', 'geonameid');
     }
+
+    public function admin1()
+    {
+        return $this->belongsTo('App\Geoname', 'admin1_code', 'admin1_code')->whereNull('admin2_code');
+    }
+
+    public function admin2()
+    {
+        return $this->belongsTo('App\Geoname', 'admin2_code', 'admin2_code')->whereNull('admin3_code');
+    }
 }

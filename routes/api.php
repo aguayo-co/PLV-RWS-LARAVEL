@@ -72,8 +72,8 @@ Route::name('api.')->group(function () {
         # Routes for user account and profile administration.
         Route::patch('users/{user}', 'Auth\UserController@update')
             ->name('user.update')->where('user', ID_REGEX);
-        Route::delete('users/{user}', 'Auth\UserController@delete')
-            ->name('user.delete')->where('user', ID_REGEX);
+        Route::delete('users/{user_scoped}', 'Auth\UserController@delete')
+            ->name('user.delete')->where('user_scoped', ID_REGEX);
 
         Route::get('users/{user}/addresses', 'AddressController@index')
             ->name('user.addresses.get')->where('user', ID_REGEX);
@@ -90,6 +90,8 @@ Route::name('api.')->group(function () {
         Route::post('products', 'ProductController@store')->name('product.create');
         Route::patch('products/{product}', 'ProductController@update')
             ->name('product.update')->where('product', ID_REGEX);
+        Route::post('products/{product}/replicate', 'ProductController@replicate')
+            ->name('product.replicate')->where('product', ID_REGEX);
         Route::delete('products/{product}', 'ProductController@ownerDelete')
             ->name('product.delete')->where('product', ID_REGEX);
 

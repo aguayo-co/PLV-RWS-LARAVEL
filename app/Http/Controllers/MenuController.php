@@ -33,6 +33,9 @@ class MenuController extends AdminController
      */
     protected function setVisibility(Collection $collection)
     {
-        $collection->load('items.children.children');
+        // Unless explicitly asked for a flat list, load children.
+        if (!request()->get('flat')) {
+            $collection->load('items.children.children');
+        }
     }
 }

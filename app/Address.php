@@ -18,7 +18,10 @@ class Address extends Model
         'user_id', 'number', 'street', 'additional', 'geonameid',
     ];
     protected $hidden = [
-        'geoname'
+        'geoname',
+    ];
+    protected $with = [
+        'geoname', 'chilexpressGeodata',
     ];
     protected $appends = [
         'commune', 'region', 'province', 'can_admit_chilexpress', 'can_deliver_chilexpress'
@@ -40,7 +43,7 @@ class Address extends Model
      */
     public function user()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo('App\User')->withTrashed();
     }
 
     public function geoname()
@@ -55,22 +58,12 @@ class Address extends Model
 
     protected function getRegionAttribute()
     {
-        if (!$this->geoname) {
-            return null;
-        }
-        $region = Geoname::where('feature_code', 'ADM1')
-            ->where('admin1_code', $this->geoname->admin1_code)->first();
-        return data_get($region, 'name');
+        return data_get($this->geoname->admin1, 'name');
     }
 
     protected function getProvinceAttribute()
     {
-        if (!$this->geoname) {
-            return null;
-        }
-        $province = Geoname::where('feature_code', 'ADM2')
-            ->where('admin2_code', $this->geoname->admin2_code)->first();
-        return data_get($province, 'name');
+        return data_get($this->geoname->admin2, 'name');
     }
 
     protected function getCommuneAttribute()

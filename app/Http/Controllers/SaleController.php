@@ -20,7 +20,7 @@ class SaleController extends Controller
 {
     protected $modelClass = Sale::class;
 
-    public static $allowedWhereIn = ['id', 'user_id'];
+    public static $allowedWhereIn = ['id', 'user_id', 'order_id'];
     public static $allowedWhereBetween = ['status'];
     public static $allowedWhereHas = [
         'buyer_id' => 'order,user_id',
@@ -190,7 +190,7 @@ class SaleController extends Controller
                 || (Sale::STATUS_PAYED <= $sale->status && $sale->status < Sale::STATUS_CANCELED)) {
                 $sale->order->user->makeVisible(['email', 'phone']);
             }
-            if ($sale->status <= Sale::STATUS_PAYED || $sale->status === Sale::STATUS_CANCELED) {
+            if ($sale->status < Sale::STATUS_PAYED || $sale->status === Sale::STATUS_CANCELED) {
                 $sale->order->makeHidden(['shipping_information']);
             }
 

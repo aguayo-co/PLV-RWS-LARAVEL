@@ -3,8 +3,8 @@ Una devolución (SaleReturn) se genera cuando un comprador quiere devolver uno o
 - **0**: Pendiente
 - **40**: Enviada
 - **41**: Entregada
-- **49**: Recibida
-- **50**: Manejo de administrador
+- **49**: Recibida (Depreciado: 2018-08-17)
+- **50**: Manejo de administrador (Depreciado: 2018-08-17)
 - **90**: Completada
 - **99**: Cancelada
 
@@ -51,3 +51,26 @@ Ejemplos:
 }
 
 ```
+
+##### Filtrado
+
+Aparte de los criterios de filtrado globales, las ventas se pueden filtrar por los siguientes criterios:
+
+|filtro|tipo|
+|------|----|
+|status|Entre|
+|sale_id|ContenidoEn|
+|buyer_id|ContenidoEn|
+|buyer_email|ContenidoEn|
+|user_id|ContenidoEn|
+|user_email|ContenidoEn|
+|product_id|ContenidoEn|
+|product_title|ContenidoEn|
+
+##### Ordenamiento
+
+Aparte de los criterios globales, los sliders se pueden ordenar por los siguientes criterios:
+
+|valor|parámetro de url|ejemplo|
+|-----|----------------|-------|
+|Fecha de creación|created_at|`?orderby=-created_at`|

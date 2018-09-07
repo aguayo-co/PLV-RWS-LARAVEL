@@ -26,5 +26,19 @@ return [
     ],
     'products' => [
         'notAvailable' => 'Alguno de los productos ya no está disponible.',
+        'alreadyReplicated' => 'Este producto ya fue replicado.',
+    ],
+    'orders' => [
+        'noPendingPayment' => 'No Existe un pago pendiente en la orden.',
+        'paymentIsNotTransfer' => 'El pago no es de tipo Transferencia.',
+        'transferAlreadyApproved' => 'Tú orden ya se encuentra pagada y no es necesario subir un recibo.',
+        'frozenOfShoppingCart' => 'No se puede modificar Orden que no está en ShoppingCart.',
+        'notPayed' => 'La orden no ha sido pagada.',
+    ],
+    'users' => [
+        'hasPendingSales' => 'La usuaria tiene ventas pendientes.',
+        'hasPendingOrders' => 'La usuaria tiene compras pendientes.',
+        'hasCredits' => 'La usuaria tiene saldo de créditos.',
+        'hasPendingTransfers' => 'La usuaria tiene transferencias pendientes.',
     ]
 ];

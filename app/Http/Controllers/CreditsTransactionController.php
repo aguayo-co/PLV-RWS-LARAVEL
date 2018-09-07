@@ -19,6 +19,7 @@ class CreditsTransactionController extends Controller
 
     public static $allowedWhereIn = ['id', 'payroll_id', 'user_id'];
     public static $allowedWhereBetween = ['transfer_status'];
+    public static $allowedWhereHas = ['recent_returns' => 'user.orders.sales.recentSaleReturns,__has__'];
 
     public function __construct()
     {
@@ -276,6 +277,7 @@ class CreditsTransactionController extends Controller
     protected function setVisibility(Collection $collection)
     {
         $loggedUser = auth()->user();
+        // No need to load the suer if it is the owner.
         if ($loggedUser && $loggedUser->hasRole('admin')) {
             $collection->load(['user']);
         }
