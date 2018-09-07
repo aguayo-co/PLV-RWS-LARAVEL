@@ -229,10 +229,9 @@ class PaymentController extends Controller
         });
 
         // Send notifications if payment is successful.
-        if ($payment->status === Payment::STATUS_SUCCESS) {
-            if ($payment->order->status === Order::STATUS_PAYED) {
-                $gatewayManager->gateway->sendApprovedNotification();
-            }
+        if ($payment->status === Payment::STATUS_SUCCESS && $order->status === Order::STATUS_PAYED) {
+            $gatewayManager->gateway->payment->load('order');
+            $gatewayManager->gateway->sendApprovedNotification();
         }
 
         return $payment;
