@@ -174,6 +174,10 @@ class Order extends Model
             return 0;
         }
 
+        if ($this->total < $coupon->minimum_price) {
+            return 0;
+        }
+
         $discountedProducts = $this->getDiscountedProducts();
 
         $discountValue = $coupon->discount_value;
@@ -252,14 +256,6 @@ class Order extends Model
         if ($minimumCommission) {
             $products = $products->filter(function ($product) use ($minimumCommission) {
                 return $minimumCommission <= $product->commission;
-            });
-        }
-
-        // Remove products that do not meet the minimum price, if there is a minimum.
-        $minimumPrice = $coupon->minimum_price;
-        if ($minimumPrice) {
-            $products = $products->filter(function ($product) use ($minimumPrice) {
-                return $minimumPrice <= $product->price;
             });
         }
 

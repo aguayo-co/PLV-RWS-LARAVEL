@@ -12,6 +12,7 @@ trait CouponRules
         return [
             $this->getCouponActive($order),
             $this->getCouponIsFirstPurchase($order),
+            $this->getCouponMinimumPriceIsValid($order),
             $this->getCouponIsApplicable($order),
         ];
     }
@@ -58,6 +59,22 @@ trait CouponRules
             }
 
             return $fail(__('prilov.coupons.firstPurchaseOnly'));
+        };
+    }
+
+    /**
+     * Rule that validates that the order total is higher than minimum_price.
+     */
+    protected function getCouponMinimumPriceIsValid($order)
+    {
+        return function ($attribute, $value, $fail) use ($order) {
+            $coupon = Coupon::where('code', $value)->first();
+            $testOrder = $order->fresh();
+            if ($testOrder->total >= $coupon->minimum_price) {
+                return;
+            }
+
+            return $fail(__('prilov.coupons.totalTooLow', ['total' => $coupon->minimum_price]));
         };
     }
 

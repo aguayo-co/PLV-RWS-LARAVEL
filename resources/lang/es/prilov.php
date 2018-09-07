@@ -22,6 +22,7 @@ return [
     ],
     'coupons' => [
         'firstPurchaseOnly' => 'Cupón sólo permitido en primera compra.',
+        'totalTooLow' => 'Este cupón aplica órdenes de más de :total.',
         'notApplicable' => 'Este cupón no aplica para ninguno de los productos de la orden.',
     ],
     'products' => [
