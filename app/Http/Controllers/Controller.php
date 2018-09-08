@@ -164,7 +164,7 @@ class Controller extends BaseController
         $alter = $this->alterIndexQuery();
         $query = call_user_func($this->modelClass . '::when', $alter, $alter);
         $query = $this->applyParamsToQuery($request, $query);
-        $items = $request->items ? (int)$request->items : 12;
+        $items = $request->items ? (int)$request->items : 24;
         $pagination = $query
             ->paginate($items)
             ->appends($request->query());
