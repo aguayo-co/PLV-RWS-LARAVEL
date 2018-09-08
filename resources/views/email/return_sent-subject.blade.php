@@ -1,1 +1,1 @@
-Ya te enviaron de vuelta el producto
+La compradora ya te envió la devolución

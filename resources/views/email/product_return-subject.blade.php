@@ -1,1 +1,1 @@
-Debes devolver el producto a tu vendedora
+Debes enviar la devolución a la vendedora
