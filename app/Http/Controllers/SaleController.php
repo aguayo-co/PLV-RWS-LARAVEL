@@ -21,7 +21,7 @@ class SaleController extends Controller
     protected $modelClass = Sale::class;
 
     public static $allowedWhereIn = ['id', 'user_id', 'order_id'];
-    public static $allowedWhereBetween = ['status'];
+    public static $allowedWhereBetween = ['status', 'created_at',];
     public static $allowedWhereHas = [
         'buyer_id' => 'order,user_id',
         'buyer_email' => 'order.user,email',
@@ -63,6 +63,28 @@ class SaleController extends Controller
      */
     protected function alterIndexQuery()
     {
+        return function ($query) {
+            $this->filterByUser($query);
+
+            $user = auth()->user();
+            if (request()->withReportData && $user->hasRole('admin')) {
+                $query->with(['order.user' => function ($query) {
+                    $query->withCount('orders');
+                }]);
+
+                $query->with(['products' => function ($query) {
+                    $query->withCount(['favoritedBy', 'sales as shopping_cart_count' => function ($query) {
+                        $query->where('status', Sale::STATUS_SHOPPING_CART);
+                    }]);
+                }]);
+            }
+
+            return $query;
+        };
+    }
+
+    protected function filterByUser($query)
+    {
         $user = auth()->user();
         $showAll = array_get(request()->query('filter'), 'all');
         if ($user->hasRole('admin') && $showAll) {
@@ -74,16 +96,13 @@ class SaleController extends Controller
         // Check setVisibility().
         // Limit to orders of the current logged in user.
         if (request()->get('buyer')) {
-            return function ($query) use ($user) {
-                $query = $query->whereHas('order', function ($q) use ($user) {
-                    $q->where('user_id', $user->id);
-                });
-            };
+            $query = $query->whereHas('order', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            });
+            return;
         }
 
-        return function ($query) use ($user) {
-            return $query->where('user_id', $user->id);
-        };
+        $query->where('user_id', $user->id);
     }
 
     /**
@@ -150,7 +169,7 @@ class SaleController extends Controller
 
     protected function setVisibility(Collection $collection)
     {
-        $collection->load([
+        $collection->loadMissing([
             'returns',
             'shippingMethod',
             'user',

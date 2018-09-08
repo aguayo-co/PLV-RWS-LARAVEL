@@ -270,13 +270,13 @@ class ProductController extends Controller
                 $query = $query->orderByImageInstagramDate('desc');
             }
 
-            if (request()->withCounts) {
+            $user = auth()->user();
+            if (request()->withCounts && $user->hasRole('admin')) {
                 $query->withCount(['favoritedBy', 'sales as shopping_cart_count' => function ($query) {
                     $query->where('status', Sale::STATUS_SHOPPING_CART);
                 }]);
             }
 
-            $user = auth()->user();
             if ($user && $user->hasRole('admin')) {
                 return $query;
             }
