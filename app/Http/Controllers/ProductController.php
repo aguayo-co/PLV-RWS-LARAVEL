@@ -11,6 +11,7 @@ use App\Notifications\ProductDeletedAdmin;
 use App\Notifications\ProductHidden;
 use App\Notifications\ProductRejected;
 use App\Product;
+use App\Sale;
 use App\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -45,7 +46,7 @@ class ProductController extends Controller
         'users_emails' => 'user,email',
         'users_groups_ids' => 'user.groups',
     ];
-    public static $allowedWhereBetween = ['price', 'status'];
+    public static $allowedWhereBetween = ['price', 'status', 'created_at', 'commission'];
     public static $allowedWhereLike = ['slug'];
 
     /**
@@ -267,6 +268,12 @@ class ProductController extends Controller
             }
             if (in_array('-image_instagram_date', $orderBy)) {
                 $query = $query->orderByImageInstagramDate('desc');
+            }
+
+            if (request()->withCounts) {
+                $query->withCount(['favoritedBy', 'sales as shopping_cart_count' => function ($query) {
+                    $query->where('status', Sale::STATUS_SHOPPING_CART);
+                }]);
             }
 
             $user = auth()->user();
