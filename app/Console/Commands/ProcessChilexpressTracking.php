@@ -101,8 +101,9 @@ class ProcessChilexpressTracking extends Command
         while (($data = fgetcsv($tempFile, 0, ";")) !== false) {
             $matches = collect();
             $refBase = config('prilov.chilexpress.referencia_base');
+            // Patter to match: /{refBase}0000-0000
             $pattern = '/' . $refBase . '[0-9]+-(?P<saleId>[0-9]+)/';
-            if (preg_match($pattern, $data[1], $matches)) {
+            if (preg_match($pattern, array_get($data, 1), $matches)) {
                 $saleId = $matches['saleId'];
                 if (!$salesEvents->has($saleId)) {
                     $salesEvents->put($saleId, collect());
