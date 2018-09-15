@@ -204,8 +204,7 @@ class Sale extends Model
             return $addressFrom ? new Address($addressFrom) : null;
         }
 
-        return $this->user->addresses
-            ->where('id', $this->user->favorite_address_id)->first();
+        return $this->user->favoriteAddress;
     }
 
     public function getReturnedCommissionAttribute()

@@ -172,7 +172,7 @@ class SaleController extends Controller
         $collection->loadMissing([
             'returns',
             'shippingMethod',
-            'user',
+            'user.favoriteAddress',
 
             'order.coupon',
             'order.user',
@@ -180,7 +180,8 @@ class SaleController extends Controller
             'products.brand',
             'products.condition',
             'products.size',
-            'products.user',
+            // For product.sale_price discount.
+            'products.user.groups',
         ]);
 
         // Optional information.
@@ -195,12 +196,13 @@ class SaleController extends Controller
                 // This might seem redundant, but since from the sale there
                 // is information that we do not have, we need the order with all
                 // its related models loaded to calculate everything.
-                'order.sales.products',
+                'order.sales.products.user.groups',
                 'order.sales.shippingMethod',
             ]);
         }
 
         $collection->each(function ($sale) {
+            $sale->user->makeHidden(['favoriteAddress']);
             $sale->user->makeVisible(['email', 'phone']);
             // Show contact data only when order has been successful.
             // Or for admins.
