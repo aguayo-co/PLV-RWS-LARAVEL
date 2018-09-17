@@ -44,9 +44,7 @@ trait ProductPrice
     protected function getSalePriceFromSale()
     {
         // If it was loaded by itself, get the sale that it was sold with.
-        $sale = $this->sales()
-            ->whereBetween('status', [Sale::STATUS_PAYMENT, Sale::STATUS_COMPLETED_PARTIAL])
-            ->first();
+        $sale = $this->soldWith->first();
 
         // It might happen that there is no sale.
         // It might have been cancelled.

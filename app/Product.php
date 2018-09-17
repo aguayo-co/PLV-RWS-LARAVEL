@@ -133,6 +133,12 @@ class Product extends Model
         return $this->belongsToMany('App\Sale')->withPivot('sale_return_id', 'price');
     }
 
+    public function soldWith()
+    {
+        return $this->sales()
+            ->whereBetween('status', [Sale::STATUS_PAYMENT, Sale::STATUS_COMPLETED_PARTIAL]);
+    }
+
     public function threads()
     {
         return $this->hasMany('App\Thread');

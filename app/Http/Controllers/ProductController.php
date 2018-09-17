@@ -368,9 +368,12 @@ class ProductController extends Controller
             'category.parent',
             'colors',
             'condition',
+            'soldWith',
 
             'size.parent',
         ]);
+
+        $collection->makeHidden(['soldWith']);
 
         $loggedUser = auth()->user();
         if ($loggedUser && $loggedUser->hasRole('admin')) {
