@@ -241,6 +241,7 @@ class SaleReturnController extends Controller
         $collection->load([
             'sales.order.user',
             'sales.user',
+            'sales.shippingMethod',
             'products',
         ]);
 
