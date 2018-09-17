@@ -29,9 +29,10 @@ trait ProductPrice
             return $price;
         }
 
-        // If product is set as sold, and we didn't have a pivot table
-        // or price was null then get salePrice form the sale it was sold with.
-        if ($this->status >= Product::STATUS_PAYMENT) {
+        // If product is set as sold, and we don't have a pivot table
+        // (not loaded from a sale) then get salePrice form the sale it
+        // was sold with.
+        if ($this->status >= Product::STATUS_PAYMENT && $this->pivot === null) {
             return $this->getSalePriceFromSale();
         }
 
