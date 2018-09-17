@@ -86,11 +86,13 @@ class SaleReturnController extends Controller
             ],
             'products_ids' => [
                 'bail',
+                'filled',
                 trim($required, '|'),
                 $this->getCanAlterProducts($return),
                 'array'
             ],
             'products_ids.*' => [
+                'required',
                 Rule::exists('product_sale', 'product_id')->where(function ($query) use ($saleId) {
                     $query->where('sale_id', $saleId);
                 }),
@@ -226,8 +228,8 @@ class SaleReturnController extends Controller
             $data['status'] = SaleReturn::STATUS_PENDING;
         }
 
-        $productsIds = array_get($data, 'products_ids');
-        if ($productsIds) {
+        if (array_has($data, 'products_ids')) {
+            $productsIds = array_get($data, 'products_ids');
             $saleId = $return ? $return->sale->id : array_get($data, 'sale_id');
             $data['products_ids'] = ['sale_id' => $saleId, 'products_ids' => $productsIds];
         }
