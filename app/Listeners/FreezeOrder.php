@@ -10,7 +10,7 @@ use App\Product;
 use App\Sale;
 use Illuminate\Support\Facades\DB;
 
-class LockOrder
+class FreezeOrder
 {
     /**
      * Create the event listener.
@@ -33,12 +33,12 @@ class LockOrder
         $order = $event->order;
 
         DB::transaction(function () use ($order) {
-            $this->lockOrder($order);
-            $this->lockSales($order->sales);
+            $this->freezeOrder($order);
+            $this->freezeSales($order->sales);
         });
     }
 
-    protected function lockOrder($order)
+    protected function freezeOrder($order)
     {
         $order->applied_coupon = [
             'discount_per_product' => $order->discount_per_product,
@@ -48,7 +48,7 @@ class LockOrder
         $order->save();
     }
 
-    protected function lockSales($sales)
+    protected function freezeSales($sales)
     {
         foreach ($sales as $sale) {
             $sale->status = Sale::STATUS_PAYMENT;
@@ -59,11 +59,11 @@ class LockOrder
             $sale->shipment_details = $shipmentDetails;
 
             $sale->save();
-            $this->lockProducts($sale);
+            $this->freezeProducts($sale);
         }
     }
 
-    protected function lockProducts($sale)
+    protected function freezeProducts($sale)
     {
         foreach ($sale->products as $product) {
             $sale->products()->updateExistingPivot($product->id, [

@@ -20,7 +20,15 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $listen = [
         'App\Events\PaymentStarted' => [
-            'App\Listeners\LockOrder',
+            'App\Listeners\FreezeOrder',
+        ],
+
+        'App\Events\PaymentAborted' => [
+            'App\Listeners\UnfreezeOrder',
+        ],
+
+        'App\Events\OrderReversed' => [
+            'App\Listeners\UnfreezeOrder',
         ],
 
         'App\Events\PaymentSuccessful' => [

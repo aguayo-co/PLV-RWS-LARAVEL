@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Order;
 
+use App\Events\OrderReversed;
 use App\Http\Traits\CurrentUserOrder;
 use App\Order;
 use App\Product;
@@ -39,31 +40,7 @@ trait ShoppingCart
             return $order;
         }
 
-        DB::transaction(function () use ($order) {
-            $order->applied_coupon = null;
-            $order->status = Order::STATUS_SHOPPING_CART;
-            $order->save();
-            foreach ($order->payments as $payment) {
-                $payment->status = Sale::STATUS_CANCELED;
-                $payment->save();
-            }
-            foreach ($order->sales as $sale) {
-                $sale->status = Sale::STATUS_SHOPPING_CART;
-                $shipmentDetails = $sale->shipment_details;
-                unset($shipmentDetails['cost']);
-                unset($shipmentDetails['address_from']);
-                $sale->shipment_details = $shipmentDetails;
-                $sale->save();
-
-                foreach ($sale->products as $product) {
-                    $sale->products()->updateExistingPivot($product->id, [
-                        'price' => null,
-                    ]);
-                    $product->status = Product::STATUS_AVAILABLE;
-                    $product->save();
-                }
-            }
-        });
+        event(new OrderReversed($order));
 
         return $order->fresh();
     }
