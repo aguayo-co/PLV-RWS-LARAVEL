@@ -36,6 +36,11 @@ class Free implements PaymentGateway
     {
     }
 
+    public function getPaymentAmount()
+    {
+        return 0;
+    }
+
     public function setPayment(Payment $payment)
     {
         $this->payment = $payment;

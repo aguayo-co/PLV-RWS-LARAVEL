@@ -12,15 +12,23 @@ class GatewayManager
 {
     public $gateway;
     protected $order;
+    protected $payment;
     protected const BASE_REF = "-_PRILOV_LV";
 
     public function __construct($gateway)
     {
+        if ($gateway instanceof Payment) {
+            $this->payment = $gateway;
+            $gateway = $gateway->gateway;
+        }
         $gatewayClass = __NAMESPACE__ . '\\' . studly_case($gateway);
         if (!class_exists($gatewayClass)) {
             abort(Response::HTTP_INTERNAL_SERVER_ERROR, 'Payment gateway not available.');
         }
         $this->gateway = new $gatewayClass;
+        if ($this->payment) {
+            $this->gateway->setPayment($this->payment);
+        }
     }
 
     /**
@@ -47,6 +55,14 @@ class GatewayManager
     protected function getReference($payment)
     {
         return  $payment->uniqid . self::BASE_REF;
+    }
+
+    /**
+     * Get payment amount.
+     */
+    public function getPaymentAmount()
+    {
+        return  $this->gateway->getPaymentAmount();
     }
 
     protected function getPaymentFromReference($reference)

@@ -132,6 +132,11 @@ class PayU implements PaymentGateway
         return $this->callbackData;
     }
 
+    public function getPaymentAmount()
+    {
+        return data_get($this->payment, 'request.public_data.amount');
+    }
+
     public function setPayment(Payment $payment)
     {
         $this->payment = $payment;

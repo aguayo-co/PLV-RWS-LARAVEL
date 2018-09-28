@@ -169,6 +169,11 @@ class MercadoPago implements PaymentGateway
         return $this->paymentInfo;
     }
 
+    public function getPaymentAmount()
+    {
+        return data_get($this->payment, 'request.preference.items.0.unit_price');
+    }
+
     public function setPayment(Payment $payment)
     {
         $this->payment = $payment;

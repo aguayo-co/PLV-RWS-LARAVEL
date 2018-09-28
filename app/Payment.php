@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Gateways\GatewayManager;
 use App\Traits\DateSerializeFormat;
 use App\Traits\HasSingleFile;
 use App\Traits\HasStatuses;
@@ -22,7 +23,7 @@ class Payment extends Model
     protected $fillable = ['order_id', 'status'];
     protected $hidden = ['request', 'cloudFiles'];
     protected $with = ['cloudFiles'];
-    protected $appends = ['request_data', 'transfer_receipt', 'cancel_by'];
+    protected $appends = ['request_data', 'transfer_receipt', 'cancel_by', 'amount'];
     protected $casts = [
         'attempts' => 'array',
         'request' => 'array',
@@ -51,6 +52,12 @@ class Payment extends Model
     public function getTotalAttribute()
     {
         return $this->order->due;
+    }
+
+    public function getAmountAttribute()
+    {
+        $gatewayManager = new GatewayManager($this);
+        return $gatewayManager->getPaymentAmount();
     }
 
     public function getRequestDataAttribute($value)

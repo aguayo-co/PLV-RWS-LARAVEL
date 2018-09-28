@@ -12,6 +12,7 @@ interface PaymentGateway
     public function validateCallbackData($data);
     public function getStatus();
     public function getData();
+    public function getPaymentAmount();
     public function sendApprovedNotification();
     public function sendRejectedNotification();
     public function setPayment(Payment $payment);
