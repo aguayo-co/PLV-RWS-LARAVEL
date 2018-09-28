@@ -18,7 +18,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -208,9 +207,6 @@ class PaymentController extends Controller
         }
 
         // Order value should be the same.
-        Log::info(print_r($freshOrder->total, true));
-        Log::info(print_r($order->total, true));
-        Log::info($order->total == $freshOrder->total);
         if ($freshOrder->total != $order->total
             || $freshOrder->used_credits != $order->used_credits
             || $freshOrder->coupon_discount != $order->coupon_discount
