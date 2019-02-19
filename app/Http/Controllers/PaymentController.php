@@ -78,6 +78,15 @@ class PaymentController extends Controller
             ]);
         }
 
+        if ($order->used_credits) {
+            $availableCredits = data_get($order->user()->withCredits()->first(), 'credits', 0);
+            if ($availableCredits < $order->used_credits) {
+                throw ValidationException::withMessages([
+                    'order.used_credits' => ['Invalid credits value.'],
+                ]);
+            }
+        }
+
         switch ($order->status) {
             case Order::STATUS_TRANSACTION:
                 $this->validateTransactionOrder($order);
