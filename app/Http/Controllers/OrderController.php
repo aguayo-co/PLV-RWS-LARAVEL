@@ -278,6 +278,12 @@ class OrderController extends Controller
         if ($request->has('used_credits')) {
             $this->setOrderCredits($request->used_credits, $order);
         }
+        if ($order->used_credits) {
+            $availableCredits = data_get($order->user()->withCredits()->first(), 'credits', 0);
+            if ($availableCredits < $order->used_credits) {
+                $this->setOrderCredits($availableCredits, $order);
+            }
+        }
 
         // Only use address if Chilexpress is selected for at least one Sale.
         // This is performed after updating the sales, in case shipping method were changed.
