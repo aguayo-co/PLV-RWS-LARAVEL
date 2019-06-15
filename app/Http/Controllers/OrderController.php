@@ -278,7 +278,7 @@ class OrderController extends Controller
         if ($request->has('used_credits')) {
             $this->setOrderCredits($request->used_credits, $order);
         }
-        if ($order->used_credits) {
+        if ($order->used_credits && $order->status === Order::STATUS_SHOPPING_CART) {
             $availableCredits = data_get($order->user()->withCredits()->first(), 'credits', 0);
             if ($availableCredits < $order->used_credits) {
                 $this->setOrderCredits($availableCredits, $order);
