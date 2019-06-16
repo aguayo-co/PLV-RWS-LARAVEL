@@ -47,3 +47,33 @@ $ php artisan payments:pending-to-canceled
 $ php artisan sales:shipped-to-delivered
 $ php artisan ratings:publish
 ```
+
+
+## Backup y restaurado de base de datos
+
+Es necesario eliminar el `definer` de los `triggers` para poder restaurar un backup.
+Se crea el backup y de forma inmediata se eliminan esas instrucciones.
+
+```shell
+#!/usr/bin/env zsh
+docker run -it --rm -a STDOUT -v `pwd`/prilov/:/srv/prilov/ mysql:5.7 bash -c "mysqldump --defaults-extra-file=/srv/prilov/prilov-backup.cnf --set-gtid-purged=OFF --single-transaction=TRUE $DATABASE_BACKUP | sed -e 's/DEFINER[ ]*=[ ]*[^*]*\*/\*/' > /srv/prilov/dump.sql"
+
+#!/usr/bin/env zsh
+docker run -it --rm -a STDOUT -v /root/prilov/:/srv/prilov/ mysql:5.7 bash -c "mysql --defaults-extra-file=/srv/prilov/prilov-restore.cnf $DATABASE_RESTORE < /srv/prilov/dump.sql"
+```
+
+```ini
+# prilov-restore.cnf
+[mysql]
+user=
+password=
+host=
+```
+
+```ini
+# prilov-backup.cnf
+[mysqldump]
+user=
+password=
+host=
+```
