@@ -1,5 +1,0 @@
-"*":
-  "linter-phpmd":
-    rulesOrConfigFile: [
-      ".phpmd/laravel.phpmd.xml"
-    ]
