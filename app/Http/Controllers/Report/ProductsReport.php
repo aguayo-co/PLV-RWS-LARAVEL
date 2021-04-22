@@ -13,7 +13,7 @@ trait ProductsReport
             ->whereRaw('created_at < ?', $request->from)
             ->addSelect(DB::raw('COUNT(id) as productsCount'))
             ->addSelect(DB::raw('SUM(price) as productsPriceTotal'))
-            ->get();
+            ->first();
     }
 
     protected function getProductsReport(Request $request)

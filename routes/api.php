@@ -111,6 +111,8 @@ Route::name('api.')->group(function () {
         Route::get('/orders/{order}/payment', 'PaymentController@generatePayment')
             ->name('orders.payment.create')->where('order', ID_REGEX);
 
-        Route::get('/report', 'ReportController@show')->name('report');
+        Route::get('/report/first', 'ReportController@showFirst')->name('report.first');
+        Route::post('/report/second', 'ReportController@showSecond')->name('report.second');
+        Route::post('/report/third', 'ReportController@showThird')->name('report.third');
     });
 });
