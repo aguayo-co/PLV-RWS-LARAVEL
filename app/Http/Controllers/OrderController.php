@@ -66,6 +66,14 @@ class OrderController extends Controller
         abort(Response::HTTP_FORBIDDEN, 'Order can not be deleted.');
     }
 
+    public function getById(Request $request, $id)
+    {
+        $order = Order::find($id);
+        $order->user->makeVisible(['email', 'phone']);
+        $order->append(['due']);
+        return $order;
+    }
+
     /**
      * Return a Closure that modifies the index query.
      * The closure receives the $query as a parameter.
@@ -357,7 +365,8 @@ class OrderController extends Controller
             $order->sales->each(function ($sale) {
                 $loggedUser = auth()->user();
                 if (($loggedUser && $loggedUser->hasRole('admin'))
-                    || (Sale::STATUS_PAYED <= $sale->status && $sale->status < Sale::STATUS_CANCELED)) {
+                    || (Sale::STATUS_PAYED <= $sale->status && $sale->status < Sale::STATUS_CANCELED)
+                ) {
                     $sale->user->makeVisible(['email', 'phone']);
                 }
                 $sale->append([
