@@ -169,9 +169,9 @@ class Controller extends BaseController
             ->paginate($items)
             ->appends($request->query());
 
-        // $collection = $pagination->getCollection();
-        // $this->setVisibility($collection);
-        // $pagination->setCollection($collection);
+        $collection = $pagination->getCollection();
+        $this->setVisibility($collection);
+        $pagination->setCollection($collection);
 
         return $pagination;
     }

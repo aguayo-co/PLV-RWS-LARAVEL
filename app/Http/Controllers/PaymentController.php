@@ -436,12 +436,12 @@ class PaymentController extends Controller
 
     protected function setVisibility(Collection $collection)
     {
-        $collection->load([
+        /* $collection->load([
             'order.user',
         ]);
         $collection->each(function ($payment) {
             $payment->order->user->makeVisible(['email', 'phone']);
             $payment->order->append(['due']);
-        });
+        }); */
     }
 }
