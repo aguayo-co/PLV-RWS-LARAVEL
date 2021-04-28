@@ -43,7 +43,12 @@ class MercadoPago implements PaymentGateway
     public function getPaymentRequest($data)
     {
         $buyer = $this->payment->order->user;
-        $mercadoPago = new MP($this->getClientId(), $this->getClientSecret());
+        if ($this->getAccessToken()) {
+            $mercadoPago = new MP($this->getAccessToken());
+        } else {
+            $mercadoPago = new MP($this->getClientId(), $this->getClientSecret());
+        }
+
 
         $preferenceData = [
             'items' => [
@@ -138,9 +143,11 @@ class MercadoPago implements PaymentGateway
         }
 
         // Anything but payment, ignore.
-        if (array_get($data, 'type') !== 'payment' &&
+        if (
+            array_get($data, 'type') !== 'payment' &&
             array_get($data, 'topic') !== 'payment' &&
-            !array_has($data, 'merchant_order_id')) {
+            !array_has($data, 'merchant_order_id')
+        ) {
             abort(Response::HTTP_OK, __('Non payment callback: IGNORING'));
         }
 
