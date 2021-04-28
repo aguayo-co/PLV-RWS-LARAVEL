@@ -43,6 +43,11 @@
                 "dist": {
                     "url": "https://github.com/mercadopago/DEPRECATED-sdk-php/archive/refs/tags/v0.5.2.zip",
                     "type": "zip"
+                },
+                "autoload": {
+                    "classmap": [
+                        "lib/mercadopago.php"
+                    ]
                 }
             }
         }

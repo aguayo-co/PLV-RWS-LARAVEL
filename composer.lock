@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f55d0581a7eae72aecc0d67c79ea7020",
+    "content-hash": "2c3c04f5344c5216a03cf9c72fa5b6bb",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -2295,7 +2295,12 @@
                 "type": "zip",
                 "url": "https://github.com/mercadopago/DEPRECATED-sdk-php/archive/refs/tags/v0.5.2.zip"
             },
-            "type": "library"
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "lib/mercadopago.php"
+                ]
+            }
         },
         {
             "name": "monolog/monolog",
