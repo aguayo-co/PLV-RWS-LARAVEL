@@ -141,8 +141,6 @@ class MercadoPago implements PaymentGateway
             $mercadoPago = new MP($this->getClientId(), $this->getClientSecret());
         }
 
-        $mercadoPago->sandbox_mode(true);
-
         // If it is a test, do nothing.
         if (array_get($data, 'type') === 'test') {
             abort(Response::HTTP_OK, __('Test callback: OK'));
@@ -163,7 +161,7 @@ class MercadoPago implements PaymentGateway
         if ($paymentInfo['status'] != 200) {
             abort(Response::HTTP_BAD_GATEWAY, __('Invalid MercadoPago info: ERROR'));
         }
-
+        dd($paymentInfo);
         $this->paymentInfo = $paymentInfo['response']['collection'];
     }
 
