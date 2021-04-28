@@ -34,6 +34,19 @@
         "phpunit/phpunit": "~7.0",
         "symfony/thanks": "^1.0"
     },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "mercadopago/sdk",
+                "version": "0.5.2",
+                "dist": {
+                    "url": "https://github.com/mercadopago/DEPRECATED-sdk-php/archive/refs/tags/v0.5.2.zip",
+                    "type": "zip"
+                }
+            }
+        }
+    ],
     "autoload": {
         "classmap": [
             "database/seeds",
