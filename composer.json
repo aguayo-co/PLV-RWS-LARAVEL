@@ -22,7 +22,7 @@
         "laravel/passport": "~4.0",
         "laravel/tinker": "~1.0",
         "league/flysystem-aws-s3-v3": "^1.0",
-        "mercadopago/sdk": "^0.5.3",
+        "mercadopago/sdk": "0.5.2",
         "spatie/laravel-cors": "^1.2",
         "spatie/laravel-permission": "^2.9"
     },
