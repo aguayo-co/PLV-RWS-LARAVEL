@@ -135,7 +135,11 @@ class MercadoPago implements PaymentGateway
     public function setCallback($data)
     {
         $this->callbackData = $data;
-        $mercadoPago = new MP($this->getClientId(), $this->getClientSecret());
+        if ($this->getAccessToken()) {
+            $mercadoPago = new MP($this->getAccessToken());
+        } else {
+            $mercadoPago = new MP($this->getClientId(), $this->getClientSecret());
+        }
 
         // If it is a test, do nothing.
         if (array_get($data, 'type') === 'test') {
