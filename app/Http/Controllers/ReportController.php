@@ -23,6 +23,7 @@ class ReportController extends BaseController
 
     protected $dateGroupByFormat;
     protected $baseQuery;
+    protected $rowsResponse;
 
     public function __construct()
     {
@@ -108,11 +109,55 @@ class ReportController extends BaseController
         ];
     }
 
-    public function showFirst(Request $request)
+    public function showInparts(Request $request, $nextPart)
     {
         $this->validate($request);
 
         $this->setDateGroupByFormat($request);
+
+        $this->rowsResponse = $request->json('nexResponse') ?? [];
+
+        $response = [
+            'nextPart' => null,
+            'nexResponse' => []
+        ];
+
+        switch ($nextPart) {
+            case '1':
+                $response['nextPart'] = '2';
+                $response['nexResponse'] = $this->showFirst($request);
+                break;
+            case '2':
+                $response['nextPart'] = '3';
+                $response['nexResponse'] = $this->showSecond($request);
+                break;
+            case '3':
+                $response['nextPart'] = '4';
+                $response['nexResponse'] = $this->showRest($request, 'newUsers');
+                break;
+            case '4':
+                $response['nextPart'] = '5';
+                $response['nexResponse'] = $this->showRest($request, 'newUsersWithPicture');
+                break;
+            case '5':
+                $response['nextPart'] = '6';
+                $response['nexResponse'] = $this->showRest($request, 'newRatings');
+                break;
+            case '6':
+                $response['nextPart'] = '7';
+                $response['nexResponse'] = $this->showRest($request, 'newMessages');
+                break;
+            case '7':
+                // $response['nextPart'] = '8';
+                $response['nexResponse'] = $this->showRest($request, 'newComments');
+                break;
+        }
+
+        return $response;
+    }
+
+    public function showFirst(Request $request)
+    {
 
         $ordersReport = $this->getOrdersReport($request);
 
@@ -131,39 +176,37 @@ class ReportController extends BaseController
             'soldProductsCount',
         ];
 
-        $rows = [
+        $this->rowsResponse = [
             'groupBy' => $request->groupBy,
             'ranges' => [],
         ];
 
         foreach ($ordersReportKeys as $key) {
-            $rows[$key] = [];
+            $this->rowsResponse[$key] = [];
         }
 
         foreach ($ordersReport as $range) {
-            $this->setRangeDates($rows, $range);
+            $this->setRangeDates($this->rowsResponse, $range);
 
             foreach ($ordersReportKeys as $key) {
-                $rows[$key][$range->date_range] = $range->$key;
+                $this->rowsResponse[$key][$range->date_range] = $range->$key;
             }
         }
 
 
-        return $rows;
+        return $this->rowsResponse;
     }
 
     public function showSecond(Request $request)
     {
-        $this->setDateGroupByFormat($request);
-        $rows = $request->json('firstPart');
 
         $runningCredits = $this->getInitialCredits($request);
         $creditsReport = $this->getCreditsTransactionsReport($request);
         foreach ($creditsReport as $range) {
-            $this->setRangeDates($rows, $range);
+            $this->setRangeDates($this->rowsResponse, $range);
 
             $runningCredits += $range->credits;
-            $rows['creditsDebt'][$range->date_range] = $runningCredits;
+            $this->rowsResponse['creditsDebt'][$range->date_range] = $runningCredits;
         }
 
 
@@ -172,36 +215,34 @@ class ReportController extends BaseController
         $runningPriceTotal = $initialProductsData->productsPriceTotal;
         $productsReport = $this->getProductsReport($request);
         foreach ($productsReport as $range) {
-            $this->setRangeDates($rows, $range);
+            $this->setRangeDates($this->rowsResponse, $range);
 
             $runningProducts += $range->newProductsCount;
             $runningPriceTotal += $range->newProductsPriceTotal;
-            $rows['newProductsCount'][$range->date_range] = $range->newProductsCount;
-            $rows['newProductsAveragePrice'][$range->date_range] = (int) ($range->newProductsPriceTotal / $range->newProductsCount);
-            $rows['productsAveragePrice'][$range->date_range] = (int) ($runningPriceTotal / $runningProducts);
+            $this->rowsResponse['newProductsCount'][$range->date_range] = $range->newProductsCount;
+            $this->rowsResponse['newProductsAveragePrice'][$range->date_range] = (int) ($range->newProductsPriceTotal / $range->newProductsCount);
+            $this->rowsResponse['productsAveragePrice'][$range->date_range] = (int) ($runningPriceTotal / $runningProducts);
         }
 
-        return $rows;
+        return $this->rowsResponse;
     }
 
-    public function showThird(Request $request)
+    public function showRest(Request $request, $type = 'all')
     {
-        $this->setDateGroupByFormat($request);
-        $rows = $request->json('secondPart');
 
-        $newDataReport = $this->getNewDataReport($request);
+        $newDataReport = $this->getNewDataReport($request, $type);
         foreach ($newDataReport as $key => $dataReport) {
             foreach ($dataReport as $range) {
-                $this->setRangeDates($rows, $range);
+                $this->setRangeDates($this->rowsResponse, $range);
 
-                $rows[$key][$range->date_range] = $range->count;
+                $this->rowsResponse[$key][$range->date_range] = $range->count;
             }
         }
 
         // Sort ranges. Api consumers can use this array as the starting point.
         // Or can sort themselves.
-        ksort($rows['ranges']);
+        ksort($this->rowsResponse['ranges']);
 
-        return $rows;
+        return $this->rowsResponse;
     }
 }
