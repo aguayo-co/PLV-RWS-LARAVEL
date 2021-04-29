@@ -108,7 +108,7 @@ class ReportController extends BaseController
         ];
     }
 
-    public function show(Request $request)
+    public function showFirst(Request $request)
     {
         $this->validate($request);
 
@@ -148,6 +148,15 @@ class ReportController extends BaseController
             }
         }
 
+
+        return $rows;
+    }
+
+    public function showSecond(Request $request)
+    {
+        $this->setDateGroupByFormat($request);
+        $rows = $request->json('firstPart');
+
         $runningCredits = $this->getInitialCredits($request);
         $creditsReport = $this->getCreditsTransactionsReport($request);
         foreach ($creditsReport as $range) {
@@ -159,8 +168,8 @@ class ReportController extends BaseController
 
 
         $initialProductsData = $this->getInitialProductsData($request);
-        $runningProducts = $initialProductsData[0]->productsCount;
-        $runningPriceTotal = $initialProductsData[0]->productsPriceTotal;
+        $runningProducts = $initialProductsData->productsCount;
+        $runningPriceTotal = $initialProductsData->productsPriceTotal;
         $productsReport = $this->getProductsReport($request);
         foreach ($productsReport as $range) {
             $this->setRangeDates($rows, $range);
@@ -168,11 +177,17 @@ class ReportController extends BaseController
             $runningProducts += $range->newProductsCount;
             $runningPriceTotal += $range->newProductsPriceTotal;
             $rows['newProductsCount'][$range->date_range] = $range->newProductsCount;
-            $rows['newProductsAveragePrice'][$range->date_range] = (int) (
-                $range->newProductsPriceTotal / $range->newProductsCount
-            );
+            $rows['newProductsAveragePrice'][$range->date_range] = (int) ($range->newProductsPriceTotal / $range->newProductsCount);
             $rows['productsAveragePrice'][$range->date_range] = (int) ($runningPriceTotal / $runningProducts);
         }
+
+        return $rows;
+    }
+
+    public function showThird(Request $request)
+    {
+        $this->setDateGroupByFormat($request);
+        $rows = $request->json('secondPart');
 
         $newDataReport = $this->getNewDataReport($request);
         foreach ($newDataReport as $key => $dataReport) {

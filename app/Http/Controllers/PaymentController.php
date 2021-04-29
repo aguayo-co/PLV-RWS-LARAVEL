@@ -181,8 +181,10 @@ class PaymentController extends Controller
     protected function validateIsFresh(Order $order, $abort)
     {
         $freshOrder = Order::find($order->id)->load('sales.products');
-        if (!$this->orderIsFresh($order, $freshOrder)
-            || !$this->salesAreFresh($order, $freshOrder)) {
+        if (
+            !$this->orderIsFresh($order, $freshOrder)
+            || !$this->salesAreFresh($order, $freshOrder)
+        ) {
             if ($abort) {
                 event(new PaymentAborted($order));
             }
@@ -216,11 +218,13 @@ class PaymentController extends Controller
         }
 
         // Order value should be the same.
-        if ($freshOrder->total != $order->total
+        if (
+            $freshOrder->total != $order->total
             || $freshOrder->used_credits != $order->used_credits
             || $freshOrder->coupon_discount != $order->coupon_discount
-            || $freshOrder->shipping_cost != $freshOrder->shipping_cost) {
-               return false;
+            || $freshOrder->shipping_cost != $freshOrder->shipping_cost
+        ) {
+            return false;
         }
 
         return true;
@@ -235,8 +239,10 @@ class PaymentController extends Controller
         $freshSalesIds = $freshOrder->sales->pluck('id');
 
         // Sales should be the same.
-        if ($salesIds->diff($freshSalesIds)->count()
-        || $freshSalesIds->diff($salesIds)->count()) {
+        if (
+            $salesIds->diff($freshSalesIds)->count()
+            || $freshSalesIds->diff($salesIds)->count()
+        ) {
             return false;
         }
 
@@ -265,9 +271,11 @@ class PaymentController extends Controller
         $freshProductsIds = $freshOrder->products->pluck('id');
 
         // Products should be the same.
-        if ($productsIds->diff($freshProductsIds)->count()
-            || $freshProductsIds->diff($productsIds)->count()) {
-                return false;
+        if (
+            $productsIds->diff($freshProductsIds)->count()
+            || $freshProductsIds->diff($productsIds)->count()
+        ) {
+            return false;
         }
 
         // Products should have not been updated.
@@ -428,12 +436,12 @@ class PaymentController extends Controller
 
     protected function setVisibility(Collection $collection)
     {
-        $collection->load([
+        /* $collection->load([
             'order.user',
         ]);
         $collection->each(function ($payment) {
             $payment->order->user->makeVisible(['email', 'phone']);
             $payment->order->append(['due']);
-        });
+        }); */
     }
 }

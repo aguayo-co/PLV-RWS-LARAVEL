@@ -105,12 +105,15 @@ Route::name('api.')->group(function () {
         Route::patch('payments/{payment}', 'PaymentController@update')
             ->name('payment.update')->where('product', ID_REGEX);
         Route::post('payments', 'PaymentController@store')->name('payment.create');
+        Route::get('/orders/get-by-id/{id}', 'OrderController@getById')->name('orders.get-by-id');
 
         # Alternative routes for payment methods.
         Route::get('/shopping_cart/payment', 'PaymentController@store')->name('shopping_cart.payment.create');
         Route::get('/orders/{order}/payment', 'PaymentController@generatePayment')
             ->name('orders.payment.create')->where('order', ID_REGEX);
 
-        Route::get('/report', 'ReportController@show')->name('report');
+        Route::get('/report/first', 'ReportController@showFirst')->name('report.first');
+        Route::post('/report/second', 'ReportController@showSecond')->name('report.second');
+        Route::post('/report/third', 'ReportController@showThird')->name('report.third');
     });
 });

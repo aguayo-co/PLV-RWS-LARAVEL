@@ -40,10 +40,22 @@ class MercadoPago implements PaymentGateway
         return (int) ($this->payment->total * (100 + config('prilov.payments.percentage_fee.mercado_pago')) / 100);
     }
 
+    public function getMercadoPago()
+    {
+        if ($this->getAccessToken()) {
+            $mercadoPago = new MP($this->getAccessToken());
+        } else {
+            $mercadoPago = new MP($this->getClientId(), $this->getClientSecret());
+        }
+
+        return $mercadoPago;
+    }
+
     public function getPaymentRequest($data)
     {
         $buyer = $this->payment->order->user;
-        $mercadoPago = new MP($this->getClientId(), $this->getClientSecret());
+        $mercadoPago = $this->getMercadoPago();
+
 
         $preferenceData = [
             'items' => [
@@ -130,7 +142,7 @@ class MercadoPago implements PaymentGateway
     public function setCallback($data)
     {
         $this->callbackData = $data;
-        $mercadoPago = new MP($this->getClientId(), $this->getClientSecret());
+        $mercadoPago = $this->getMercadoPago();
 
         // If it is a test, do nothing.
         if (array_get($data, 'type') === 'test') {
@@ -138,9 +150,11 @@ class MercadoPago implements PaymentGateway
         }
 
         // Anything but payment, ignore.
-        if (array_get($data, 'type') !== 'payment' &&
+        if (
+            array_get($data, 'type') !== 'payment' &&
             array_get($data, 'topic') !== 'payment' &&
-            !array_has($data, 'merchant_order_id')) {
+            !array_has($data, 'merchant_order_id')
+        ) {
             abort(Response::HTTP_OK, __('Non payment callback: IGNORING'));
         }
 
@@ -150,7 +164,6 @@ class MercadoPago implements PaymentGateway
         if ($paymentInfo['status'] != 200) {
             abort(Response::HTTP_BAD_GATEWAY, __('Invalid MercadoPago info: ERROR'));
         }
-
         $this->paymentInfo = $paymentInfo['response']['collection'];
     }
 
