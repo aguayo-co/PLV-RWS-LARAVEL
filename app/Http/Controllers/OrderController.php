@@ -69,9 +69,12 @@ class OrderController extends Controller
     public function getById(Request $request, $id)
     {
         $order = Order::find($id);
-        $order->user->makeVisible(['email', 'phone']);
-        $order->append(['due']);
-        return $order;
+        if ($order) {
+            $order->user->makeVisible(['email', 'phone']);
+            $order->append(['due']);
+            return $order;
+        }
+        abort(Response::HTTP_NOT_FOUND, 'Order not found.');
     }
 
     /**

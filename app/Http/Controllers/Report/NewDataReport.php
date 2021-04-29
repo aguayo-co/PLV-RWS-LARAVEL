@@ -35,23 +35,34 @@ trait NewDataReport
             });
     }
 
-    protected function getNewDataReport(Request $request)
+    protected function getNewDataReport(Request $request, $type = 'all')
     {
         $data = collect();
-        $newUsers = $this->createQueryForNew($request, 'users');
-        $data->put('newUsers', $newUsers->get());
 
-        $newUsersWithPicture = $this->newUsersWithPicturesQuery($request);
-        $data->put('newUsersWithPicture', $newUsersWithPicture->get());
+        if ($type === 'all' || $type === 'newUsers') {
+            $newUsers = $this->createQueryForNew($request, 'users');
+            $data->put('newUsers', $newUsers->get());
+        }
 
-        $newRatings = $this->createQueryForNew($request, 'ratings', 'sale_id');
-        $data->put('newRatings', $newRatings->get());
+        if ($type === 'all' || $type === 'newUsersWithPicture') {
+            $newUsersWithPicture = $this->newUsersWithPicturesQuery($request);
+            $data->put('newUsersWithPicture', $newUsersWithPicture->get());
+        }
 
-        $newMessages = $this->newMessagesQuery($request);
-        $data->put('newMessages', $newMessages->get());
+        if ($type === 'all' || $type === 'newRatings') {
+            $newRatings = $this->createQueryForNew($request, 'ratings', 'sale_id');
+            $data->put('newRatings', $newRatings->get());
+        }
 
-        $newComments = $this->newMessagesQuery($request, 0);
-        $data->put('newComments', $newComments->get());
+        if ($type === 'all' || $type === 'newMessages') {
+            $newMessages = $this->newMessagesQuery($request);
+            $data->put('newMessages', $newMessages->get());
+        }
+
+        if ($type === 'all' || $type === 'newComments') {
+            $newComments = $this->newMessagesQuery($request, 0);
+            $data->put('newComments', $newComments->get());
+        }
 
         return $data;
     }
