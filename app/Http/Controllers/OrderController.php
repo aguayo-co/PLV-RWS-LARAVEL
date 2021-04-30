@@ -190,7 +190,7 @@ class OrderController extends Controller
 
             // Should be allowed only for Transfers.
             'transfer_receipt' => [
-                'image',
+                'mimes:jpg,png',
                 $this->paymentAcceptsReceiptRule($order)
             ],
         ];
